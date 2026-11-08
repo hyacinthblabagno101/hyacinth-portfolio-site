@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.netlify/
+.env
+.env.*
+.DS_Store
+._*
+
+# Draft resume stays local until resumeConfirmed is true in site.json
+public/hyacinth-blabagno-resume.pdf

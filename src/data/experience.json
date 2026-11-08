@@ -1,0 +1,103 @@
+{
+  "_note": "Drafted from the resume in hyacinth-portfolio (Aug 2026). Set confirmed to true on each role once its title, company, dates and points are correct. Unconfirmed roles never appear on the live site.",
+  "roles": [
+    {
+      "confirmed": true,
+      "role": "Brand & Growth Marketing Manager",
+      "company": "iLuxe Aesthetic Center",
+      "type": "Monthly retainer, medical aesthetics",
+      "dates": "[PLACEHOLDER: dates]",
+      "points": [
+        "Led brand development, content strategy, paid advertising, and influencer and UGC marketing across multiple clinic locations.",
+        "Built monthly content calendars and campaign roadmaps with the founder, tied to the clinic's growth targets."
+      ]
+    },
+    {
+      "confirmed": true,
+      "role": "Brand & Growth Marketing Manager",
+      "company": "Hair Solution Nails & Spa",
+      "type": "Monthly retainer, beauty and wellness",
+      "dates": "[PLACEHOLDER: dates]",
+      "points": [
+        "Built the salon's brand identity and online presence from the start, including visual direction and content strategy.",
+        "Ran monthly marketing, paid ads, promotions, and influencer and UGC campaigns for bookings and local awareness."
+      ]
+    },
+    {
+      "confirmed": true,
+      "role": "AI Content Production & E-commerce Marketing Specialist",
+      "company": "Proper Ecom",
+      "type": "Full-time contract, e-commerce",
+      "dates": "[PLACEHOLDER: dates]",
+      "points": [
+        "Produced AI-generated images and video for social, paid ads, Amazon listings, and storefronts for several brands at once.",
+        "Edited and retouched product images in Photoshop for Amazon and website listings."
+      ]
+    },
+    {
+      "confirmed": true,
+      "role": "Creative Content & E-commerce Specialist",
+      "company": "Winnie & Co.",
+      "type": "Full-time contract, fashion accessories",
+      "dates": "[PLACEHOLDER: dates]",
+      "points": [
+        "Produced short-form video and graphics for a premium handbag brand, sized for Reels, Stories, and paid ads.",
+        "Edited and merchandised product photography and supported the website's visual merchandising."
+      ]
+    },
+    {
+      "confirmed": true,
+      "role": "E-commerce Content & Digital Marketing Specialist",
+      "company": "Style State",
+      "type": "Full-time contract, wholesale fashion (Australia)",
+      "dates": "[PLACEHOLDER: dates]",
+      "points": [
+        "Handled product listings, Photoshop retouching, and AI-assisted creative for launches and seasonal campaigns.",
+        "Produced and scheduled social content and website banners."
+      ]
+    },
+    {
+      "confirmed": true,
+      "role": "Social Media & Influencer Marketing Manager",
+      "company": "Epic Tales / Rabble",
+      "type": "Full-time contract, children's publishing and kids' apparel",
+      "dates": "[PLACEHOLDER: dates]",
+      "points": [
+        "Managed Instagram, TikTok, and Pinterest strategy and content calendars for two consumer brands.",
+        "Ran influencer and UGC campaigns from creator sourcing through briefs and deliverables."
+      ]
+    },
+    {
+      "confirmed": true,
+      "role": "Marketing Operations & Content Strategist",
+      "company": "Flow.io Technologies and Solutions",
+      "type": "Part-time contract, SaaS",
+      "dates": "[PLACEHOLDER: dates]",
+      "points": [
+        "Organized the team's marketing systems and databases in Notion and researched the target audience.",
+        "Developed the content strategy and content pillars for lead generation and brand awareness."
+      ]
+    },
+    {
+      "confirmed": true,
+      "role": "Social Media Manager & Content Creator",
+      "company": "Self-employed (freelance)",
+      "type": "General Santos City, Philippines",
+      "dates": "2018 to present",
+      "points": [
+        "Managed social accounts for local food, retail, furniture, and beauty businesses, including photography, graphics, captions, and video.",
+        "Clients included Hya Collections & Clothing, Hya Chill & Grill, Dada's Mango, Tyrone James Designs, TJames Sporty Bar, Indaylyn Pares Overload, and MagSamgyup 199."
+      ]
+    },
+    {
+      "confirmed": true,
+      "role": "Social Media Specialist",
+      "company": "Hyacinth Gadgets and Accessories Shop",
+      "type": "General Santos City, Philippines",
+      "dates": "2019 to 2024",
+      "points": [
+        "Built the shop's online presence, covering social media planning, website marketing, and analytics."
+      ]
+    }
+  ]
+}

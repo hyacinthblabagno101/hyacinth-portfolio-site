@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page not found" description="This page doesn't exist. Go back to Hyacinth Blabagno's portfolio.">
+  <section class="band-dark nf">
+    <div class="wrap">
+      <p class="eyebrow">Error 404</p>
+      <h1>This page doesn't exist.</h1>
+      <p>The link may be old or mistyped.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="/">Go to the home page</a>
+        <a class="btn btn-ghost" href="/#work">See my work</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { padding-block: clamp(5rem, 4rem + 8vw, 10rem); }
+  .nf .wrap { display: grid; gap: 1.25rem; }
+  .eyebrow { color: var(--chambray); }
+  h1 { max-width: 14ch; }
+  p { color: var(--text-muted); }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+</style>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hyacinthblabagno.work/sitemap-index.xml

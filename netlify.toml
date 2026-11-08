@@ -1,0 +1,13 @@
+# Netlify reads this when the site is connected. Nothing is deployed until the site is set up in Netlify.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Long cache for fingerprinted build files (their names change whenever the content does)
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

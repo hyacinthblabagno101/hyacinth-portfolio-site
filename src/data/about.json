@@ -1,0 +1,45 @@
+{
+  "confirmed": false,
+  "heading": "About me",
+  "bio": [
+    "I'm Hyacinth, a social media manager and creative strategist based in General Santos City, Philippines. I started my first business at 13 and was running my own shop by 16, so I learned marketing by doing it for things I owned: taking the product photos, writing the captions, and answering the messages myself.",
+    "Since then I've worked with brands in food, fashion, beauty, e-commerce, and software. Most of my work sits between planning and making. I build the content calendar, write the brief or script, then design, edit, and schedule the posts.",
+    "I also handle the less visible work that keeps a team moving, like organizing files, tracking deliverables, and keeping product listings up to date."
+  ],
+  "facts": [
+    { "label": "Based in", "value": "General Santos City, Philippines" },
+    { "label": "Open to", "value": "[PLACEHOLDER: e.g. remote full-time roles, contract work]" }
+  ],
+  "portraitAlt": "Hyacinth Blabagno in a brown suit, on a phone call while working on a laptop",
+  "skills": [
+    {
+      "title": "Social media management",
+      "text": "Account setup and profile optimization, content strategy and calendars, research and ideation, scheduling and publishing, and replying to comments and messages.",
+      "category": "Social Media & Design"
+    },
+    {
+      "title": "Creative production",
+      "text": "Static posts, carousels, and short-form video for organic content and ads. I take an idea from brief and script through design, editing, and resizing for each platform.",
+      "category": "Short-Form Video"
+    },
+    {
+      "title": "UGC and influencer coordination",
+      "text": "Brand and creator research, outreach, campaign briefs, scripts and visual hooks, and tracking deliverables through review, by direct outreach or inside a client's influencer platform.",
+      "category": "UGC & Influencer"
+    },
+    {
+      "title": "E-commerce support",
+      "text": "Product image editing in Photoshop and Lightroom, product presentation, and website listings, with close attention to fabric, color, and garment details.",
+      "category": "E-commerce"
+    },
+    {
+      "title": "AI-assisted workflows",
+      "text": "Landing pages, forms, spreadsheet workflows, and simple automations built with AI tools, each one made to solve a specific day-to-day problem.",
+      "category": "Digital Workflows"
+    },
+    {
+      "title": "Virtual assistance",
+      "text": "File organization, content coordination, and admin support that keeps campaigns and teams on schedule."
+    }
+  ]
+}

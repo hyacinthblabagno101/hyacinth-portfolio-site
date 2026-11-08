@@ -1,0 +1,57 @@
+{
+  "_note": "Transcribed from the tools image in the brief. Set confirmed to true once the list is right. A tool with \"check\" is one I wasn't sure about; delete the check line once confirmed.",
+  "confirmed": false,
+  "groups": [
+    {
+      "name": "Social platforms",
+      "tools": ["Instagram", "TikTok", "Facebook", "YouTube", "Pinterest", "Threads", "X", "WhatsApp"]
+    },
+    {
+      "name": "Scheduling and analytics",
+      "tools": [
+        { "name": "Meta Business Suite", "check": "Logo just says Meta. Business Suite, Ads Manager, or both?" },
+        "Later", "Buffer", "Hootsuite", "Sprout Social", "Metricool", "Planable",
+        { "name": "Preview", "check": "Assumed the Preview app for planning Instagram grids" }
+      ]
+    },
+    {
+      "name": "Design and video",
+      "tools": ["Canva", "CapCut", "Adobe Photoshop", "Adobe Lightroom Classic", "Adobe Illustrator", "Adobe InDesign", "Adobe Acrobat", "Evoto"]
+    },
+    {
+      "name": "AI",
+      "tools": ["ChatGPT", "Claude", "Gemini", "Kling AI", "Higgsfield"]
+    },
+    {
+      "name": "Automation and web",
+      "tools": ["n8n", "GitHub"]
+    },
+    {
+      "name": "E-commerce and email",
+      "tools": [
+        "Shopify", "Amazon Seller Central", "TikTok Shop", "Magento",
+        { "name": "Cin7 Core", "check": "Read the striped blue icon as part of the Cin7 Core logo" },
+        "HighLevel", "Klaviyo", "Mailchimp"
+      ]
+    },
+    {
+      "name": "Project management",
+      "tools": ["Notion", "monday.com", "ClickUp", "Trello", "Airtable", "Slack"]
+    },
+    {
+      "name": "Microsoft 365",
+      "tools": ["Word", "Excel", "PowerPoint", "Outlook", "Teams"]
+    },
+    {
+      "name": "Google Workspace",
+      "tools": [
+        "Drive", "Docs",
+        { "name": "Sheets", "check": "Newer redesigned icon, fairly sure" },
+        "Slides",
+        { "name": "Forms", "check": "Newer redesigned icon, fairly sure" },
+        "Calendar", "Meet",
+        { "name": "Apps Script", "check": "Newer redesigned icon, fairly sure" }
+      ]
+    }
+  ]
+}

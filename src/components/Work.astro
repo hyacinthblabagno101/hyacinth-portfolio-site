@@ -1,0 +1,161 @@
+---
+/**
+ * Selected work grid. Cards come from src/content/projects (see the README to add or reorder).
+ * Filter buttons only appear for categories that have projects, and only when there are 2+ categories.
+ */
+import Media from './Media.astro';
+import { visibleProjects, isPublished, CATEGORY_ORDER } from '../lib/projects';
+
+const projects = (await visibleProjects()).filter((p) => p.data.featured);
+const categories = CATEGORY_ORDER.filter((c) => projects.some((p) => p.data.category === c));
+const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+---
+
+<section id="work" class="work" aria-labelledby="work-title">
+  <div class="wrap">
+    <header class="head">
+      <p class="eyebrow">Selected work</p>
+      <h2 id="work-title">Work I've planned, made, and managed</h2>
+      <p class="lede">
+        Each project says what my part was, so you can see what I did myself and what was a team effort.
+      </p>
+    </header>
+
+    {
+      categories.length > 1 && (
+        <div class="filters" role="group" aria-label="Filter work by category" hidden data-filters>
+          <button type="button" aria-pressed="true" data-filter="all">All</button>
+          {categories.map((c) => (
+            <button type="button" aria-pressed="false" data-filter={slugify(c)}>{c}</button>
+          ))}
+        </div>
+      )
+    }
+    <p class="visually-hidden" aria-live="polite" data-filter-status></p>
+
+    {
+      projects.length === 0 ? (
+        <p class="empty">Work samples are being added. In the meantime, feel free to contact me for examples.</p>
+      ) : (
+        <ul class="grid" role="list">
+          {projects.map((p, i) => (
+            <li class="card" data-category={slugify(p.data.category)}>
+              <div class="cover">
+                <Media item={p.data.cover} mode="poster" sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 92vw" />
+              </div>
+              <div class="meta">
+                <span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <p class="eyebrow cat">{p.data.category}</p>
+                <span class="type">{p.data.type}</span>
+                {!isPublished(p) && <span class="placeholder">Not live: {p.data.draft ? 'draft' : 'permission not confirmed'}</span>}
+              </div>
+              <h3><a class="card-link" href={`/work/${p.id}/`}>{p.data.title}</a></h3>
+              <p class="summary">{p.data.summary}</p>
+              <p class="role"><span>My role:</span> {p.data.role}</p>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .work { padding-block: var(--section); }
+  .head { display: grid; gap: 1rem; max-width: 46rem; }
+  .head .eyebrow { color: var(--rust); }
+  .lede { color: var(--text-muted); max-width: 52ch; }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2.5rem;
+  }
+  .filters button {
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    border: 1.5px solid var(--java);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--java);
+    font: 600 var(--step-small) / 1 var(--font-sans);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .filters button:hover { background: var(--bisque); }
+  .filters button[aria-pressed='true'] { background: var(--java); color: var(--cream); }
+
+  .grid {
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(2.5rem, 2rem + 2vw, 4rem) clamp(1.25rem, 1rem + 1.5vw, 2.5rem);
+  }
+  @media (min-width: 40rem) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  .card[hidden] { display: none; }
+
+  /* The whole card is clickable, but only the title is announced as the link */
+  .card { position: relative; display: grid; gap: 0.6rem; align-content: start; }
+  .card-link { color: inherit; text-decoration: none; }
+  .card-link::after { content: ''; position: absolute; inset: 0; }
+  .card-link:focus-visible { outline: none; }
+  .card:has(.card-link:focus-visible) { outline: 3px solid var(--focus); outline-offset: 6px; border-radius: 2px; }
+  .cover { overflow: hidden; border-radius: var(--radius); margin-bottom: 0.6rem; }
+  .cover :global(.media) { aspect-ratio: 4 / 5 !important; transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  @media (prefers-reduced-motion: no-preference) {
+    .card:hover .cover :global(.media) { transform: scale(1.03); }
+  }
+
+  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
+  .num { font-family: var(--font-serif); font-style: italic; font-size: 1.25rem; color: var(--burgundy); line-height: 1; }
+  .cat { color: var(--rust); }
+  .type {
+    padding: 0.2rem 0.55rem;
+    background: var(--glacier);
+    color: var(--java);
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 2px;
+  }
+  h3 { transition: color 0.2s ease; }
+  .card:hover h3 { color: var(--burgundy); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+  .summary { color: var(--text-muted); }
+  .role { font-size: var(--step-small); }
+  .role span { font-weight: 600; }
+
+  .empty { margin-top: 2rem; color: var(--text-muted); }
+</style>
+
+<script>
+  const group = document.querySelector<HTMLElement>('[data-filters]');
+  const status = document.querySelector<HTMLElement>('[data-filter-status]');
+  const cards = [...document.querySelectorAll<HTMLElement>('.card[data-category]')];
+
+  function apply(btn: HTMLButtonElement, announce = true) {
+    if (!group) return;
+    const filter = btn.dataset.filter;
+    group.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    let shown = 0;
+    cards.forEach((card) => {
+      const match = filter === 'all' || card.dataset.category === filter;
+      card.hidden = !match;
+      if (match) shown++;
+    });
+    if (status && announce) status.textContent = `Showing ${shown} ${shown === 1 ? 'project' : 'projects'}: ${btn.textContent}`;
+  }
+
+  if (group) {
+    group.hidden = false; // filters only appear once JavaScript can make them work
+    group.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-filter]');
+      if (btn) apply(btn);
+    });
+    // "See ... work" links in What I do open the grid already filtered, e.g. /?work=e-commerce#work
+    const preset = new URLSearchParams(location.search).get('work');
+    const presetBtn = preset ? group.querySelector<HTMLButtonElement>(`button[data-filter="${CSS.escape(preset)}"]`) : null;
+    if (presetBtn) apply(presetBtn, false);
+  }
+</script>

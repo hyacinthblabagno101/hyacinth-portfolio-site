@@ -1,0 +1,70 @@
+---
+/**
+ * About. Text comes from src/data/about.json; the photo is src/assets/portrait-about.jpg.
+ */
+import { Picture } from 'astro:assets';
+import portrait from '../assets/portrait-about.jpg';
+import { about, isPlaceholder } from '../lib/data';
+---
+
+<section id="about" class="about" aria-labelledby="about-title">
+  <div class="wrap grid">
+    <figure class="photo">
+      <Picture
+        src={portrait}
+        alt={about.portraitAlt}
+        widths={[400, 640, 900]}
+        sizes="(min-width: 64rem) 34vw, 90vw"
+        formats={['avif', 'webp']}
+      />
+    </figure>
+
+    <div class="copy">
+      <p class="eyebrow">About</p>
+      <h2 id="about-title">{about.heading}</h2>
+      {!about.confirmed && <p><span class="placeholder">Draft bio: needs your confirmation</span></p>}
+      <div class="bio">
+        {about.bio.map((p) => <p>{p}</p>)}
+      </div>
+      <dl class="facts">
+        {
+          about.facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>{isPlaceholder(f.value) ? <span class="placeholder">{f.value}</span> : f.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    --bg: var(--glacier);
+    background: var(--glacier);
+    padding-block: var(--section);
+  }
+  .grid { display: grid; gap: clamp(2.5rem, 2rem + 3vw, 5rem); align-items: center; }
+  @media (min-width: 64rem) { .grid { grid-template-columns: 1fr 1.25fr; } }
+
+  .photo { margin: 0; width: min(100%, 28rem); justify-self: center; }
+  .photo :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 30%;
+    border-radius: var(--radius) var(--radius) 999px 999px;
+    background: #fff;
+  }
+
+  .copy { display: grid; gap: 1.25rem; }
+  .copy .eyebrow { color: var(--burgundy); }
+  .bio { display: grid; gap: 1rem; max-width: 60ch; }
+  .bio p:first-child { font-family: var(--font-serif); font-size: clamp(1.375rem, 1.1rem + 1vw, 1.75rem); line-height: 1.3; }
+
+  .facts { margin: 0.5rem 0 0; display: flex; flex-wrap: wrap; gap: 1.25rem 3rem; }
+  .facts dt { font-size: var(--step-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--burgundy); }
+  .facts dd { margin: 0.25rem 0 0; }
+</style>

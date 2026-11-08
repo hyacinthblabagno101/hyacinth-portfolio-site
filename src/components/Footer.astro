@@ -1,0 +1,20 @@
+---
+import { site } from '../lib/data';
+---
+
+<footer class="site-footer">
+  <div class="wrap foot">
+    <p>&copy; {new Date().getFullYear()} {site.name}</p>
+    <a href="#main">Back to top <span aria-hidden="true">&uarr;</span></a>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--java); color: var(--beige); --focus: var(--chambray); }
+  .foot {
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;
+    min-height: 4.5rem;
+    font-size: var(--step-small);
+  }
+  .foot a { color: var(--cream); display: inline-flex; align-items: center; min-height: 2.75rem; }
+</style>

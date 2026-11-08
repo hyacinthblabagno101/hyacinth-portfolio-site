@@ -1,0 +1,59 @@
+---
+/**
+ * Experience timeline from src/data/experience.json, in the order listed there.
+ * Roles with confirmed: false only show while previewing.
+ */
+import { roles, isPlaceholder, showUnconfirmed } from '../lib/data';
+---
+
+<section id="experience" class="experience" aria-labelledby="experience-title">
+  <div class="wrap">
+    <header class="head">
+      <p class="eyebrow">Experience</p>
+      <h2 id="experience-title">Where I've worked</h2>
+    </header>
+
+    <ol class="timeline" role="list">
+      {
+        roles.map((r) => (
+          <li class="item">
+            <p class="dates">
+              {isPlaceholder(r.dates) ? showUnconfirmed && <span class="placeholder">{r.dates}</span> : r.dates}
+            </p>
+            <div class="detail">
+              <h3>{r.role}</h3>
+              <p class="org">
+                <strong>{r.company}</strong>
+                {r.type && <span>{r.type}</span>}
+              </p>
+              {!r.confirmed && <p><span class="placeholder">Needs your confirmation</span></p>}
+              <ul>{r.points.map((pt) => <li>{pt}</li>)}</ul>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .experience { padding-block: var(--section); }
+  .head { display: grid; gap: 1rem; }
+  .head .eyebrow { color: var(--rust); }
+
+  .timeline { list-style: none; margin: 3rem 0 0; padding: 0; }
+  .item {
+    display: grid;
+    gap: 0.5rem 3rem;
+    padding-block: 2rem;
+    border-top: 1px solid var(--line);
+  }
+  .item:last-child { border-bottom: 1px solid var(--line); }
+  @media (min-width: 48rem) { .item { grid-template-columns: 12rem 1fr; } }
+
+  .dates { font-size: var(--step-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rust); padding-top: 0.35rem; }
+  .detail { display: grid; gap: 0.6rem; max-width: 46rem; }
+  .org { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; }
+  .org span { color: var(--text-muted); }
+  .detail ul { margin: 0.25rem 0 0; padding-left: 1.2rem; display: grid; gap: 0.35rem; color: var(--text-muted); }
+</style>

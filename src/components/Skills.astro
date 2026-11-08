@@ -1,0 +1,59 @@
+---
+/**
+ * "What I do". Text comes from "skills" in src/data/about.json.
+ * A skill with a category gets a link to matching work, but only when that category has projects.
+ */
+import { about } from '../lib/data';
+import { visibleProjects } from '../lib/projects';
+
+const projects = await visibleProjects();
+const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+const hasWork = (c?: string) => !!c && projects.some((p) => p.data.category === c && p.data.featured);
+---
+
+<section id="skills" class="skills" aria-labelledby="skills-title">
+  <div class="wrap">
+    <header class="head">
+      <p class="eyebrow">What I do</p>
+      <h2 id="skills-title">Skills, and where to see them</h2>
+    </header>
+
+    <ol class="list" role="list">
+      {
+        about.skills.map((s, i) => (
+          <li>
+            <span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+            {hasWork(s.category) && (
+              <a class="see" href={`/?work=${slugify(s.category!)}#work`}>
+                See {s.category} work <span aria-hidden="true">&rarr;</span>
+              </a>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .skills { padding-block: 0 var(--section); }
+  .head { display: grid; gap: 1rem; padding-top: var(--section); border-top: 1px solid var(--line); }
+  .head .eyebrow { color: var(--rust); }
+
+  .list {
+    list-style: none;
+    margin: 3rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 2.5rem clamp(1.5rem, 1rem + 2vw, 3rem);
+  }
+  @media (min-width: 40rem) { .list { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .list { grid-template-columns: repeat(3, 1fr); } }
+
+  li { display: grid; gap: 0.75rem; align-content: start; padding-top: 1.25rem; border-top: 1px solid var(--java); }
+  .num { font-family: var(--font-serif); font-style: italic; font-size: 1.25rem; color: var(--burgundy); line-height: 1; }
+  li p { color: var(--text-muted); }
+  .see { justify-self: start; font-weight: 600; font-size: var(--step-small); padding-block: 0.4rem; }
+</style>

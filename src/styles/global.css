@@ -1,0 +1,203 @@
+/*
+ * Design tokens. Palette A "Cream editorial", every value taken from the brief's reference images.
+ * Contrast ratios are noted next to the pairs the site actually uses (WCAG AA body text needs 4.5:1).
+ */
+:root {
+  /* Palette */
+  --cream: #f8f1e7;        /* Vintage Soul: main background */
+  --bisque: #ebcdb7;       /* Chambray board: surfaces, buttons on dark */
+  --beige: #d8c3a5;        /* Vintage Soul: borders, quiet surfaces */
+  --chambray: #79a3c3;     /* Chambray board: dusty blue accent. Fill only on light (fails as text on cream) */
+  --glacier: #d2e2ec;      /* Chambray board: soft blue surface */
+  --burgundy: #6b2c2c;     /* Vintage Soul: headlines, links on light (9.3:1 on cream) */
+  --rust: #8d4d3a;         /* Fig board: secondary accent text (5.8:1 on cream) */
+  --espresso: #3a2119;     /* Chambray board: dark bands */
+  --java: #231815;         /* Pantone board: body text (15.4:1 on cream) */
+
+  /* Roles (light sections) */
+  --bg: var(--cream);
+  --text: var(--java);
+  --text-muted: #4a2e27;   /* Potting Soil, 11:1 on cream */
+  --heading: var(--java);
+  --accent: var(--burgundy);
+  --line: var(--beige);
+  --focus: var(--burgundy);
+
+  /* Type */
+  --font-serif: 'Instrument Serif', 'Times New Roman', serif;
+  --font-sans: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --step-display: clamp(3.25rem, 1.6rem + 8vw, 8rem);
+  --step-h1: clamp(2.5rem, 1.5rem + 5vw, 5rem);
+  --step-h2: clamp(2.25rem, 1.4rem + 3.6vw, 4rem);
+  --step-lede: clamp(1.625rem, 1.2rem + 1.8vw, 2.5rem);
+  --step-h3: clamp(1.5rem, 1.3rem + 0.6vw, 1.875rem);
+  --step-body: 1.0625rem;
+  --step-small: 0.875rem;
+  --step-label: 0.8125rem;
+
+  /* Space and layout */
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  --section: clamp(4rem, 3rem + 6vw, 8rem);
+  --max: 78rem;
+  --radius: 4px;
+}
+
+/* Dark band: put class="band-dark" on any section */
+.band-dark {
+  --bg: var(--espresso);
+  --text: var(--cream);              /* 13.3:1 */
+  --text-muted: var(--beige);        /* 8.7:1 */
+  --heading: var(--cream);
+  --accent: var(--bisque);           /* 9.9:1 */
+  --line: rgb(248 241 231 / 0.18);
+  --focus: var(--chambray);          /* 5.6:1 */
+  background: var(--bg);
+  color: var(--text);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--step-body);
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  /* Keep the footer at the bottom on short pages */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+main { flex: 1; }
+
+img, video { display: block; max-width: 100%; height: auto; }
+
+h1, h2, h3 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--heading);
+  margin: 0;
+  text-wrap: balance;
+}
+h1 { font-size: var(--step-h1); line-height: 1; letter-spacing: -0.01em; }
+h2 { font-size: var(--step-h2); line-height: 1.05; letter-spacing: -0.01em; }
+h3 { font-size: var(--step-h3); line-height: 1.15; }
+
+p { margin: 0; text-wrap: pretty; }
+
+a { color: var(--accent); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--step-label);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-sans);
+  font-size: var(--step-label);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1.5px solid currentColor;
+  border-radius: var(--radius);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.btn-primary { background: var(--burgundy); border-color: var(--burgundy); color: var(--cream); }
+.btn-primary:hover { background: var(--java); border-color: var(--java); }
+.btn-ghost { color: var(--text); background: transparent; }
+.btn-ghost:hover { background: var(--text); color: var(--bg); }
+.band-dark .btn-primary { background: var(--bisque); border-color: var(--bisque); color: var(--java); }
+.band-dark .btn-primary:hover { background: var(--cream); border-color: var(--cream); }
+
+/* Development placeholders: obvious on purpose so nothing ships by accident */
+.placeholder {
+  display: inline-block;
+  padding: 0.1em 0.4em;
+  background: #fff3a8;
+  color: #3d2b00;
+  border: 1px dashed #8a6d00;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.media-placeholder {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: repeating-linear-gradient(45deg, var(--glacier), var(--glacier) 12px, #c6d8e4 12px, #c6d8e4 24px);
+  color: var(--java);
+  font-size: var(--step-small);
+  font-weight: 600;
+  text-align: center;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem; top: -4rem;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background: var(--java);
+  color: var(--cream);
+  font-weight: 600;
+  text-decoration: none;
+}
+.skip-link:focus { top: 1rem; }
+
+/*
+ * Entrance motion: a small upward drift, only for people who haven't asked for less motion.
+ * Opacity is never animated, so text is readable even if a browser pauses or skips animations.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .rise { animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; animation-delay: var(--delay, 0s); }
+  @keyframes rise { from { transform: translateY(12px); } to { transform: none; } }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

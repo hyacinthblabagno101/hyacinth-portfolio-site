@@ -1,0 +1,108 @@
+---
+/**
+ * Hero. All text comes from the "hero" block in src/data/site.json.
+ * Portrait: replace src/assets/portrait-hero.jpg (portrait shape, about 4:5) and update portraitAlt.
+ */
+import { Picture } from 'astro:assets';
+import portrait from '../assets/portrait-hero.jpg';
+import { site } from '../lib/data';
+
+const { hero } = site;
+const [first, ...rest] = site.name.split(' ');
+// Keep hyphenated words like "hands-on" from splitting across two lines.
+const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const headlineHtml = escape(hero.headline).replace(/(\S+-\S+)/g, '<span class="nowrap">$1</span>');
+---
+
+<section class="hero band-dark" aria-labelledby="hero-title">
+  <div class="wrap grid">
+    <div class="copy">
+      <p class="eyebrow role rise">{site.role}</p>
+      <h1 id="hero-title" class="name rise" style="--delay: 0.05s">
+        {first} <em>{rest.join(' ')}</em>
+      </h1>
+      <p class="headline rise" style="--delay: 0.12s" set:html={headlineHtml} />
+      <p class="intro rise" style="--delay: 0.18s">{hero.intro}</p>
+      <div class="actions rise" style="--delay: 0.24s">
+        <a class="btn btn-primary" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
+        <a class="btn btn-ghost" href={hero.secondaryCta.href}>{hero.secondaryCta.label}</a>
+      </div>
+    </div>
+
+    <figure class="portrait rise" style="--delay: 0.1s">
+      <Picture
+        src={portrait}
+        alt={hero.portraitAlt}
+        widths={[400, 640, 900, 1200]}
+        sizes="(min-width: 64rem) 34vw, (min-width: 48rem) 40vw, 90vw"
+        formats={['avif', 'webp']}
+        loading="eager"
+        fetchpriority="high"
+      />
+    </figure>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: clamp(2.5rem, 1.5rem + 5vw, 6rem) clamp(3.5rem, 2rem + 6vw, 7rem);
+    overflow: hidden;
+  }
+  .grid {
+    display: grid;
+    gap: clamp(2.5rem, 2rem + 3vw, 4rem);
+    align-items: end;
+  }
+  .role { color: var(--chambray); max-width: 44ch; }
+  .headline :global(.nowrap) { white-space: nowrap; }
+  .name {
+    margin-top: 1.25rem;
+    font-size: var(--step-display);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+  .name em { display: block; font-style: italic; color: var(--bisque); }
+  .headline {
+    margin-top: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    max-width: 24ch;
+    font-family: var(--font-serif);
+    font-size: var(--step-lede);
+    line-height: 1.15;
+    color: var(--cream);
+    text-wrap: balance;
+  }
+  .intro {
+    margin-top: 1.25rem;
+    max-width: 52ch;
+    color: var(--text-muted);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .portrait {
+    margin: 0;
+    justify-self: center;
+    width: min(100%, 26rem);
+  }
+  .portrait :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 20%;
+    border-radius: 999px 999px var(--radius) var(--radius);
+    background: var(--cream);
+  }
+
+  @media (max-width: 30rem) {
+    .actions .btn { flex: 1 1 100%; }
+  }
+
+  @media (min-width: 64rem) {
+    .grid { grid-template-columns: 1.35fr 1fr; }
+    .portrait { justify-self: end; width: 100%; max-width: 30rem; }
+  }
+</style>

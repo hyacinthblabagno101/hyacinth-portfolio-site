@@ -1,0 +1,150 @@
+---
+/**
+ * One image or video from a project file.
+ * Videos show a poster with a play button. The video file only downloads when someone presses play,
+ * and then plays with the browser's normal controls (pause, volume, fullscreen).
+ */
+import { imageUrl, imageSrcset, posterFor, videoUrl, aspectToSize, isMissing } from '../lib/cloudinary';
+
+interface Props {
+  item: { kind: 'image' | 'video'; id: string; alt: string; aspect: string; poster?: string };
+  sizes?: string;
+  eager?: boolean;
+  /** "poster" shows a video's poster only (for cards that link to the project page). */
+  mode?: 'full' | 'poster';
+}
+
+const { item, sizes = '(min-width: 64rem) 50vw, 100vw', eager = false, mode = 'full' } = Astro.props;
+const { width, height } = aspectToSize(item.aspect, 1200);
+const style = `aspect-ratio: ${item.aspect.replace(':', ' / ')}`;
+const missing = isMissing(item.id);
+---
+
+{
+  missing ? (
+    <div class="media-placeholder media" style={style} role="img" aria-label={item.alt}>
+      <span>{item.id || '[PLACEHOLDER: media]'}</span>
+    </div>
+  ) : item.kind === 'image' ? (
+    <img
+      class="media"
+      src={imageUrl(item.id, 800, item.aspect)}
+      srcset={imageSrcset(item.id, item.aspect)}
+      sizes={sizes}
+      width={width}
+      height={height}
+      alt={item.alt}
+      loading={eager ? 'eager' : 'lazy'}
+      decoding="async"
+      style={style}
+    />
+  ) : mode === 'poster' ? (
+    <div class="media video-poster" style={style}>
+      <img
+        src={posterFor(item, 800, item.aspect)}
+        srcset={`${posterFor(item, 400, item.aspect)} 400w, ${posterFor(item, 800, item.aspect)} 800w`}
+        sizes={sizes}
+        width={width}
+        height={height}
+        alt={item.alt}
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+      />
+      <span class="play-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="14" height="14"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
+        Video
+      </span>
+    </div>
+  ) : (
+    <div class="media video-player" style={style} data-src={videoUrl(item.id)}>
+      <button type="button" class="play" data-play aria-label={`Play video: ${item.alt}`}>
+        <img
+          src={posterFor(item, 800, item.aspect)}
+          srcset={`${posterFor(item, 400, item.aspect)} 400w, ${posterFor(item, 800, item.aspect)} 800w, ${posterFor(item, 1200, item.aspect)} 1200w`}
+          sizes={sizes}
+          width={width}
+          height={height}
+          alt=""
+          loading={eager ? 'eager' : 'lazy'}
+          decoding="async"
+        />
+        <span class="play-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
+        </span>
+      </button>
+    </div>
+  )
+}
+
+<style>
+  .media {
+    width: 100%;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+  .media:not(.media-placeholder) { display: block; background: var(--beige); }
+  .video-poster, .video-player { position: relative; overflow: hidden; }
+  .video-poster img, .video-player img, .video-player :global(video) {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .video-player :global(video) { background: #000; }
+
+  .play-badge {
+    position: absolute;
+    left: 0.75rem; bottom: 0.75rem;
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.35rem 0.6rem;
+    background: var(--java);
+    color: var(--cream);
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    border-radius: 2px;
+  }
+
+  .play {
+    position: relative;
+    display: block;
+    width: 100%; height: 100%;
+    padding: 0; border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .play-icon {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    translate: -50% -50%;
+    display: grid; place-items: center;
+    width: 4.5rem; height: 4.5rem;
+    border-radius: 50%;
+    background: var(--cream);
+    color: var(--burgundy);
+    box-shadow: 0 6px 24px rgb(35 24 21 / 0.35);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+  .play-icon svg { margin-left: 4px; }
+  .play:hover .play-icon, .play:focus-visible .play-icon { transform: scale(1.08); background: var(--bisque); }
+  .play:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+</style>
+
+<script>
+  // Swap the poster button for a real <video> only when asked, so nothing heavy loads up front.
+  document.querySelectorAll<HTMLElement>('.video-player').forEach((wrap) => {
+    const button = wrap.querySelector<HTMLButtonElement>('[data-play]');
+    const src = wrap.dataset.src;
+    if (!button || !src) return;
+    button.addEventListener('click', () => {
+      const poster = button.querySelector('img')?.currentSrc ?? '';
+      const video = document.createElement('video');
+      video.src = src;
+      video.poster = poster;
+      video.controls = true;
+      video.playsInline = true;
+      video.preload = 'auto';
+      video.setAttribute('aria-label', button.getAttribute('aria-label')?.replace(/^Play video: /, '') ?? 'Video');
+      button.replaceWith(video);
+      video.focus();
+      video.play().catch(() => {
+        /* If the browser blocks playback, the controls are there to press play. */
+      });
+    });
+  });
+</script>

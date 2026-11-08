@@ -1,0 +1,66 @@
+---
+/**
+ * Tools grouped by purpose, as text (no logos, no skill bars). Edit src/data/tools.json.
+ * Hidden on the live site until tools.json has confirmed: true.
+ */
+import { tools, showTools } from '../lib/data';
+
+const items = (list: (string | { name: string; check?: string })[]) =>
+  list.map((t) => (typeof t === 'string' ? { name: t, check: undefined } : t));
+---
+
+{
+  showTools && (
+    <section id="tools" class="tools band-dark" aria-labelledby="tools-title">
+      <div class="wrap">
+        <header class="head">
+          <p class="eyebrow">Tools</p>
+          <h2 id="tools-title">What I work with</h2>
+          {!tools.confirmed && <p><span class="placeholder">Tool list needs your confirmation</span></p>}
+        </header>
+
+        <div class="groups">
+          {tools.groups.map((g) => (
+            <div class="group">
+              <h3>{g.name}</h3>
+              <ul role="list">
+                {items(g.tools).map((t) => (
+                  <li>
+                    {t.name}
+                    {t.check && <span class="placeholder check">Check: {t.check}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .tools { padding-block: var(--section); }
+  .head { display: grid; gap: 1rem; }
+  .head .eyebrow { color: var(--chambray); }
+
+  .groups {
+    margin-top: 3rem;
+    display: grid;
+    gap: 2.5rem clamp(1.5rem, 1rem + 2vw, 3rem);
+  }
+  @media (min-width: 40rem) { .groups { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .groups { grid-template-columns: repeat(3, 1fr); } }
+
+  .group { padding-top: 1.25rem; border-top: 1px solid var(--line); }
+  .group h3 { font-size: 1.5rem; color: var(--bisque); }
+  ul { list-style: none; margin: 1rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  li {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid rgb(248 241 231 / 0.28);
+    border-radius: 999px;
+    font-size: var(--step-small);
+    line-height: 1.4;
+  }
+  .check { display: block; margin-top: 0.35rem; font-size: 0.75rem; }
+</style>

@@ -1,0 +1,154 @@
+---
+/**
+ * Site header. On small screens the links fold into a "Menu" button.
+ * Links point at sections on the home page, so they work from project pages too.
+ */
+import { site, resumeFile, showAbout, showExperience } from '../lib/data';
+
+const links = [
+  { label: 'Work', href: '/#work' },
+  showAbout && { label: 'About', href: '/#about' },
+  showExperience && { label: 'Experience', href: '/#experience' },
+  { label: 'Contact', href: '/#contact' },
+].filter((l): l is { label: string; href: string } => Boolean(l));
+---
+
+<header class="site-header band-dark">
+  <div class="wrap bar">
+    <a class="brand" href="/">{site.name}</a>
+
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
+      <span class="menu-label">Menu</span>
+      <span class="menu-icon" aria-hidden="true"></span>
+    </button>
+
+    <nav id="site-menu" class="menu" aria-label="Main">
+      <ul>
+        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        {resumeFile && <li><a class="resume" href={resumeFile} download>Resume (PDF)</a></li>}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--line);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 4rem;
+  }
+  .brand {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--cream);
+    text-decoration: none;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    padding: 0 0.25rem;
+    background: none;
+    border: 0;
+    color: var(--cream);
+    font: 600 var(--step-label) / 1 var(--font-sans);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .menu-icon,
+  .menu-icon::before {
+    display: block;
+    width: 1.25rem;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 0.2s ease;
+  }
+  .menu-icon { position: relative; transform: translateY(-3px); }
+  .menu-icon::before { content: ''; position: absolute; top: 6px; }
+  .menu-toggle[aria-expanded='true'] .menu-icon { transform: rotate(45deg); }
+  .menu-toggle[aria-expanded='true'] .menu-icon::before { transform: translateY(-6px) rotate(-90deg); }
+
+  .menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .menu a {
+    color: var(--cream);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .menu a:hover { text-decoration: underline; text-underline-offset: 0.3em; }
+
+  /* Mobile: drop-down panel */
+  @media (max-width: 47.99rem) {
+    .menu {
+      position: absolute;
+      inset: 100% 0 auto 0;
+      background: var(--espresso);
+      border-bottom: 1px solid var(--line);
+      padding: 0.5rem var(--gutter) 1.5rem;
+    }
+    .menu[data-open='false'] { display: none; }
+    .menu a {
+      display: block;
+      padding: 0.75rem 0;
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 400;
+      line-height: 1.1;
+    }
+  }
+
+  /* Desktop: inline links */
+  @media (min-width: 48rem) {
+    .menu-toggle { display: none; }
+    .menu ul { display: flex; gap: 2rem; }
+    .menu a {
+      font-size: var(--step-label);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .menu .resume { color: var(--bisque); }
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const menu = document.getElementById('site-menu');
+  const mq = window.matchMedia('(max-width: 47.99rem)');
+
+  function setOpen(open: boolean) {
+    if (!toggle || !menu) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    menu.dataset.open = String(open);
+  }
+
+  if (toggle && menu) {
+    setOpen(false);
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    // Close after choosing a link, and on Escape (focus goes back to the button)
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a') && mq.matches) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+  }
+</script>

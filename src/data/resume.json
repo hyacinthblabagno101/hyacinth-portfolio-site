@@ -1,0 +1,9 @@
+{
+  "_note": "Resume-only text. Everything else on the resume (name, role, contact, skills, experience, tools) comes from site.json, about.json, experience.json and tools.json, so the resume and the site always match. Rebuild with: npm run resume",
+  "fullName": "Hyacinth Blabagno",
+  "summary": "Social media manager and creative strategist with virtual assistance and e-commerce experience. I plan content, write briefs and scripts, design and edit posts and short-form video, and handle the day-to-day publishing and coordination behind them. I have worked with brands in food, fashion, beauty, e-commerce, and software, and started my first business at 13.",
+  "education": [
+    { "school": "STI College", "place": "General Santos City, Philippines", "dates": "2021 to 2022" },
+    { "school": "Stratford International School", "place": "General Santos City, Philippines", "dates": "2016 to 2020" }
+  ]
+}

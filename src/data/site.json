@@ -1,0 +1,26 @@
+{
+  "name": "Hyacinth Blabagno",
+  "role": "Social Media Manager & Creative Strategist | Virtual Assistant",
+  "domain": "hyacinthblabagno.work",
+  "email": "hyacinthblabagno101@gmail.com",
+  "location": "General Santos City, Philippines",
+  "resumeFile": "/hyacinth-blabagno-resume.pdf",
+  "resumeConfirmed": false,
+  "cloudName": "ktee3ije",
+  "cloudFolder": "hyacinth portfolio",
+  "socials": [
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/hyacinthblabagno/" }
+  ],
+  "seo": {
+    "title": "Hyacinth Blabagno | Social Media Manager & Creative Strategist",
+    "description": "Social media manager and creative strategist. I plan content, design and edit posts and short-form video, and handle the day-to-day work behind them.",
+    "ogImage": "/og-image.png"
+  },
+  "hero": {
+    "headline": "Creative strategy, social content, and the hands-on work to make it happen.",
+    "intro": "I'm Hyacinth, a social media manager and creative strategist with virtual assistance and e-commerce experience. I turn ideas into content plans, finished visuals, and the day-to-day work that keeps accounts running.",
+    "primaryCta": { "label": "View my work", "href": "#work" },
+    "secondaryCta": { "label": "Contact me", "href": "#contact" },
+    "portraitAlt": "Hyacinth Blabagno in a brown leather jacket, holding a laptop"
+  }
+}

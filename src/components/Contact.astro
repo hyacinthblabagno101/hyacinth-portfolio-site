@@ -1,0 +1,160 @@
+---
+/**
+ * Contact. Email, profile links and resume all come from src/data/site.json.
+ * Anything still a [PLACEHOLDER] is left off the live site, so a fake address is never published.
+ */
+import { site, publicEmail, publishedSocials, resumeFile, isPlaceholder, showUnconfirmed } from '../lib/data';
+
+const mailto = publicEmail ? `mailto:${publicEmail}?subject=${encodeURIComponent('Job opportunity')}` : undefined;
+const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholder(s.url)) : [];
+---
+
+<section id="contact" class="contact" aria-labelledby="contact-title">
+  <div class="wrap grid">
+    <div class="intro">
+      <p class="eyebrow">Contact</p>
+      <h2 id="contact-title">Let's talk about the role</h2>
+      <p class="lede">
+        If you're hiring for social media, content, or creative support, email me and tell me a little about the team
+        and the role.
+      </p>
+    </div>
+
+    <div class="actions">
+      {
+        publicEmail ? (
+          <div class="email">
+            <a class="address" href={mailto}>{publicEmail}</a>
+            <div class="buttons">
+              <a class="btn btn-light" href={mailto}>Email me</a>
+              <button type="button" class="btn btn-outline" data-copy={publicEmail}>Copy email address</button>
+            </div>
+            <p class="copied" role="status" aria-live="polite" data-copy-status></p>
+          </div>
+        ) : (
+          showUnconfirmed && <p><span class="placeholder">{site.email}</span></p>
+        )
+      }
+
+      {
+        (publishedSocials.length > 0 || pendingSocials.length > 0) && (
+          <ul class="links" role="list" aria-label="Profiles">
+            {publishedSocials.map((s) => (
+              <li>
+                <a href={s.url} rel="me noopener" target="_blank">
+                  {s.label} <span class="visually-hidden">(opens in a new tab)</span>
+                  <span aria-hidden="true">&#8599;</span>
+                </a>
+              </li>
+            ))}
+            {pendingSocials.map((s) => (
+              <li><span class="placeholder">{s.label}: {s.url}</span></li>
+            ))}
+          </ul>
+        )
+      }
+
+      {
+        resumeFile ? (
+          <a class="resume" href={resumeFile} download>
+            Download my resume <span class="meta">(PDF)</span>
+          </a>
+        ) : (
+          showUnconfirmed && <p><span class="placeholder">{site.resumeFile}</span></p>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+
+<style>
+  .contact {
+    --bg: var(--burgundy);
+    --text: var(--cream);          /* 9.3:1 */
+    --text-muted: var(--bisque);   /* 6.9:1 */
+    --heading: var(--cream);
+    --accent: var(--cream);
+    --focus: var(--glacier);       /* 7.8:1 */
+    --line: rgb(248 241 231 / 0.25);
+    background: var(--bg);
+    color: var(--text);
+    padding-block: var(--section);
+  }
+  .grid { display: grid; gap: 3rem; align-items: end; }
+  @media (min-width: 64rem) { .grid { grid-template-columns: 1.1fr 1fr; gap: 5rem; } }
+
+  .intro { display: grid; gap: 1.25rem; }
+  .eyebrow { color: var(--bisque); }
+  h2 { font-size: var(--step-h1); line-height: 0.98; max-width: 12ch; }
+  .lede { color: var(--text-muted); max-width: 46ch; }
+
+  .actions { display: grid; gap: 2rem; }
+  .email { display: grid; gap: 1.25rem; }
+  /* Sans, not serif: Instrument Serif's "1" looks like an "l", which matters in an email address */
+  .address {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: clamp(1.125rem, 0.9rem + 1.2vw, 1.75rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--cream);
+    overflow-wrap: anywhere;
+  }
+  .buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .btn-light { background: var(--cream); border-color: var(--cream); color: var(--java); }
+  .btn-light:hover { background: var(--bisque); border-color: var(--bisque); }
+  .btn-outline { background: transparent; color: var(--cream); cursor: pointer; }
+  .btn-outline:hover { background: var(--cream); color: var(--burgundy); }
+  @media (max-width: 30rem) { .buttons .btn { flex: 1 1 100%; } }
+  .copied { min-height: 1.5em; font-size: var(--step-small); color: var(--bisque); }
+
+  .links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; }
+  .links a {
+    display: inline-flex; gap: 0.35rem; align-items: center;
+    min-height: 2.75rem;
+    color: var(--cream);
+    font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em; font-size: var(--step-label);
+  }
+
+  .resume {
+    justify-self: start;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    min-height: 2.75rem;
+    color: var(--cream);
+    font-weight: 600;
+  }
+  .resume .meta { font-weight: 400; color: var(--bisque); }
+
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    const status = btn.closest('.email')?.querySelector<HTMLElement>('[data-copy-status]');
+    btn.addEventListener('click', async () => {
+      const value = btn.dataset.copy ?? '';
+      let copied = false;
+      try {
+        await navigator.clipboard.writeText(value);
+        copied = true;
+      } catch {
+        // Older or locked-down browsers: copy through a hidden text field instead
+        const field = document.createElement('textarea');
+        field.value = value;
+        field.setAttribute('readonly', '');
+        field.style.position = 'fixed';
+        field.style.opacity = '0';
+        document.body.append(field);
+        field.select();
+        try { copied = document.execCommand('copy'); } catch { copied = false; }
+        field.remove();
+        btn.focus();
+      }
+      if (status) {
+        status.textContent = copied ? 'Email address copied.' : `Couldn't copy automatically. The address is ${value}`;
+      }
+      window.setTimeout(() => { if (status) status.textContent = ''; }, 4000);
+    });
+  });
+</script>

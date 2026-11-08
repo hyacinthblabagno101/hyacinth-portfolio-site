@@ -1,0 +1,211 @@
+---
+/**
+ * Project page, built from one file in src/content/projects.
+ * Sections: context, my role, what I delivered, the finished work, outcomes (only if verified).
+ */
+import Base from '../../layouts/Base.astro';
+import Media from '../../components/Media.astro';
+import { visibleProjects, isPublished, type Project } from '../../lib/projects';
+import { imageUrl, posterFor, isMissing } from '../../lib/cloudinary';
+import { render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await visibleProjects();
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: {
+      project,
+      prev: projects[i - 1] ?? null,
+      next: projects[i + 1] ?? null,
+    },
+  }));
+}
+
+interface Props {
+  project: Project;
+  prev: Project | null;
+  next: Project | null;
+}
+
+const { project, prev, next } = Astro.props;
+const d = project.data;
+const { Content } = await render(project);
+const media = d.media.length ? d.media : [d.cover];
+
+const ogImage = isMissing(d.cover.id)
+  ? undefined
+  : d.cover.kind === 'image'
+    ? imageUrl(d.cover.id, 1200, '1200:630')
+    : posterFor(d.cover, 1200, '1200:630');
+
+const facts = [
+  { label: 'My role', value: d.role },
+  { label: 'Project type', value: d.type },
+  d.client && { label: 'Client', value: d.client },
+  d.date && { label: 'When', value: d.date },
+].filter(Boolean) as { label: string; value: string }[];
+---
+
+<Base title={d.title} description={d.summary} ogImage={ogImage}>
+  <article class="project">
+    <header class="band-dark top">
+      <div class="wrap">
+        <a class="back" href="/#work">
+          <span aria-hidden="true">&larr;</span> Back to all work
+        </a>
+        <p class="eyebrow kicker">{d.category}</p>
+        <h1>{d.title}</h1>
+        <p class="summary">{d.summary}</p>
+        {!isPublished(project) && (
+          <p><span class="placeholder">Not live: {d.draft ? 'draft' : 'permission not confirmed'}. Only visible in preview.</span></p>
+        )}
+      </div>
+    </header>
+
+    <div class="wrap body">
+      <aside class="facts" aria-label="Project details">
+        <dl>
+          {facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
+          ))}
+          {d.tools.length > 0 && (
+            <div>
+              <dt>Tools</dt>
+              <dd>{d.tools.join(', ')}</dd>
+            </div>
+          )}
+        </dl>
+      </aside>
+
+      <div class="story">
+        <section aria-labelledby="context">
+          <h2 id="context">Context</h2>
+          <p>{d.context}</p>
+        </section>
+
+        <section aria-labelledby="delivered">
+          <h2 id="delivered">What I delivered</h2>
+          <ul>{d.delivered.map((item) => <li>{item}</li>)}</ul>
+        </section>
+
+        <div class="notes">
+          <Content />
+        </div>
+      </div>
+    </div>
+
+    <section class="wrap gallery-wrap" aria-labelledby="the-work">
+      <h2 id="the-work">The finished work</h2>
+      <div class="gallery">
+        {media.map((item, i) => (
+          <figure class:list={['shot', `ar-${item.aspect.replace(':', 'x')}`]}>
+            <Media item={item} eager={i === 0} sizes="(min-width: 64rem) 45vw, 92vw" />
+            {item.caption && <figcaption>{item.caption}</figcaption>}
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    {d.outcomes.length > 0 && (
+      <section class="wrap outcomes" aria-labelledby="outcomes">
+        <h2 id="outcomes">Outcomes</h2>
+        <ul>{d.outcomes.map((o) => <li>{o}</li>)}</ul>
+      </section>
+    )}
+
+    <nav class="wrap pager" aria-label="More projects">
+      {prev ? (
+        <a href={`/work/${prev.id}/`} class="prev">
+          <span class="eyebrow">Previous project</span>
+          <span class="title">{prev.data.title}</span>
+        </a>
+      ) : <span />}
+      {next ? (
+        <a href={`/work/${next.id}/`} class="next">
+          <span class="eyebrow">Next project</span>
+          <span class="title">{next.data.title}</span>
+        </a>
+      ) : (
+        <a href="/#work" class="next">
+          <span class="eyebrow">All projects</span>
+          <span class="title">Back to all work</span>
+        </a>
+      )}
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .top { padding-block: clamp(2rem, 1.5rem + 3vw, 4rem) clamp(3rem, 2rem + 4vw, 5rem); }
+  .top .wrap { display: grid; gap: 1rem; }
+  .back {
+    justify-self: start;
+    display: inline-flex; gap: 0.5rem; align-items: center;
+    min-height: 2.75rem;
+    color: var(--cream);
+    font-size: var(--step-small); font-weight: 600;
+    text-decoration: none;
+    margin-bottom: 1rem;
+  }
+  .back:hover { text-decoration: underline; }
+  .kicker { color: var(--chambray); }
+  .top h1 { font-size: var(--step-h1); max-width: 18ch; }
+  .summary { max-width: 55ch; color: var(--text-muted); font-size: 1.125rem; }
+
+  .body {
+    display: grid;
+    gap: 2.5rem;
+    padding-block: var(--section) 0;
+  }
+  @media (min-width: 64rem) { .body { grid-template-columns: 18rem 1fr; gap: 5rem; } }
+
+  .facts dl { margin: 0; display: grid; gap: 1.25rem; border-top: 1px solid var(--java); padding-top: 1.25rem; }
+  .facts dt { font-size: var(--step-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rust); }
+  .facts dd { margin: 0.25rem 0 0; }
+
+  .story { display: grid; gap: 2.5rem; max-width: 42rem; }
+  .story h2, .gallery-wrap h2, .outcomes h2 { font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem); margin-bottom: 0.75rem; }
+  .story ul, .outcomes ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.4rem; }
+  .notes :global(p + p) { margin-top: 1rem; }
+  .notes :global(h2) { margin: 1.5rem 0 0.75rem; }
+
+  .gallery-wrap { padding-block: var(--section) 0; }
+  .gallery {
+    display: grid;
+    gap: clamp(1.25rem, 1rem + 1.5vw, 2.5rem);
+    align-items: start;
+  }
+  @media (min-width: 48rem) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+  /* Wide media (16:9, 3:2) spans the full width on larger screens */
+  @media (min-width: 48rem) { .shot.ar-16x9, .shot.ar-3x2 { grid-column: 1 / -1; } }
+  .shot { margin: 0; display: grid; gap: 0.75rem; }
+  /* Tall phone videos stay a sensible height on desktop */
+  .shot.ar-9x16 :global(.media) { width: min(100%, calc(85vh * 9 / 16)); margin-inline: auto; }
+  .shot.ar-9x16 figcaption { width: min(100%, calc(85vh * 9 / 16)); margin-inline: auto; }
+  figcaption { font-size: var(--step-small); color: var(--text-muted); max-width: 60ch; }
+
+  .outcomes { padding-block: var(--section) 0; }
+
+  .pager {
+    display: grid;
+    gap: 1rem;
+    padding-block: var(--section);
+  }
+  @media (min-width: 40rem) { .pager { grid-template-columns: 1fr 1fr; } }
+  .pager a {
+    display: grid; gap: 0.4rem;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--text);
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+  .pager a:hover { background: var(--bisque); }
+  .pager .next { text-align: right; }
+  .pager .eyebrow { color: var(--rust); }
+  .pager .title { font-family: var(--font-serif); font-size: 1.5rem; line-height: 1.15; }
+</style>
