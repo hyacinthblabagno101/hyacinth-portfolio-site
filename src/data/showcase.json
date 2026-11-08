@@ -1,0 +1,1281 @@
+{
+  "_note": "Showcase items. Copied from the Cinfluence site's curated list (cinfluence-portfolio/src/data/work.json). Media IDs are Cloudinary public IDs in cloud ktee3ije. Set \"hidden\": true on an item to leave it off the site. Featured items show first in their category.",
+  "categories": [
+    {
+      "key": "reels",
+      "label": "Video reels"
+    },
+    {
+      "key": "ads",
+      "label": "Ads"
+    },
+    {
+      "key": "ai",
+      "label": "AI content"
+    },
+    {
+      "key": "animations",
+      "label": "Animations"
+    },
+    {
+      "key": "statics",
+      "label": "Statics"
+    },
+    {
+      "key": "stories",
+      "label": "Stories"
+    }
+  ],
+  "items": [
+    {
+      "id": "reel-five-things",
+      "category": "reels",
+      "title": "5 things to know about the Woven Volume II",
+      "alt": "Two dark brown woven leather bags on a white plinth, with the title 5 Things you need to know about our Woven Volume II",
+      "kind": "video",
+      "media": "5ThingsAboutAdele_Remi_2",
+      "aspect": "9:16",
+      "featured": true
+    },
+    {
+      "id": "reel-tj-food-dancing",
+      "category": "reels",
+      "title": "T-James food reveal",
+      "alt": "The T-James owner eating at a table full of wings, fries and sizzling plates in front of the bar's logo",
+      "kind": "video",
+      "media": "v-tjames-tjames-ceo-fooddancing",
+      "aspect": "9:16",
+      "brand": "T-James Sporty Bar",
+      "featured": true
+    },
+    {
+      "id": "reel-ss-spring-racing",
+      "category": "reels",
+      "title": "Spring Racing: what retailers should stock",
+      "alt": "Green screen video of the founder in front of Spring Racing dress looks, explaining what boutiques should stock",
+      "kind": "video",
+      "media": "v-stylestate-springracing-greenscreen-2",
+      "aspect": "9:16",
+      "brand": "Style State"
+    },
+    {
+      "id": "reel-ask-julia",
+      "category": "reels",
+      "title": "Ask Julia",
+      "alt": "A woman in a black strapless dress lifts a brown leather tote on a cream chair, captioned No, but the Julia does",
+      "kind": "video",
+      "media": "AskJulia_Speed1.20",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-ss-top-trends",
+      "category": "reels",
+      "title": "Top trends Spring Summer 2026",
+      "alt": "The founder in a yellow floral dress beside a clothing rack under the title Top Trends Spring Summer 2026",
+      "kind": "video",
+      "media": "v-stylestate-ss26-letstalklucia-2",
+      "aspect": "9:16",
+      "brand": "Style State",
+      "featured": true
+    },
+    {
+      "id": "reel-hs-bills",
+      "category": "reels",
+      "title": "I have bills to pay",
+      "alt": "Split screen of foot spa, hair wash, hair colour and nail services, captioned I have bills to pay",
+      "kind": "video",
+      "media": "v-hairsolution-cinth-hs-billstopay",
+      "aspect": "9:16",
+      "brand": "Hair Solution Nails and Spa",
+      "featured": true
+    },
+    {
+      "id": "reel-rb-patches",
+      "category": "reels",
+      "title": "Rabble patch tee",
+      "alt": "Close-up of a pink kids' tee with colourful velcro patches",
+      "kind": "video",
+      "media": "v-rabble-rabble-kelsey-girl-2-cinth",
+      "aspect": "9:16",
+      "brand": "Rabble",
+      "featured": true
+    },
+    {
+      "id": "reel-what-fits-aria",
+      "category": "reels",
+      "title": "What fits: the Aria",
+      "alt": "A hand slides a 13 inch MacBook Pro into a tan woven bag sitting on a black chair",
+      "kind": "video",
+      "media": "ASK_-_Aria",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-tj-chase",
+      "category": "reels",
+      "title": "Chase what you love",
+      "alt": "Owner lunging toward a spread of wings and fries, captioned My therapist said you should chase what you love",
+      "kind": "video",
+      "media": "v-tjames-tjames-ceo-youshouldchasewhatyoulove",
+      "aspect": "9:16",
+      "brand": "T-James Sporty Bar"
+    },
+    {
+      "id": "reel-what-fits-jenny",
+      "category": "reels",
+      "title": "What fits: the Jenny",
+      "alt": "An 11 inch iPad with a keyboard case being lowered into a brown leather tote on a cream boucle chair",
+      "kind": "video",
+      "media": "ASK_-_Jenny",
+      "aspect": "9:16",
+      "featured": true
+    },
+    {
+      "id": "reel-tj-book-court",
+      "category": "reels",
+      "title": "How to book a court",
+      "alt": "Owner in a T-James jersey on the lit pickleball court explaining how to book",
+      "kind": "video",
+      "media": "v-tjames-tjames-ceo-howtobookcourt",
+      "aspect": "9:16",
+      "brand": "T-James Sporty Bar"
+    },
+    {
+      "id": "reel-bts-all-hours",
+      "category": "reels",
+      "title": "Behind the scenes: All Hours shoot",
+      "alt": "A photographer shoots a model posing on the floor with a black shoulder bag in a studio with brown curtains",
+      "kind": "video",
+      "media": "BTSHype-AllHours_2",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-tj-serve",
+      "category": "reels",
+      "title": "How to serve in pickleball",
+      "alt": "Owner demonstrating a pickleball serve on the court",
+      "kind": "video",
+      "media": "v-tjames-tjames-ceo-angtamangpagservengpickleball",
+      "aspect": "9:16",
+      "brand": "T-James Sporty Bar"
+    },
+    {
+      "id": "reel-betty-bag",
+      "category": "reels",
+      "title": "What's in the Betty bag",
+      "alt": "A tan structured handbag on a white table beside sunglasses, a camera, a wallet, lipsticks and perfume",
+      "kind": "video",
+      "media": "Betty_Bag_V2",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-rumi-raya-ruby",
+      "category": "reels",
+      "title": "Rumi vs Raya vs Ruby",
+      "alt": "Split screen of three burgundy woven bags labelled Ruby, Raya and Rumi as hands pack items into each",
+      "kind": "video",
+      "media": "RumiVSRayaVSRuby",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-tj-lyka",
+      "category": "reels",
+      "title": "Pickleball trend",
+      "alt": "A girl in a pink top dancing on the pickleball court, captioned Me kapag nilibre moko ng pickleball",
+      "kind": "video",
+      "media": "v-tjames-tjames-lyka-trend",
+      "aspect": "9:16",
+      "brand": "T-James Sporty Bar"
+    },
+    {
+      "id": "reel-texture",
+      "category": "reels",
+      "title": "Woven texture close-up",
+      "alt": "Close-up of a hand running over cream woven leather",
+      "kind": "video",
+      "media": "Tatiana_CloseUp",
+      "aspect": "9:16",
+      "featured": true
+    },
+    {
+      "id": "reel-tj-crave",
+      "category": "reels",
+      "title": "POV: sudden craving",
+      "alt": "Close-up of sizzling sisig with egg and chilies on a hot plate",
+      "kind": "video",
+      "media": "v-tjames-tjames-povbiglakangnagcrave-1",
+      "aspect": "9:16",
+      "brand": "T-James Sporty Bar"
+    },
+    {
+      "id": "reel-drawing-trend",
+      "category": "reels",
+      "title": "My bag collection drawing trend",
+      "alt": "A small brown leather bag on a cream boucle chair with the caption My Bag Collection and a hand-drawn scribble",
+      "kind": "video",
+      "media": "DrawingTrend_1",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-tj-acoustic",
+      "category": "reels",
+      "title": "Friday acoustic night",
+      "alt": "Three singers performing on a purple-lit stage at T-James Sporty Bar",
+      "kind": "video",
+      "media": "v-tjames-friday-acoustic",
+      "aspect": "9:16",
+      "brand": "T-James Sporty Bar"
+    },
+    {
+      "id": "reel-founder-launch",
+      "category": "reels",
+      "title": "Founder launch: the Julia",
+      "alt": "The founder talks to camera in front of two large totes, under the title Does Jenny fit",
+      "kind": "video",
+      "media": "Founder_JuliaLaunch_2",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-tj-pump",
+      "category": "reels",
+      "title": "Pump it, don't stop",
+      "alt": "The open-air courts and bar at night with the words Pump it, don't stop",
+      "kind": "video",
+      "media": "v-tjames-copy-c7a95646-5a1d-4b87-9a21-bc4b3004d79",
+      "aspect": "9:16",
+      "brand": "T-James Sporty Bar"
+    },
+    {
+      "id": "reel-afterpay-day",
+      "category": "reels",
+      "title": "Afterpay Day picks",
+      "alt": "Green screen video of the founder in front of five leather bags, under an Afterpay Day 20% off sitewide banner",
+      "kind": "video",
+      "media": "GreenScreen_Founder_V2",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-tj-gensan",
+      "category": "reels",
+      "title": "Gensan nga naay",
+      "alt": "A player on the lit pickleball court at night with the caption Gensan nga naay",
+      "kind": "video",
+      "media": "v-tjames-khent-tjames-001",
+      "aspect": "9:16",
+      "brand": "T-James Sporty Bar"
+    },
+    {
+      "id": "reel-dust-bag",
+      "category": "reels",
+      "title": "Dust bag close-up",
+      "alt": "Hands lift a cream drawstring dust bag printed with the words Something to keep you company",
+      "kind": "video",
+      "media": "Josie_CloseUpZoom_2",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-tj-pickleball-pov",
+      "category": "reels",
+      "title": "You just need to play pickleball",
+      "alt": "Players mid-rally on the pickleball court at night, captioned you're not sad you just need to play pickleball",
+      "kind": "video",
+      "media": "v-tjames-tjames-pickleballpov",
+      "aspect": "9:16",
+      "brand": "T-James Sporty Bar"
+    },
+    {
+      "id": "reel-hype-landscape",
+      "category": "reels",
+      "title": "Brand hype video",
+      "alt": "Landscape video of a model standing among bags, clothes and beauty products spread across a cream floor",
+      "kind": "video",
+      "media": "LandscapeHype-copy",
+      "aspect": "16:9"
+    },
+    {
+      "id": "reel-tj-found-us",
+      "category": "reels",
+      "title": "You found us",
+      "alt": "Friends toasting at an outdoor table at night, captioned literally, you found us",
+      "kind": "video",
+      "media": "v-tjames-tjames-youfoundus",
+      "aspect": "9:16",
+      "brand": "T-James Sporty Bar"
+    },
+    {
+      "id": "reel-ways-of-wearing",
+      "category": "reels",
+      "title": "Ways of wearing the Lola",
+      "alt": "A woman in a white top holds a glossy white shoulder bag and its detachable silver straps",
+      "kind": "video",
+      "media": "Lola_-_Ways_of_wearing_V2",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-mila-landscape",
+      "category": "reels",
+      "title": "The Mila against concrete",
+      "alt": "A woman in a long brown leather coat holds a brown bag against a grey concrete wall",
+      "kind": "video",
+      "media": "MILA_Landscape",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-ss-milestone",
+      "category": "reels",
+      "title": "Major brand milestone",
+      "alt": "The founder in a black blazer announcing a major brand milestone in the showroom",
+      "kind": "video",
+      "media": "v-stylestate-founder-reveal-1",
+      "aspect": "9:16",
+      "brand": "Style State"
+    },
+    {
+      "id": "reel-mila-chocolate",
+      "category": "reels",
+      "title": "Mila shoulder bag in chocolate",
+      "alt": "A hand opens a brown leather shoulder bag on a café table next to a latte, captioned It's about better organisation",
+      "kind": "video",
+      "media": "Mila_Shoulder_Bag_-_Chocolate",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-ss-olive-rack",
+      "category": "reels",
+      "title": "Olive knit styling",
+      "alt": "An olive high neck knit top and black skirt hanging on a rail in the showroom",
+      "kind": "video",
+      "media": "v-stylestate-olive-rack",
+      "aspect": "9:16",
+      "brand": "Style State"
+    },
+    {
+      "id": "reel-sangria-xmas",
+      "category": "reels",
+      "title": "Christmas edit: Nicole in sangria",
+      "alt": "A woven burgundy bag on white fur, surrounded by sunglasses, a phone, makeup and perfume",
+      "kind": "video",
+      "media": "Nicole_Sangria_Xmas",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-ss-colour-combos",
+      "category": "reels",
+      "title": "Rack colour combos",
+      "alt": "A clothing rack in espresso, merlot and black tones with colour combo swatches above it",
+      "kind": "video",
+      "media": "v-stylestate-rackcolorcombos-1",
+      "aspect": "9:16",
+      "brand": "Style State"
+    },
+    {
+      "id": "reel-office-brolls",
+      "category": "reels",
+      "title": "Office b-roll with headline",
+      "alt": "A woman works at a desk with three monitors in a bright office, with the headline The team behind your Amazon business",
+      "kind": "video",
+      "media": "PE_Cinth_Organic_OfficeBrolls_WHeadline",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-ss-eofy",
+      "category": "reels",
+      "title": "EOFY sale, 2 days left",
+      "alt": "Style State 25% off sitewide sale graphic with three knit pieces and the code 25EOFY",
+      "kind": "video",
+      "media": "v-stylestate-eofysale-2daysleft",
+      "aspect": "9:16",
+      "brand": "Style State"
+    },
+    {
+      "id": "reel-ss-summer-linen",
+      "category": "reels",
+      "title": "Summer linen styling",
+      "alt": "Three mannequins in white linen tops, a dress and jeans with straw accessories",
+      "kind": "video",
+      "media": "v-stylestate-summer-linen-white-mannequin",
+      "aspect": "9:16",
+      "brand": "Style State"
+    },
+    {
+      "id": "reel-wc-founder-bags",
+      "category": "reels",
+      "title": "Founder's bag picks",
+      "alt": "Green screen video of the Winnie & Co. founder over photos of models carrying leather bags",
+      "kind": "video",
+      "media": "v-winnie-foundergreenscreen-1",
+      "aspect": "9:16",
+      "brand": "Winnie & Co."
+    },
+    {
+      "id": "reel-rb-styling",
+      "category": "reels",
+      "title": "Styling Rabble patches",
+      "alt": "A girl in a pink Rabble top pressing patches onto her shirt",
+      "kind": "video",
+      "media": "v-rabble-0415-2",
+      "aspect": "9:16",
+      "brand": "Rabble"
+    },
+    {
+      "id": "reel-rb-unboxing",
+      "category": "reels",
+      "title": "Rabble unboxing",
+      "alt": "A child's hands opening a yellow Rabble box of patches",
+      "kind": "video",
+      "media": "v-rabble-0415",
+      "aspect": "9:16",
+      "brand": "Rabble"
+    },
+    {
+      "id": "reel-ad-proper-ecom-1",
+      "category": "ads",
+      "title": "Proper Ecom video ad",
+      "alt": "A man in a dark Proper Ecom polo speaks straight to camera against a blue backdrop",
+      "kind": "video",
+      "media": "PE_Ads3_9.16",
+      "aspect": "9:16"
+    },
+    {
+      "id": "reel-ad-proper-ecom-2",
+      "category": "ads",
+      "title": "Proper Ecom video ad, second cut",
+      "alt": "A man in a dark Proper Ecom polo speaks to camera against a blue backdrop",
+      "kind": "video",
+      "media": "PE_Ads4_9.16",
+      "aspect": "9:16"
+    },
+    {
+      "id": "ad-tj-all-in-one",
+      "category": "ads",
+      "title": "T-James all-in-one offer ad",
+      "alt": "A pickleball court beside the T-James net banner, captioned pov: you found the newest pickleball tambayan",
+      "kind": "video",
+      "media": "v-tjames-tjames-ad-allinoneoffer-script1",
+      "aspect": "9:16",
+      "brand": "T-James Sporty Bar"
+    },
+    {
+      "id": "ad-tj-july",
+      "category": "ads",
+      "title": "T-James court ad",
+      "alt": "A player hitting on the T-James pickleball court under night lights",
+      "kind": "video",
+      "media": "v-tjames-tjames-jul172026-ad1-copy",
+      "aspect": "9:16",
+      "brand": "T-James Sporty Bar"
+    },
+    {
+      "id": "ai-uncle-scientist-talking",
+      "category": "ai",
+      "title": "AI spokesperson for Uncle Scientist",
+      "alt": "AI-generated presenter in an office talking to camera about a supplement",
+      "kind": "video",
+      "media": "v-ai-us-talking-v1",
+      "aspect": "9:16",
+      "brand": "Uncle Scientist",
+      "featured": true
+    },
+    {
+      "id": "ai-expert-biotics",
+      "category": "ai",
+      "title": "Expert Biotics AI ad",
+      "alt": "AI-generated close-up of a woman in a white top with the words Designed to help thyroid metabolism",
+      "kind": "video",
+      "media": "v-ai-expertbiotics-ai-generated-edited002",
+      "aspect": "9:16",
+      "brand": "Expert Biotics"
+    },
+    {
+      "id": "ai-uncle-scientist-product",
+      "category": "ai",
+      "title": "AI product shot: GLP-1 probiotic",
+      "alt": "AI-generated scene of an Uncle Scientist GLP-1 probiotic bottle on a counter beside cookies",
+      "kind": "video",
+      "media": "v-ai-objreplace-d7caa6952d06453dac6129ceb50b9",
+      "aspect": "9:16",
+      "brand": "Uncle Scientist"
+    },
+    {
+      "id": "ai-uncle-scientist-talking-2",
+      "category": "ai",
+      "title": "AI spokesperson, second version",
+      "alt": "AI-generated man in a teal tee holding an Uncle Scientist bottle in a city apartment",
+      "kind": "video",
+      "media": "v-ai-us-talkingv2",
+      "aspect": "9:16",
+      "brand": "Uncle Scientist"
+    },
+    {
+      "id": "ai-uncle-scientist-capsules",
+      "category": "ai",
+      "title": "AI product shot: capsules",
+      "alt": "AI-generated macro shot of white supplement capsules",
+      "kind": "video",
+      "media": "v-ai-objreplace-1b59150ea4cd4235a45ea8f637747",
+      "aspect": "9:16",
+      "brand": "Uncle Scientist"
+    },
+    {
+      "id": "ai-suezicu-08",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated model in a gold cowl-neck mini dress lounging on a reflective golden floor",
+      "kind": "image",
+      "media": "ai-suezicu-08",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "ai-suezicu-03",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated model in a taupe rosette halter top and camel blazer, holding a latte at a café table",
+      "kind": "image",
+      "media": "ai-suezicu-03",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "ai-suezicu-11",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated model in a black leather strapless dress holding sunflowers, one stem between her lips",
+      "kind": "image",
+      "media": "ai-suezicu-11",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "ai-suezicu-01",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated model in a black asymmetric cut-out mini dress posing on marble steps outside a gold art deco doorway",
+      "kind": "image",
+      "media": "ai-suezicu-01",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "ai-suezicu-09",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated model in a red floral halter maxi dress sitting on a tan leather sofa",
+      "kind": "image",
+      "media": "ai-suezicu-09",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "ai-suezicu-05",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated model laughing at a fruit market in a red and green polka-dot mesh top, carrying a woven bag",
+      "kind": "image",
+      "media": "ai-suezicu-05",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "ai-suezicu-12",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated model in a black ruched crop top and maxi skirt walking past yellow taxis",
+      "kind": "image",
+      "media": "ai-suezicu-12",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "ai-suezicu-10",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated model in a white one-shoulder draped dress seated on a deep red velvet set",
+      "kind": "image",
+      "media": "ai-suezicu-10",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "ai-suezicu-02",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated model in the same black cut-out dress walking down a cobblestone street with a black handbag",
+      "kind": "image",
+      "media": "ai-suezicu-02",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "ai-suezicu-04",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated model in the taupe rosette halter top and a metallic skirt, sitting at the edge of a pool",
+      "kind": "image",
+      "media": "ai-suezicu-04",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "ai-suezicu-06",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated model in the polka-dot mesh top and cargo shorts on a pastel street lined with palm trees",
+      "kind": "image",
+      "media": "ai-suezicu-06",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "ai-suezicu-07",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated model in the polka-dot mesh top and a lime swimsuit by a rooftop pool, holding a drink",
+      "kind": "image",
+      "media": "ai-suezicu-07",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "ai-suezicu-13",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated studio shot of a model in a cropped striped olive faux-fur jacket, arms crossed",
+      "kind": "image",
+      "media": "ai-suezicu-13",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "ai-suezicu-14",
+      "category": "ai",
+      "title": "Suezicu AI fashion image",
+      "alt": "AI-generated studio shot of a model in a cropped burgundy croc-embossed leather jacket, arms crossed",
+      "kind": "image",
+      "media": "ai-suezicu-14",
+      "aspect": "2:3",
+      "brand": "Suezicu"
+    },
+    {
+      "id": "anim-eb-vital-energy",
+      "category": "animations",
+      "title": "Vital Energy product animation",
+      "alt": "Animated Expert Biotics Iodine+ bottle with a Vital Energy headline and benefit icons",
+      "kind": "video",
+      "media": "v-anim-eb-vital-energy",
+      "aspect": "9:16",
+      "brand": "Expert Biotics"
+    },
+    {
+      "id": "anim-us-3-things",
+      "category": "animations",
+      "title": "3 things to do while taking GLP-1 probiotics",
+      "alt": "Motion graphic for Uncle Scientist listing 3 habits to pair with its GLP-1 probiotic",
+      "kind": "video",
+      "media": "v-anim-us-3-things",
+      "aspect": "9:16",
+      "brand": "Uncle Scientist"
+    },
+    {
+      "id": "anim-pe-instagram-post",
+      "category": "animations",
+      "title": "Animated social post mockup",
+      "alt": "Animated Instagram post mockup promoting Proper Ecom's done-for-you e-commerce stores",
+      "kind": "video",
+      "media": "v-anim-pe-instagram-post",
+      "aspect": "9:16",
+      "brand": "Proper Ecom"
+    },
+    {
+      "id": "anim-ss-hormone-reset",
+      "category": "animations",
+      "title": "Daily Hormone Reset intro",
+      "alt": "Kinetic text animation on an orange gradient introducing Stacked Science's Daily Hormone Reset",
+      "kind": "video",
+      "media": "v-anim-ss-hormone-reset",
+      "aspect": "9:16",
+      "brand": "Stacked Science"
+    },
+    {
+      "id": "anim-eb-wellness-tips",
+      "category": "animations",
+      "title": "4 wellness tips",
+      "alt": "Step-by-step animated wellness tips card for Expert Biotics",
+      "kind": "video",
+      "media": "v-anim-eb-wellness-tips",
+      "aspect": "9:16",
+      "brand": "Expert Biotics"
+    },
+    {
+      "id": "anim-us-results",
+      "category": "animations",
+      "title": "Results you'll feel",
+      "alt": "Animated product callouts for Uncle Scientist GLP-1 Probiotic: reduced cravings and appetite control",
+      "kind": "video",
+      "media": "v-anim-us-results",
+      "aspect": "9:16",
+      "brand": "Uncle Scientist"
+    },
+    {
+      "id": "anim-pe-scalable-stores",
+      "category": "animations",
+      "title": "Builds scalable online stores",
+      "alt": "Split-screen motion graphic for Proper Ecom about building scalable online stores",
+      "kind": "video",
+      "media": "v-anim-pe-scalable-stores",
+      "aspect": "9:16",
+      "brand": "Proper Ecom"
+    },
+    {
+      "id": "anim-eb-balance-support",
+      "category": "animations",
+      "title": "Balance and support",
+      "alt": "Animated Expert Biotics bottles sliding in with Balance and Support headlines",
+      "kind": "video",
+      "media": "v-anim-eb-balance-support",
+      "aspect": "9:16",
+      "brand": "Expert Biotics"
+    },
+    {
+      "id": "anim-us-dim-sgs",
+      "category": "animations",
+      "title": "DIM SGS+ product reveal",
+      "alt": "Product animation of Uncle Scientist DIM SGS+ among succulents with dosage text",
+      "kind": "video",
+      "media": "v-anim-us-dim-sgs",
+      "aspect": "9:16",
+      "brand": "Uncle Scientist"
+    },
+    {
+      "id": "anim-pe-logo-reveal",
+      "category": "animations",
+      "title": "Logo reveal",
+      "alt": "Animated Proper Ecom logo reveal with layered green circles",
+      "kind": "video",
+      "media": "v-anim-pe-logo-reveal",
+      "aspect": "9:16",
+      "brand": "Proper Ecom"
+    },
+    {
+      "id": "anim-ss-meet",
+      "category": "animations",
+      "title": "Meet the product",
+      "alt": "Bold kinetic typography intro for Stacked Science",
+      "kind": "video",
+      "media": "v-anim-ss-meet",
+      "aspect": "9:16",
+      "brand": "Stacked Science"
+    },
+    {
+      "id": "anim-eb-precision-dosing",
+      "category": "animations",
+      "title": "Precision dosing explainer",
+      "alt": "Animated Expert Biotics bottle with callouts for thyroid support and daily dosing",
+      "kind": "video",
+      "media": "v-anim-eb-precision-dosing",
+      "aspect": "9:16",
+      "brand": "Expert Biotics"
+    },
+    {
+      "id": "anim-us-research-results",
+      "category": "animations",
+      "title": "Research reveals results",
+      "alt": "Animated typography and capsules for Uncle Scientist on a lime background",
+      "kind": "video",
+      "media": "v-anim-us-research-results",
+      "aspect": "9:16",
+      "brand": "Uncle Scientist"
+    },
+    {
+      "id": "anim-eb-get-to-know",
+      "category": "animations",
+      "title": "Get to know Expert Biotics",
+      "alt": "Animated Expert Biotics Iodine+ bottle with an intro call to action",
+      "kind": "video",
+      "media": "v-anim-eb-get-to-know",
+      "aspect": "9:16",
+      "brand": "Expert Biotics"
+    },
+    {
+      "id": "anim-pe-passive-profits",
+      "category": "animations",
+      "title": "Passive profits headline animation",
+      "alt": "Animated stacked headlines behind a presenter for Proper Ecom",
+      "kind": "video",
+      "media": "v-anim-pe-passive-profits",
+      "aspect": "9:16",
+      "brand": "Proper Ecom"
+    },
+    {
+      "id": "anim-us-glp1-cart",
+      "category": "animations",
+      "title": "Get your GLP-1 Probiotic",
+      "alt": "Animated shopping cart and product call to action for Uncle Scientist",
+      "kind": "video",
+      "media": "v-anim-us-glp1-cart",
+      "aspect": "9:16",
+      "brand": "Uncle Scientist"
+    },
+    {
+      "id": "anim-eb-three-facts",
+      "category": "animations",
+      "title": "Three facts you're missing",
+      "alt": "Animated facts card with presenter for Expert Biotics probiotics",
+      "kind": "video",
+      "media": "v-anim-eb-three-facts",
+      "aspect": "9:16",
+      "brand": "Expert Biotics"
+    },
+    {
+      "id": "board-expertbiotics",
+      "category": "statics",
+      "title": "Expert Biotics graphic designs",
+      "alt": "Grid of Expert Biotics supplement posts in orange and blue about metabolism, hormonal balance and consistency, with fitness models and product bottles",
+      "kind": "image",
+      "media": "expertbiotics-graphicdesigns",
+      "aspect": "5:4",
+      "brand": "Expert Biotics",
+      "board": true
+    },
+    {
+      "id": "board-rabble",
+      "category": "statics",
+      "title": "Rabble graphic designs",
+      "alt": "Grid of Rabble posts in bright pink, yellow and blue showing kids' clothing with velcro patches, patch packs and sale announcements",
+      "kind": "image",
+      "media": "rabble-graphicdesigns",
+      "aspect": "5:4",
+      "brand": "Rabble",
+      "board": true
+    },
+    {
+      "id": "board-properecom",
+      "category": "statics",
+      "title": "Proper Ecom graphic designs",
+      "alt": "Grid of Proper Ecom posts in navy and light blue about done-for-you Amazon stores, passive income and investor tips",
+      "kind": "image",
+      "media": "properecom-graphicdesigns",
+      "aspect": "5:4",
+      "brand": "Proper Ecom",
+      "board": true
+    },
+    {
+      "id": "static-dfy-stores",
+      "category": "statics",
+      "title": "Done-for-you Amazon stores",
+      "alt": "Proper Ecom graphic headlined Build wealth through done-for-you Amazon stores, with three photos labelled hands-off store management, bi-weekly payouts and performance dashboards",
+      "kind": "image",
+      "media": "Education___Authority_1",
+      "aspect": "4:5",
+      "brand": "Proper Ecom"
+    },
+    {
+      "id": "static-why-investors",
+      "category": "statics",
+      "title": "Why investors choose Proper Ecom",
+      "alt": "Proper Ecom diagram linking its logo to five services: Amazon store setup, full store management, passive income model, performance tracking and a 24-month buyback guarantee",
+      "kind": "image",
+      "media": "Proof___Results___Success_Stories_2",
+      "aspect": "4:5",
+      "brand": "Proper Ecom"
+    },
+    {
+      "id": "static-smart-investing",
+      "category": "statics",
+      "title": "4 tips for smart investing",
+      "alt": "Proper Ecom graphic listing 4 tips for smart investing next to a 3D growth chart with coins",
+      "kind": "image",
+      "media": "Education___Authority_4",
+      "aspect": "4:5",
+      "brand": "Proper Ecom"
+    },
+    {
+      "id": "static-dfy-one-sentence",
+      "category": "statics",
+      "title": "DFY Amazon in one sentence",
+      "alt": "Dark card on a teal gradient: DFY Amazon in one sentence, with four lines from Built, managed, scaled for you to Invest smart, earn consistently",
+      "kind": "image",
+      "media": "Education___Authority_6",
+      "aspect": "4:5",
+      "brand": "Proper Ecom"
+    },
+    {
+      "id": "static-time-waits",
+      "category": "statics",
+      "title": "Time waits for no one",
+      "alt": "Proper Ecom post on light blue: Time waits for no one, but you have the power to make the most of it, above a blue alarm clock",
+      "kind": "image",
+      "media": "FOMO___Opportunity_2",
+      "aspect": "4:5",
+      "brand": "Proper Ecom"
+    },
+    {
+      "id": "static-smart-investment",
+      "category": "statics",
+      "title": "Smart investment, secure future",
+      "alt": "Proper Ecom post with two smiling colleagues at a laptop and a card reading Smart investment, secure future",
+      "kind": "image",
+      "media": "Proof___Results___Success_Stories_1",
+      "aspect": "4:5",
+      "brand": "Proper Ecom"
+    },
+    {
+      "id": "board-hairsolution",
+      "category": "statics",
+      "title": "Hair Solution Nails and Spa graphic designs",
+      "alt": "Grid of Hair Solution Nails and Spa promo posts in brown and cream: a protein straight bond discount, nail, lash and hair packages, and a Father's Day giveaway",
+      "kind": "image",
+      "media": "hairsolution-graphicdesigns",
+      "aspect": "5:4",
+      "brand": "Hair Solution Nails and Spa",
+      "board": true
+    },
+    {
+      "id": "static-mothers-day",
+      "category": "statics",
+      "title": "Mother's Day promo package",
+      "alt": "Mother's Day special promo package for P999 listing manicure cleaning, pedicure cleaning, hand spa and rock lava foot spa, beside a smiling woman",
+      "kind": "image",
+      "media": "13",
+      "aspect": "1:1",
+      "brand": "Hair Solution Nails and Spa"
+    },
+    {
+      "id": "static-kalilangan-promo",
+      "category": "statics",
+      "title": "Kalilangan 1-day discount promo",
+      "alt": "Kalilangan one-day promo: 20% off protein straight bond, save the date February 27, 2025, next to a woman with long straight black hair",
+      "kind": "image",
+      "media": "HS_Campaigns_-_HS_Kalilangan_Promo",
+      "aspect": "1:1",
+      "brand": "Hair Solution Nails and Spa"
+    },
+    {
+      "id": "static-hair-packages",
+      "category": "statics",
+      "title": "8th anniversary hair packages",
+      "alt": "8th year anniversary promo with four hair color packages from P1,998 to P2,998, each with a treatment and free manicure and pedicure cleaning",
+      "kind": "image",
+      "media": "10",
+      "aspect": "1:1",
+      "brand": "Hair Solution Nails and Spa"
+    },
+    {
+      "id": "static-nail-packages",
+      "category": "statics",
+      "title": "8th anniversary nail packages",
+      "alt": "8th year anniversary promo with three nail packages at P1,028, P1,248 and P1,448, shown with photos of manicured nails",
+      "kind": "image",
+      "media": "5",
+      "aspect": "1:1",
+      "brand": "Hair Solution Nails and Spa"
+    },
+    {
+      "id": "static-lash-services",
+      "category": "statics",
+      "title": "8th anniversary lash services",
+      "alt": "8th year anniversary promo for lash services at P598 each: almond, prime, cat's eye and Japanese doll lashes, with free brow lamination",
+      "kind": "image",
+      "media": "9",
+      "aspect": "1:1",
+      "brand": "Hair Solution Nails and Spa"
+    },
+    {
+      "id": "board-dadasmango",
+      "category": "statics",
+      "title": "Dada's Mango graphic designs",
+      "alt": "Grid of Dada's Mango posts showing cream cheesy mango, avocado and strawberry drinks with prices on bright fruit-colored backgrounds",
+      "kind": "image",
+      "media": "dadasmango-graphicdesigns",
+      "aspect": "5:4",
+      "brand": "Dada's Mango",
+      "board": true
+    },
+    {
+      "id": "board-stackedscience",
+      "category": "statics",
+      "title": "Stacked Science graphic designs",
+      "alt": "Grid of Stacked Science posts in orange and red for a GLP-1 metabolic probiotic, with product bottles and benefit stats",
+      "kind": "image",
+      "media": "stackedscience-graphicdesigns",
+      "aspect": "5:4",
+      "brand": "Stacked Science",
+      "board": true
+    },
+    {
+      "id": "board-iluxe",
+      "category": "statics",
+      "title": "iLuxe Aesthetic Center graphic designs",
+      "alt": "Grid of iLuxe Aesthetic Center posts in cream and gold: facial treatments, glowing skin portraits and facial combo price lists",
+      "kind": "image",
+      "media": "iluxe-graphicdesigns",
+      "aspect": "5:4",
+      "brand": "iLuxe Aesthetic Center",
+      "board": true
+    },
+    {
+      "id": "static-facial-treatment",
+      "category": "statics",
+      "title": "Facial treatment",
+      "alt": "Gold Facial Treatment headline beside a smiling woman resting her chin on her hand, with the line Confidence starts with clear skin",
+      "kind": "image",
+      "media": "2",
+      "aspect": "4:5",
+      "brand": "iLuxe Aesthetic Center"
+    },
+    {
+      "id": "static-relax-refresh",
+      "category": "statics",
+      "title": "Relax, refresh, renew",
+      "alt": "Woman with glowing skin looking over her shoulder beside the words Relax, Refresh, Renew and a Book now button",
+      "kind": "image",
+      "media": "1",
+      "aspect": "4:5",
+      "brand": "iLuxe Aesthetic Center"
+    },
+    {
+      "id": "static-face-care",
+      "category": "statics",
+      "title": "Face care",
+      "alt": "Face Care headline over a smiling woman touching her cheeks, with the line Restore your youthful glow today",
+      "kind": "image",
+      "media": "3",
+      "aspect": "4:5",
+      "brand": "iLuxe Aesthetic Center"
+    },
+    {
+      "id": "board-epictales",
+      "category": "statics",
+      "title": "Epic Tales graphic designs",
+      "alt": "Grid of Epic Tales posts for personalized children's books: book covers, a five-star review, this-or-that and parent engagement prompts in pastel colors",
+      "kind": "image",
+      "media": "epictales-graphicdesigns",
+      "aspect": "5:4",
+      "brand": "Epic Tales",
+      "board": true
+    },
+    {
+      "id": "static-main-hero",
+      "category": "statics",
+      "title": "The main hero of the story",
+      "alt": "Illustrated children's book covers about football, swimming and baseball under the headline The Main Hero of the Story, books that support children's sports development",
+      "kind": "image",
+      "media": "24",
+      "aspect": "4:5",
+      "brand": "Epic Tales"
+    },
+    {
+      "id": "static-beatrice",
+      "category": "statics",
+      "title": "Beatrice the Fearless Explorer",
+      "alt": "Children's book cover of Beatrice the Fearless Explorer surrounded by arrows labelled main character, for 3 to 7 years, building confidence and a courage-filled journey",
+      "kind": "image",
+      "media": "May_21_2025",
+      "aspect": "4:5",
+      "brand": "Epic Tales"
+    },
+    {
+      "id": "static-this-or-that",
+      "category": "statics",
+      "title": "This or that",
+      "alt": "This or that post comparing two illustrated children's book covers, one set in dinosaur land and one on a safari",
+      "kind": "image",
+      "media": "May_6_2025",
+      "aspect": "4:5",
+      "brand": "Epic Tales"
+    },
+    {
+      "id": "static-favourite-character",
+      "category": "statics",
+      "title": "What character do you like the most?",
+      "alt": "Blue engagement post asking What character do you like the most, with six illustrated children: fairy tale, astronaut, dancer, pirate, fearless and fire fighter",
+      "kind": "image",
+      "media": "18",
+      "aspect": "4:5",
+      "brand": "Epic Tales"
+    },
+    {
+      "id": "static-first-word",
+      "category": "statics",
+      "title": "Comment your child's first word",
+      "alt": "Pastel engagement post with an illustrated astronaut girl and speech bubbles saying Mommy, Daddy, Bye, Hello and Hungry",
+      "kind": "image",
+      "media": "25",
+      "aspect": "4:5",
+      "brand": "Epic Tales"
+    },
+    {
+      "id": "static-comforting-words",
+      "category": "statics",
+      "title": "Comforting words to say to your child",
+      "alt": "Pastel post titled Comforting words to say to your child, with six coloured hearts and phrases such as I'm here, It's okay and You're loved",
+      "kind": "image",
+      "media": "May_13_2025",
+      "aspect": "4:5",
+      "brand": "Epic Tales"
+    },
+    {
+      "id": "static-book-review",
+      "category": "statics",
+      "title": "Book review post",
+      "alt": "Book Review post with five stars, a baseball-themed children's book cover and a reader quote about their granddaughter",
+      "kind": "image",
+      "media": "May_4_2025",
+      "aspect": "4:5",
+      "brand": "Epic Tales"
+    },
+    {
+      "id": "board-unclescientist",
+      "category": "statics",
+      "title": "Uncle Scientist graphic designs",
+      "alt": "Grid of Uncle Scientist supplement posts in purple, green and yellow about managing cravings, brain health and GLP-1 probiotics",
+      "kind": "image",
+      "media": "unclescientist-graphicdesigns",
+      "aspect": "5:4",
+      "brand": "Uncle Scientist",
+      "board": true
+    },
+    {
+      "id": "board-stylestate",
+      "category": "statics",
+      "title": "Style State graphic designs",
+      "alt": "Grid of Style State fashion posts in neutral tones: outfit flat lays, cape designs, model shots and a Paint It Pink edit",
+      "kind": "image",
+      "media": "stylestate-graphicdesigns",
+      "aspect": "5:4",
+      "brand": "Style State",
+      "board": true
+    },
+    {
+      "id": "board-w-co",
+      "category": "statics",
+      "title": "Winnie & Co. graphic designs",
+      "alt": "Grid of Winnie & Co. posts in black and white: handbag flat lays, outfit pairings and a tote bag lineup",
+      "kind": "image",
+      "media": "w_co-graphicdesigns",
+      "aspect": "5:4",
+      "brand": "Winnie & Co.",
+      "board": true
+    },
+    {
+      "id": "board-hyacinthgadgets",
+      "category": "statics",
+      "title": "Hyacinth Gadgets graphic designs",
+      "alt": "Grid of Hyacinth Gadgets sale posts in neon blue and purple featuring iPads and iPhones with peso prices and free accessories",
+      "kind": "image",
+      "media": "hyacinthgadgets-graphicdesigns",
+      "aspect": "5:4",
+      "brand": "Hyacinth Gadgets",
+      "board": true
+    },
+    {
+      "id": "story-expertbiotics-1",
+      "category": "stories",
+      "title": "Expert Biotics iodine Story",
+      "alt": "Story with a man running in an orange t-shirt over a purple gradient: Expert Biotics iodine fits seamlessly into your daily routine",
+      "kind": "image",
+      "media": "story-expertbiotics-1",
+      "aspect": "9:16",
+      "brand": "Expert Biotics"
+    },
+    {
+      "id": "story-rabble-1",
+      "category": "stories",
+      "title": "Rabble sale Story",
+      "alt": "Story with a smiling girl in a lilac patch hoodie and cap in front of a bold pink SALE headline and a Shop now button",
+      "kind": "image",
+      "media": "story-rabble-1",
+      "aspect": "9:16",
+      "brand": "Rabble"
+    },
+    {
+      "id": "story-rabble-2",
+      "category": "stories",
+      "title": "Rabble patch packs Story",
+      "alt": "Story featuring a boy in a blue tee with monster truck patches under the headline Featured Patch Packs and an Add to cart button",
+      "kind": "image",
+      "media": "story-rabble-2",
+      "aspect": "9:16",
+      "brand": "Rabble"
+    },
+    {
+      "id": "story-properecom-1",
+      "category": "stories",
+      "title": "Proper Ecom passive income Story",
+      "alt": "Dark Story with a curling calendar page and the headline Your 2026 passive income goal",
+      "kind": "image",
+      "media": "story-properecom-1",
+      "aspect": "9:16",
+      "brand": "Proper Ecom"
+    },
+    {
+      "id": "story-stylestate-1",
+      "category": "stories",
+      "title": "Style State outfit Story",
+      "alt": "Black and white Story collage of a woman in a black cape dress among heels, a quilted bag, sunglasses and a camera",
+      "kind": "image",
+      "media": "story-stylestate-1",
+      "aspect": "9:16",
+      "brand": "Style State"
+    },
+    {
+      "id": "story-stylestate-2",
+      "category": "stories",
+      "title": "Style State cape design Story",
+      "alt": "Story titled The Silhouette: Cape Design showing three models in cape tops in cream, brown and burgundy",
+      "kind": "image",
+      "media": "story-stylestate-2",
+      "aspect": "9:16",
+      "brand": "Style State"
+    },
+    {
+      "id": "story-winnie-1",
+      "category": "stories",
+      "title": "Winnie & Co. Mila outfit Story",
+      "alt": "Story styling the Mila Shoulder Bag with an olive coat, cream trousers and boots beside dark olive Pantone swatches",
+      "kind": "image",
+      "media": "story-winnie-1",
+      "aspect": "9:16",
+      "brand": "Winnie & Co."
+    },
+    {
+      "id": "story-winnie-2",
+      "category": "stories",
+      "title": "Winnie & Co. Stone and Chicory Coffee Story",
+      "alt": "Story titled Stone and Chicory Coffee pairing a brown trench, cream bag and boots with matching Pantone swatches",
+      "kind": "image",
+      "media": "story-winnie-2",
+      "aspect": "9:16",
+      "brand": "Winnie & Co."
+    },
+    {
+      "id": "story-hairsolution-1",
+      "category": "stories",
+      "title": "Hair Solution anniversary giveaway Story",
+      "alt": "8th year anniversary giveaway Story for a free nano steam hair treatment, with steps to join beside a woman with long black hair",
+      "kind": "image",
+      "media": "story-hairsolution-1",
+      "aspect": "9:16",
+      "brand": "Hair Solution Nails and Spa"
+    },
+    {
+      "id": "story-iluxe-1",
+      "category": "stories",
+      "title": "iLuxe facial session Story",
+      "alt": "Story of a woman receiving a facial mask with the words Facial Session and Book your appointment",
+      "kind": "image",
+      "media": "story-iluxe-1",
+      "aspect": "9:16",
+      "brand": "iLuxe Aesthetic Center"
+    },
+    {
+      "id": "story-epictales-1",
+      "category": "stories",
+      "title": "Epic Tales did you know Story",
+      "alt": "Light blue Story with an illustrated boy drinking water and a Did you know? card about personalized books and healthy eating",
+      "kind": "image",
+      "media": "story-epictales-1",
+      "aspect": "9:16",
+      "brand": "Epic Tales"
+    }
+  ]
+}

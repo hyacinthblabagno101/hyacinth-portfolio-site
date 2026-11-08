@@ -1,0 +1,144 @@
+---
+/**
+ * Case studies: influencer marketing, UGC, and analytics. Text lives in "caseStudies" in src/data/proof.json.
+ */
+import { proof } from '../lib/data';
+---
+
+<section id="case-studies" class="cases band-dark" aria-labelledby="cases-title">
+  <div class="wrap">
+    <header class="head reveal">
+      <p class="eyebrow">Case studies</p>
+      <h2 id="cases-title">Influencer, UGC, and the numbers behind them</h2>
+    </header>
+
+    <div class="list">
+      {
+        proof.caseStudies.map((c, n) => (
+          <article class="case reveal" aria-labelledby={`case-${c.id}`}>
+            <div class="case-head">
+              <span class="num" aria-hidden="true">{String(n + 1).padStart(2, '0')}</span>
+              <p class="eyebrow">{c.eyebrow}</p>
+              <h3 id={`case-${c.id}`}>{c.title}</h3>
+              <p class="intro">{c.intro}</p>
+            </div>
+
+            <div class="case-body">
+              {c.rows && (
+                <ul class="collabs" role="list">
+                  {c.rows.map((r) => (
+                    <li class="collab">
+                      <p class="pair">
+                        <strong>{r.brand}</strong>
+                        <span class="x" aria-hidden="true">&times;</span>
+                        <span>{r.creator}</span>
+                      </p>
+                      <p class="tags">
+                        <span>{r.audience}</span>
+                        <span>{r.deal}</span>
+                      </p>
+                      <p class="detail">{r.detail}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {c.points && (
+                <ol class="steps" role="list">
+                  {c.points.map((p, i) => (
+                    <li>
+                      <span class="step" aria-hidden="true">{i + 1}</span>
+                      {p}
+                    </li>
+                  ))}
+                </ol>
+              )}
+
+              {c.reports && (
+                <div class="reports">
+                  {c.reports.map((r) => (
+                    <figure class="report">
+                      <figcaption class="eyebrow">{r.label}</figcaption>
+                      <dl class="stats">
+                        {r.stats.map((s) => (
+                          <div class="stat">
+                            <dt>{s.label}</dt>
+                            <dd>
+                              <span class="value">{s.value}</span>
+                              {s.change && <span class="change">{s.change}</span>}
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                      <p class="note">{r.note}</p>
+                    </figure>
+                  ))}
+                </div>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .cases { padding-block: var(--section); }
+  .head { display: grid; gap: 1rem; margin-bottom: 3rem; }
+  h2 { max-width: 18ch; }
+
+  .list { display: grid; }
+  .case {
+    display: grid; gap: 1.75rem;
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--line);
+  }
+  @media (min-width: 64rem) { .case { grid-template-columns: 5fr 7fr; gap: 4rem; } }
+
+  .case-head { display: grid; gap: 0.6rem; align-content: start; }
+  .num { font-family: var(--font-serif); font-size: 1.25rem; color: var(--accent); }
+  h3 { font-size: var(--step-h3); line-height: 1.15; }
+  .intro { color: var(--text-muted); max-width: 40ch; }
+
+  .collabs { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+  .collab {
+    display: grid; gap: 0.4rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--line); border-radius: 6px;
+    transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  }
+  .collab:hover { background: rgb(248 241 231 / 0.05); border-color: rgb(248 241 231 / 0.35); transform: translateX(4px); }
+  .pair { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem; font-size: 1.0625rem; }
+  .x { color: var(--accent); }
+  .tags { margin: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tags span {
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em;
+    padding: 0.15rem 0.6rem; border-radius: 999px;
+    background: rgb(248 241 231 / 0.1); color: var(--bisque);
+  }
+  .detail { margin: 0; color: var(--text-muted); font-size: var(--step-small); }
+
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
+  .steps li {
+    display: grid; grid-template-columns: 2.25rem 1fr; align-items: baseline;
+    padding: 0.85rem 0; border-bottom: 1px solid var(--line);
+  }
+  .step { font-family: var(--font-serif); font-size: 1.25rem; color: var(--accent); }
+
+  .reports { display: grid; gap: 1rem; }
+  @media (min-width: 40rem) { .reports { grid-template-columns: 1fr 1fr; } }
+  .report {
+    margin: 0; display: grid; gap: 1rem; align-content: start;
+    padding: 1.25rem; border: 1px solid var(--line); border-radius: 6px;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+  }
+  .report:hover { border-color: rgb(248 241 231 / 0.35); transform: translateY(-3px); }
+  .stats { margin: 0; display: grid; gap: 0.85rem; }
+  .stat { display: grid; gap: 0.1rem; }
+  .stat dt { font-size: var(--step-small); color: var(--text-muted); order: 2; }
+  .stat dd { margin: 0; display: flex; align-items: baseline; gap: 0.5rem; order: 1; }
+  .value { font-family: var(--font-serif); font-size: 2.25rem; line-height: 1; color: var(--heading); }
+  .change { font-size: var(--step-small); font-weight: 600; color: var(--bisque); }
+  .note { margin: 0; font-size: var(--step-small); color: var(--text-muted); }
+</style>

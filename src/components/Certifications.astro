@@ -1,0 +1,73 @@
+---
+/**
+ * Certifications. List lives in "certifications" in src/data/proof.json; images are in Cloudinary.
+ * Selecting a certificate opens the full image in a new tab.
+ */
+import { proof } from '../lib/data';
+import { jpgUrl } from '../lib/cloudinary';
+---
+
+<section id="certifications" class="certs" aria-labelledby="certs-title">
+  <div class="wrap">
+    <header class="head reveal">
+      <p class="eyebrow">Certifications</p>
+      <h2 id="certs-title">Courses and certificates</h2>
+    </header>
+
+    <ul class="grid" role="list">
+      {
+        proof.certifications.map((c, i) => (
+          <li class="reveal" style={`--delay: ${(i % 4) * 70}ms`}>
+            <a class="cert" href={jpgUrl(c.image, 1600)} target="_blank" rel="noopener">
+              <span class="thumb">
+                <img
+                  src={jpgUrl(c.image, 480)}
+                  srcset={`${jpgUrl(c.image, 480)} 480w, ${jpgUrl(c.image, 800)} 800w`}
+                  sizes="(min-width: 64rem) 22vw, (min-width: 40rem) 45vw, 92vw"
+                  width="480"
+                  height="357"
+                  alt={`${c.issuer} certificate for ${c.title}, issued to Hyacinth Blabagno`}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </span>
+              <span class="meta">
+                <span class="issuer">{c.issuer} &middot; {c.date}</span>
+                <span class="title">{c.title}</span>
+                <span class="visually-hidden">(opens the certificate in a new tab)</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .certs { padding-block: var(--section); }
+  .head { display: grid; gap: 1rem; margin-bottom: 2.5rem; }
+
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.5rem 1rem; grid-template-columns: 1fr; }
+  @media (min-width: 40rem) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .cert { display: grid; gap: 0.85rem; color: inherit; text-decoration: none; border-radius: 6px; }
+  .thumb {
+    display: block; overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--line); border-radius: 6px;
+    background: #fff;
+  }
+  .thumb img {
+    width: 100%; height: 100%; object-fit: contain;
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .cert:hover .thumb img, .cert:focus-visible .thumb img { transform: scale(1.04); }
+  .cert:hover .thumb { border-color: var(--rust); }
+  .cert:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
+  .meta { display: grid; gap: 0.2rem; }
+  .issuer { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rust); }
+  .title { font-weight: 600; line-height: 1.35; }
+  .cert:hover .title { color: var(--burgundy); }
+</style>

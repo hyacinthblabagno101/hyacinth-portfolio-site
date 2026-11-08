@@ -10,7 +10,9 @@ My personal portfolio for job applications. It's a static Astro site: every page
 | About bio, "Based in" details, the six skills | `src/data/about.json` |
 | Experience (jobs) | `src/data/experience.json` |
 | Tools | `src/data/tools.json` |
-| Projects (one file each) | `src/content/projects/` |
+| Work showcase (reels, ads, AI content, animations, statics, stories) | `src/data/showcase.json` |
+| Case studies, client feedback, certifications | `src/data/proof.json` |
+| Projects (one file each, optional detail pages) | `src/content/projects/` |
 | Hero photo | `src/assets/portrait-hero.jpg` |
 | About photo | `src/assets/portrait-about.jpg` |
 | Share image (shown when the link is posted) | `public/og-image.png` (1200 x 630) |
@@ -48,6 +50,25 @@ To check what the **live** site will contain (drafts and placeholders removed):
 npm run build
 npm run preview
 ```
+
+## Edit the work showcase
+
+The "Selected work" section is built from `src/data/showcase.json`. Each item is one tile:
+
+```json
+{ "id": "reel-hs-bills", "category": "reels", "title": "I have bills to pay",
+  "alt": "Split screen of foot spa, hair wash, hair colour and nail services",
+  "kind": "video", "media": "v-hairsolution-cinth-hs-billstopay", "aspect": "9:16",
+  "brand": "Hair Solution Nails and Spa" }
+```
+
+- `category`: `reels`, `ads`, `ai`, `animations`, `statics` or `stories` (the tabs).
+- `kind`: `video` or `image`. `media` is the Cloudinary public ID (cloud `ktee3ije`).
+- `featured: true` puts an item first in its tab. `hidden: true` takes it off the site without deleting it.
+- Each tab shows its first 10 items (8 for statics), plus a "Show all" button.
+- Hovering a video plays a silent 6-second preview; clicking opens the full video with sound.
+
+Case studies, client feedback and certifications are in `src/data/proof.json`. Feedback must be copied word for word from the client.
 
 ## Add a project
 

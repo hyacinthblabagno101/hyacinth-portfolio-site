@@ -30,6 +30,19 @@ export function imageUrl(id: string, width: number, aspect?: string): string {
   return `${base}/image/upload/${['f_auto', 'q_auto', ...crop(width, aspect)].join(',')}/${path}`;
 }
 
+/** Image as JPG, for files stored as PDFs (some certificates). */
+export function jpgUrl(id: string, width: number): string {
+  const { base, path } = resolve(id);
+  return `${base}/image/upload/${['q_auto', ...crop(width)].join(',')}/${path}.jpg`;
+}
+
+/** Short silent loop for hover previews: first 6 seconds, no audio, small and light. */
+export function videoPreviewUrl(id: string, width: number, aspect: string): string {
+  const { base, path } = resolve(id);
+  // Center crop: Cloudinary's g_auto works on video posters but not on video files
+  return `${base}/video/upload/${['du_6', 'ac_none', 'q_auto:low', `w_${width}`, `ar_${aspect}`, 'c_fill'].join(',')}/${path}.mp4`;
+}
+
 export const imageSrcset = (id: string, aspect?: string, widths = [400, 800, 1200]) =>
   widths.map((w) => `${imageUrl(id, w, aspect)} ${w}w`).join(', ');
 

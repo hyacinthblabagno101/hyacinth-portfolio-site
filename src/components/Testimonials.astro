@@ -1,0 +1,102 @@
+---
+/**
+ * Client feedback, word for word. Text lives in "testimonials" in src/data/proof.json.
+ * The first quote is shown large; the rest sit in a grid below it.
+ */
+import { proof } from '../lib/data';
+
+const [lead, ...rest] = proof.testimonials;
+---
+
+<section id="feedback" class="feedback" aria-labelledby="feedback-title">
+  <div class="wrap">
+    <header class="head reveal">
+      <p class="eyebrow">Client feedback</p>
+      <h2 id="feedback-title">What clients say</h2>
+    </header>
+
+    {
+      lead && (
+        <figure class="lead reveal">
+          <blockquote>
+            <p>{lead.quote}</p>
+          </blockquote>
+          <figcaption>
+            <strong>{lead.name}</strong>
+            <span>{lead.role}</span>
+          </figcaption>
+        </figure>
+      )
+    }
+
+    <ul class="grid" role="list">
+      {
+        rest.map((t, i) => (
+          <li class="reveal" style={`--delay: ${i * 80}ms`}>
+            <figure class="card">
+              <span class="mark" aria-hidden="true">&ldquo;</span>
+              <blockquote>
+                <p>{t.quote}</p>
+              </blockquote>
+              <figcaption>
+                <strong>{t.name}</strong>
+                <span>
+                  {t.url ? (
+                    <a href={t.url} target="_blank" rel="noopener">
+                      {t.role}, on Upwork <span class="visually-hidden">(opens in a new tab)</span>
+                    </a>
+                  ) : (
+                    t.role
+                  )}
+                </span>
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .feedback { padding-block: var(--section); background: var(--glacier); }
+  .head { display: grid; gap: 1rem; margin-bottom: 2.5rem; }
+
+  blockquote { margin: 0; }
+  figure { margin: 0; }
+  figcaption { display: grid; gap: 0.1rem; font-size: var(--step-small); }
+  figcaption span { color: var(--text-muted); }
+  figcaption a { color: var(--burgundy); }
+
+  .lead {
+    display: grid; gap: 1.5rem;
+    padding-bottom: 2.5rem; margin-bottom: 2.5rem;
+    border-bottom: 1px solid rgb(35 24 21 / 0.15);
+  }
+  .lead p {
+    margin: 0; max-width: 34em;
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem);
+    line-height: 1.25; color: var(--java);
+  }
+  .lead p::before { content: '\201C'; color: var(--burgundy); }
+  .lead p::after { content: '\201D'; color: var(--burgundy); }
+
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+  @media (min-width: 48rem) { .grid { grid-template-columns: 1fr 1fr; } }
+  .grid li { display: flex; }
+  .card {
+    position: relative; flex: 1;
+    display: grid; gap: 1.25rem; align-content: space-between;
+    padding: 1.75rem 1.5rem 1.5rem;
+    background: var(--cream); border-radius: 6px;
+    box-shadow: 0 1px 0 rgb(35 24 21 / 0.06);
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s ease;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px -18px rgb(35 24 21 / 0.45); }
+  .mark {
+    position: absolute; top: 0.4rem; right: 1.1rem;
+    font-family: var(--font-serif); font-size: 3.5rem; line-height: 1; color: var(--chambray);
+  }
+  .card p { margin: 0; padding-right: 1.5rem; }
+</style>

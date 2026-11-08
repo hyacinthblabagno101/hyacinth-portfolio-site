@@ -109,3 +109,68 @@ export const tools = parse(
   'tools.json',
 );
 export const showTools = tools.confirmed || showUnconfirmed;
+
+/* ---------- showcase.json and proof.json ---------- */
+import showcaseJson from '../data/showcase.json';
+import proofJson from '../data/proof.json';
+
+const showcaseData = parse(
+  z.object({
+    categories: z.array(z.object({ key: z.string(), label: z.string() })),
+    items: z.array(
+      z.object({
+        id: z.string(),
+        category: z.string(),
+        title: z.string(),
+        alt: z.string(),
+        kind: z.enum(['image', 'video']),
+        media: z.string(),
+        aspect: z.string(),
+        brand: z.string().optional(),
+        board: z.boolean().optional(),
+        featured: z.boolean().optional(),
+        hidden: z.boolean().optional(),
+      }),
+    ),
+  }),
+  showcaseJson,
+  'showcase.json',
+);
+export type ShowcaseItem = (typeof showcaseData.items)[number];
+/** Categories that have at least one visible item, each with its items (featured first). */
+export const showcase = showcaseData.categories
+  .map((c) => ({
+    ...c,
+    items: showcaseData.items
+      .filter((i) => i.category === c.key && !i.hidden)
+      .sort((a, b) => Number(!!b.featured) - Number(!!a.featured)),
+  }))
+  .filter((c) => c.items.length > 0);
+
+export const proof = parse(
+  z.object({
+    caseStudies: z.array(
+      z.object({
+        id: z.string(),
+        eyebrow: z.string(),
+        title: z.string(),
+        intro: z.string(),
+        rows: z.array(z.object({ brand: z.string(), creator: z.string(), audience: z.string(), deal: z.string(), detail: z.string() })).optional(),
+        points: z.array(z.string()).optional(),
+        reports: z
+          .array(
+            z.object({
+              label: z.string(),
+              stats: z.array(z.object({ value: z.string(), label: z.string(), change: z.string().optional() })),
+              note: z.string(),
+            }),
+          )
+          .optional(),
+      }),
+    ),
+    testimonials: z.array(z.object({ quote: z.string(), name: z.string(), role: z.string(), url: z.string().optional() })),
+    certifications: z.array(z.object({ title: z.string(), issuer: z.string(), date: z.string(), image: z.string() })),
+  }),
+  proofJson,
+  'proof.json',
+);

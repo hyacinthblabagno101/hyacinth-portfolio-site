@@ -7,8 +7,10 @@ import { site, resumeFile, showAbout, showExperience } from '../lib/data';
 
 const links = [
   { label: 'Work', href: '/#work' },
+  { label: 'Case studies', href: '/#case-studies' },
   showAbout && { label: 'About', href: '/#about' },
   showExperience && { label: 'Experience', href: '/#experience' },
+  { label: 'Feedback', href: '/#feedback' },
   { label: 'Contact', href: '/#contact' },
 ].filter((l): l is { label: string; href: string } => Boolean(l));
 ---

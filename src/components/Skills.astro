@@ -4,11 +4,15 @@
  * A skill with a category gets a link to matching work, but only when that category has projects.
  */
 import { about } from '../lib/data';
-import { visibleProjects } from '../lib/projects';
+import { showcase } from '../lib/data';
 
-const projects = await visibleProjects();
-const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-const hasWork = (c?: string) => !!c && projects.some((p) => p.data.category === c && p.data.featured);
+/** Where each skill's "see the work" link goes. Showcase links only appear when that tab has items. */
+const has = (key: string) => showcase.some((c) => c.key === key);
+const links: Record<string, { label: string; href: string } | undefined> = {
+  'Short-Form Video': has('reels') ? { label: 'See video reels', href: '/?work=reels#work' } : undefined,
+  'Social Media & Design': has('statics') ? { label: 'See statics', href: '/?work=statics#work' } : undefined,
+  'UGC & Influencer': { label: 'See the case studies', href: '/#case-studies' },
+};
 ---
 
 <section id="skills" class="skills" aria-labelledby="skills-title">
@@ -25,9 +29,9 @@ const hasWork = (c?: string) => !!c && projects.some((p) => p.data.category === 
             <span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
             <h3>{s.title}</h3>
             <p>{s.text}</p>
-            {hasWork(s.category) && (
-              <a class="see" href={`/?work=${slugify(s.category!)}#work`}>
-                See {s.category} work <span aria-hidden="true">&rarr;</span>
+            {s.category && links[s.category] && (
+              <a class="see" href={links[s.category]!.href}>
+                {links[s.category]!.label} <span aria-hidden="true">&rarr;</span>
               </a>
             )}
           </li>

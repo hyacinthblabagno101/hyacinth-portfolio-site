@@ -1,0 +1,448 @@
+---
+/**
+ * Work showcase: one tab per content type (reels, ads, AI, animations, statics, stories).
+ * Items come from src/data/showcase.json; media loads from Cloudinary.
+ * - Hover (mouse only): images lift, videos play a short silent preview.
+ * - Click: opens a viewer with the full video (with sound) or the full image.
+ * - Each tab shows the first few items, with a button to show the rest.
+ * Without JavaScript, every tile is a plain link to the full media file.
+ */
+import { showcase } from '../lib/data';
+import { imageUrl, imageSrcset, videoUrl, posterFor, videoPreviewUrl, aspectToSize } from '../lib/cloudinary';
+
+/** How many items each tab shows before "Show all": two full rows on a laptop screen. */
+const initialFor = (key: string) => (key === 'statics' ? 8 : 10);
+
+/** Tile shape per tab, so each grid stays even. */
+const tileAspect = (key: string) => (key === 'statics' ? '4:5' : '9:16');
+const sizes = '(min-width: 80rem) 15rem, (min-width: 64rem) 22vw, (min-width: 40rem) 30vw, 46vw';
+
+const tabs = showcase.map((c) => {
+  const aspect = tileAspect(c.key);
+  const { width, height } = aspectToSize(aspect, 480);
+  return {
+    ...c,
+    aspect,
+    tiles: c.items.map((i) => {
+      const isVideo = i.kind === 'video';
+      return {
+        ...i,
+        width,
+        height,
+        poster: isVideo ? posterFor({ id: i.media }, 480, aspect) : imageUrl(i.media, 480, aspect),
+        srcset: isVideo
+          ? [320, 480, 720].map((w) => `${posterFor({ id: i.media }, w, aspect)} ${w}w`).join(', ')
+          : imageSrcset(i.media, aspect, [320, 480, 720]),
+        preview: isVideo ? videoPreviewUrl(i.media, 360, aspect) : undefined,
+        full: isVideo ? videoUrl(i.media) : imageUrl(i.media, 1600),
+        fullPoster: isVideo ? posterFor({ id: i.media }, 720) : undefined,
+      };
+    }),
+  };
+});
+---
+
+<section id="work" class="showcase" aria-labelledby="work-title">
+  <div class="wrap">
+    <header class="head reveal">
+      <p class="eyebrow">Selected work</p>
+      <h2 id="work-title">Work I've planned, made, and managed</h2>
+      <p class="lede">
+        Reels, ads, AI content, statics, and stories for brands in beauty, fashion, food, wellness, and e-commerce.
+        Hover to preview, select to view it in full.
+      </p>
+    </header>
+
+    <div class="tabs reveal" role="tablist" aria-label="Type of work" data-tabs>
+      {
+        tabs.map((t, n) => (
+          <button
+            type="button"
+            role="tab"
+            id={`tab-${t.key}`}
+            aria-controls={`panel-${t.key}`}
+            aria-selected={n === 0 ? 'true' : 'false'}
+            tabindex={n === 0 ? 0 : -1}
+            data-tab={t.key}
+          >
+            {t.label}
+            <span class="count">{t.tiles.length}</span>
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      tabs.map((t, n) => (
+        <div class="panel" role="tabpanel" id={`panel-${t.key}`} aria-labelledby={`tab-${t.key}`} data-panel={t.key} hidden={n !== 0}>
+          <ul class:list={['grid', t.aspect === '4:5' ? 'grid-feed' : 'grid-tall']} role="list">
+            {t.tiles.map((i, k) => (
+              <li class:list={['tile', { extra: k >= initialFor(t.key) }]} style={`--i: ${k % initialFor(t.key)}`}>
+                <a
+                  class="tile-link"
+                  href={i.full}
+                  data-kind={i.kind}
+                  data-full={i.full}
+                  data-poster={i.fullPoster}
+                  data-preview={i.preview}
+                  data-title={i.title}
+                  data-brand={i.brand}
+                  data-alt={i.alt}
+                >
+                  <span class="frame" style={`aspect-ratio: ${t.aspect.replace(':', ' / ')}`}>
+                    <img
+                      src={i.poster}
+                      srcset={i.srcset}
+                      sizes={sizes}
+                      width={i.width}
+                      height={i.height}
+                      alt={i.alt}
+                      loading={n === 0 && k < 5 ? 'eager' : 'lazy'}
+                      decoding="async"
+                    />
+                    {i.kind === 'video' && (
+                      <span class="play" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="14" height="14"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
+                      </span>
+                    )}
+                    <span class="overlay" aria-hidden="true">
+                      {i.brand && <span class="brand">{i.brand}</span>}
+                      <span class="title">{i.title}</span>
+                    </span>
+                  </span>
+                  <span class="visually-hidden">
+                    {i.kind === 'video' ? 'Play video: ' : 'View image: '}
+                    {i.title}{i.brand ? `, ${i.brand}` : ''}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          {t.tiles.length > initialFor(t.key) && (
+            <button type="button" class="more" aria-expanded="false" data-more>
+              Show all {t.tiles.length} <span class="visually-hidden">{t.label}</span>
+              <span aria-hidden="true">&darr;</span>
+            </button>
+          )}
+        </div>
+      ))
+    }
+  </div>
+
+  <dialog class="viewer" aria-labelledby="viewer-title" data-viewer>
+    <div class="viewer-inner">
+      <div class="viewer-media" data-viewer-media></div>
+      <div class="viewer-bar">
+        <p class="viewer-text">
+          <span class="viewer-brand" data-viewer-brand></span>
+          <span id="viewer-title" class="viewer-title" data-viewer-title></span>
+        </p>
+        <div class="viewer-nav">
+          <button type="button" data-viewer-prev aria-label="Previous">&larr;</button>
+          <button type="button" data-viewer-next aria-label="Next">&rarr;</button>
+          <button type="button" class="close" data-viewer-close aria-label="Close">&times;</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</section>
+
+<style>
+  .showcase { padding-block: var(--section); }
+  .head { display: grid; gap: 1rem; max-width: 46rem; margin-bottom: 2.5rem; }
+  .lede { color: var(--text-muted); }
+
+  /* Tabs: a quiet underline that slides to the active tab */
+  .tabs {
+    display: flex; gap: 0.25rem 1.75rem; flex-wrap: wrap;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 2rem;
+  }
+  /* Phones: one row you can swipe sideways, instead of tabs wrapping onto several lines */
+  @media (max-width: 47.99rem) {
+    .tabs {
+      flex-wrap: nowrap; gap: 1.5rem;
+      overflow-x: auto; scrollbar-width: none;
+      margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter);
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tabs button { flex-shrink: 0; white-space: nowrap; }
+  }
+  .tabs button {
+    position: relative;
+    display: inline-flex; align-items: baseline; gap: 0.4rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 0;
+    background: none; border: 0; cursor: pointer;
+    font: inherit; font-weight: 600; font-size: var(--step-small);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color 0.25s ease;
+  }
+  .tabs button::after {
+    content: '';
+    position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+    background: var(--burgundy);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .tabs button:hover { color: var(--burgundy); }
+  .tabs button[aria-selected='true'] { color: var(--burgundy); }
+  .tabs button[aria-selected='true']::after { transform: scaleX(1); }
+  .count { font-weight: 400; letter-spacing: 0; color: var(--rust); font-size: 0.75rem; }
+
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+  .grid-tall { grid-template-columns: repeat(2, 1fr); }
+  .grid-feed { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 40rem) {
+    .grid { gap: 1rem; }
+    .grid-tall { grid-template-columns: repeat(3, 1fr); }
+    .grid-feed { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 64rem) {
+    .grid-tall { grid-template-columns: repeat(5, 1fr); }
+    .grid-feed { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .tile.extra { display: none; }
+  .panel[data-expanded] .tile.extra { display: block; }
+
+  .tile-link { display: block; color: inherit; text-decoration: none; border-radius: var(--radius); }
+  .frame {
+    position: relative; display: block; overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--beige);
+  }
+  .frame img, .frame :global(video) {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .frame :global(video) { opacity: 0; transition: opacity 0.35s ease; }
+  .frame :global(video.playing) { opacity: 1; }
+
+  .play {
+    position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
+    display: grid; place-items: center;
+    width: 1.9rem; height: 1.9rem; border-radius: 50%;
+    background: rgb(35 24 21 / 0.55); color: var(--cream);
+    backdrop-filter: blur(4px);
+    transition: opacity 0.3s ease;
+  }
+  .overlay {
+    position: absolute; inset: auto 0 0 0; z-index: 2;
+    display: grid; gap: 0.15rem;
+    padding: 2.5rem 0.85rem 0.85rem;
+    background: linear-gradient(to top, rgb(35 24 21 / 0.82), rgb(35 24 21 / 0));
+    color: var(--cream);
+    opacity: 0; transform: translateY(6px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .brand { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bisque); }
+  .title { font-family: var(--font-serif); font-size: 1.125rem; line-height: 1.15; }
+
+  /* Hover and keyboard focus show the same details */
+  .tile-link:hover .frame img, .tile-link:focus-visible .frame img { transform: scale(1.04); }
+  .tile-link:hover .overlay, .tile-link:focus-visible .overlay { opacity: 1; transform: none; }
+  .tile-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+  /* Touch screens can't hover, so the title is always shown there */
+  @media (hover: none) { .overlay { opacity: 1; transform: none; padding-top: 2rem; } .title { font-size: 1rem; } }
+
+  .more {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin: 2rem auto 0;
+    min-height: 2.75rem; padding: 0.6rem 1.4rem;
+    background: transparent; color: var(--burgundy);
+    border: 1px solid var(--burgundy); border-radius: 999px;
+    font: inherit; font-weight: 600; font-size: var(--step-small); cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  .more:hover { background: var(--burgundy); color: var(--cream); }
+  .panel[data-expanded] .more { display: none; }
+
+  /* Staggered fade-in when a tab opens or more items are shown */
+  @media (prefers-reduced-motion: no-preference) {
+    .panel.animate .tile { animation: tile-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; animation-delay: calc(var(--i, 0) * 40ms); }
+    @keyframes tile-in { from { opacity: 0; transform: translateY(10px); } }
+  }
+
+  /* Viewer */
+  .viewer {
+    width: min(100vw - 2rem, 64rem); max-height: calc(100vh - 2rem);
+    padding: 0; border: 0; border-radius: 6px;
+    background: var(--java); color: var(--cream);
+  }
+  .viewer::backdrop { background: rgb(35 24 21 / 0.86); backdrop-filter: blur(3px); }
+  .viewer[open] { animation: viewer-in 0.3s ease; }
+  @keyframes viewer-in { from { opacity: 0; transform: scale(0.98); } }
+  .viewer-inner { display: grid; grid-template-rows: 1fr auto; max-height: calc(100vh - 2rem); }
+  .viewer-media { display: grid; place-items: center; min-height: 0; background: #000; }
+  .viewer-media :global(img), .viewer-media :global(video) {
+    max-width: 100%; max-height: calc(100vh - 7rem); width: auto; height: auto; object-fit: contain;
+  }
+  .viewer-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem 1rem; }
+  .viewer-text { margin: 0; display: grid; gap: 0.1rem; min-width: 0; }
+  .viewer-brand { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bisque); }
+  .viewer-title { font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.2; }
+  .viewer-nav { display: flex; gap: 0.4rem; flex-shrink: 0; }
+  .viewer-nav button {
+    width: 2.75rem; height: 2.75rem; border-radius: 50%;
+    background: rgb(248 241 231 / 0.1); color: var(--cream);
+    border: 1px solid rgb(248 241 231 / 0.25);
+    font-size: 1.15rem; cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .viewer-nav button:hover { background: rgb(248 241 231 / 0.22); }
+  .viewer-nav button:focus-visible { outline: 2px solid var(--chambray); outline-offset: 2px; }
+</style>
+
+<script>
+  const tablist = document.querySelector<HTMLElement>('[data-tabs]');
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+  const panels = [...document.querySelectorAll<HTMLElement>('[data-panel]')];
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+  function select(tab: HTMLButtonElement, focus = false) {
+    tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+    });
+    panels.forEach((p) => {
+      const on = p.dataset.panel === tab.dataset.tab;
+      p.hidden = !on;
+      if (on) {
+        p.classList.remove('animate');
+        void p.offsetWidth; // restart the fade-in
+        p.classList.add('animate');
+      }
+    });
+    if (focus) tab.focus();
+    // On phones the tab row scrolls sideways; keep the chosen tab in view
+    tablist?.scrollTo({ left: tab.offsetLeft - tablist.offsetLeft - 16, behavior: reduce.matches ? 'auto' : 'smooth' });
+  }
+
+  tablist?.addEventListener('click', (e) => {
+    const tab = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-tab]');
+    if (tab) select(tab);
+  });
+  // Arrow keys move between tabs (standard tab pattern)
+  tablist?.addEventListener('keydown', (e) => {
+    const i = tabs.indexOf(document.activeElement as HTMLButtonElement);
+    if (i < 0) return;
+    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+    if (next === undefined) return;
+    e.preventDefault();
+    select(tabs[(next + tabs.length) % tabs.length], true);
+  });
+  // ?work=statics opens that tab (used by links in "What I do")
+  const preset = new URLSearchParams(location.search).get('work');
+  const presetTab = tabs.find((t) => t.dataset.tab === preset);
+  if (presetTab) select(presetTab);
+
+  // "Show all": reveal the rest and move focus to the first new item
+  document.querySelectorAll<HTMLButtonElement>('[data-more]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const panel = btn.closest<HTMLElement>('[data-panel]')!;
+      panel.dataset.expanded = '';
+      btn.setAttribute('aria-expanded', 'true');
+      panel.classList.remove('animate');
+      void panel.offsetWidth;
+      panel.classList.add('animate');
+      panel.querySelector<HTMLElement>('.tile.extra .tile-link')?.focus({ preventScroll: true });
+    });
+  });
+
+  // Hover previews: a short silent loop, loaded only when the pointer arrives
+  document.querySelectorAll<HTMLAnchorElement>('.tile-link[data-preview]').forEach((link) => {
+    let video: HTMLVideoElement | null = null;
+    link.addEventListener('pointerenter', () => {
+      if (!canHover.matches || reduce.matches) return;
+      const frame = link.querySelector('.frame')!;
+      if (!video) {
+        video = document.createElement('video');
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.preload = 'auto';
+        video.setAttribute('aria-hidden', 'true');
+        video.src = link.dataset.preview!;
+        video.addEventListener('playing', () => video?.classList.add('playing'));
+        frame.append(video);
+      }
+      video.play().catch(() => {});
+    });
+    link.addEventListener('pointerleave', () => {
+      if (!video) return;
+      video.pause();
+      video.classList.remove('playing');
+    });
+  });
+
+  // Viewer
+  const viewer = document.querySelector<HTMLDialogElement>('[data-viewer]');
+  const media = viewer?.querySelector<HTMLElement>('[data-viewer-media]');
+  const titleEl = viewer?.querySelector<HTMLElement>('[data-viewer-title]');
+  const brandEl = viewer?.querySelector<HTMLElement>('[data-viewer-brand]');
+  let list: HTMLAnchorElement[] = [];
+  let index = 0;
+  let opener: HTMLElement | null = null;
+
+  function show(i: number) {
+    if (!media || !titleEl || !brandEl) return;
+    index = (i + list.length) % list.length;
+    const d = list[index].dataset;
+    media.replaceChildren();
+    if (d.kind === 'video') {
+      const v = document.createElement('video');
+      v.controls = true;
+      v.playsInline = true;
+      v.autoplay = !reduce.matches;
+      v.preload = 'auto';
+      if (d.poster) v.poster = d.poster;
+      v.src = d.full!;
+      v.setAttribute('aria-label', d.alt ?? '');
+      media.append(v);
+    } else {
+      const img = document.createElement('img');
+      img.src = d.full!;
+      img.alt = d.alt ?? '';
+      media.append(img);
+    }
+    titleEl.textContent = d.title ?? '';
+    brandEl.textContent = d.brand ?? '';
+  }
+
+  function close() {
+    media?.replaceChildren(); // stops any playing video
+    viewer?.close();
+  }
+
+  document.querySelectorAll<HTMLAnchorElement>('.tile-link').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      if (!viewer || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault();
+      const panel = link.closest<HTMLElement>('[data-panel]')!;
+      list = [...panel.querySelectorAll<HTMLAnchorElement>('.tile-link')].filter((a) => a.offsetParent !== null);
+      opener = link;
+      show(list.indexOf(link));
+      viewer.showModal();
+      viewer.querySelector<HTMLButtonElement>('[data-viewer-close]')?.focus();
+    });
+  });
+
+  viewer?.querySelector('[data-viewer-prev]')?.addEventListener('click', () => show(index - 1));
+  viewer?.querySelector('[data-viewer-next]')?.addEventListener('click', () => show(index + 1));
+  viewer?.querySelector('[data-viewer-close]')?.addEventListener('click', close);
+  viewer?.addEventListener('keydown', (e) => {
+    if ((e.target as HTMLElement).tagName === 'VIDEO') return; // arrow keys seek inside the video
+    if (e.key === 'ArrowRight') show(index + 1);
+    if (e.key === 'ArrowLeft') show(index - 1);
+  });
+  viewer?.addEventListener('click', (e) => { if (e.target === viewer) close(); }); // click outside
+  viewer?.addEventListener('close', () => {
+    media?.replaceChildren();
+    opener?.focus({ preventScroll: true });
+  });
+</script>
