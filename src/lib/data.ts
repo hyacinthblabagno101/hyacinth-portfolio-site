@@ -21,6 +21,8 @@ const siteSchema = z.object({
   domain: z.string(),
   email: z.string(),
   location: z.string(),
+  /** Short status for the badge on the profile card. Hidden while it's a [PLACEHOLDER]. */
+  availability: z.string(),
   resumeFile: z.string(),
   /** The resume download only appears on the live site once this is true. */
   resumeConfirmed: z.boolean(),
@@ -117,6 +119,8 @@ import proofJson from '../data/proof.json';
 const showcaseData = parse(
   z.object({
     categories: z.array(z.object({ key: z.string(), label: z.string() })),
+    grouped: z.array(z.string()),
+    roles: z.record(z.string(), z.string()),
     items: z.array(
       z.object({
         id: z.string(),
@@ -137,6 +141,9 @@ const showcaseData = parse(
   'showcase.json',
 );
 export type ShowcaseItem = (typeof showcaseData.items)[number];
+/** Tabs that show one cover per brand, and the "my role" line for each brand. */
+export const groupedTabs = new Set(showcaseData.grouped);
+export const roleFor = (brand?: string) => (brand ? showcaseData.roles[brand] : undefined);
 /** Categories that have at least one visible item, each with its items (featured first). */
 export const showcase = showcaseData.categories
   .map((c) => ({

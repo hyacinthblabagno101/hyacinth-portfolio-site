@@ -68,6 +68,14 @@ The "Selected work" section is built from `src/data/showcase.json`. Each item is
 - Each tab shows its first 10 items (8 for statics), plus a "Show all" button.
 - Hovering a video plays a silent 6-second preview; clicking opens the full video with sound.
 
+- Statics and stories (listed under `grouped`) show one cover per brand. Selecting it opens the whole collection. A brand's designs board (`board: true`) is used as the cover.
+- `roles` holds the short "My role" line shown in the viewer for each brand. Brands with no line show none.
+- The hero's "A look at recent work" strip uses the `featured` items, plus the first ad, animation and two stories.
+
+**Profile card (hero):** uses the hero photo, your name and role, LinkedIn and email icons, "Download CV" (once the resume is confirmed) and "Contact me". To show the availability badge, set `availability` in `site.json`, for example `"Open to full-time roles"`.
+
+**Tool icons:** matched by name in `src/lib/toolIcons.ts`. Brands that aren't in the Simple Icons library (Adobe, Microsoft and a few others) use lettered tiles in their brand colors.
+
 Case studies, client feedback and certifications are in `src/data/proof.json`. Feedback must be copied word for word from the client.
 
 ## Add a project

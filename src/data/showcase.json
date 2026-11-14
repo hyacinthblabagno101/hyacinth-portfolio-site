@@ -1,5 +1,5 @@
 {
-  "_note": "Showcase items. Copied from the Cinfluence site's curated list (cinfluence-portfolio/src/data/work.json). Media IDs are Cloudinary public IDs in cloud ktee3ije. Set \"hidden\": true on an item to leave it off the site. Featured items show first in their category.",
+  "_note": "Showcase items. Copied from the Cinfluence site's curated list (cinfluence-portfolio/src/data/work.json). Media IDs are Cloudinary public IDs in cloud ktee3ije. Set \"hidden\": true on an item to leave it off the site. Featured items show first in their tab. Tabs listed in \"grouped\" show one cover per brand that opens the whole collection. \"roles\" is the short line about my part, shown for every item from that brand; brands without a line show none.",
   "categories": [
     {
       "key": "reels",
@@ -26,6 +26,22 @@
       "label": "Stories"
     }
   ],
+  "grouped": [
+    "statics",
+    "stories"
+  ],
+  "roles": {
+    "iLuxe Aesthetic Center": "Brand & Growth Marketing Manager. I led the brand, content, ads, and influencer and UGC marketing.",
+    "Hair Solution Nails and Spa": "Brand & Growth Marketing Manager. I built the brand and ran monthly marketing, ads, and promotions.",
+    "Proper Ecom": "AI Content Production & E-commerce Marketing Specialist. I produced AI images and video for social, ads, and listings.",
+    "Winnie & Co.": "Creative Content & E-commerce Specialist. I produced short-form video and graphics for Reels, Stories, and ads.",
+    "Style State": "E-commerce Content & Digital Marketing Specialist. I produced and scheduled social content and campaign creative.",
+    "Epic Tales": "Social Media & Influencer Marketing Manager. I ran the content calendar and influencer and UGC campaigns.",
+    "Rabble": "Social Media & Influencer Marketing Manager. I ran the content calendar and influencer and UGC campaigns.",
+    "T-James Sporty Bar": "Freelance social media manager. I handled the bar's social content, including graphics, captions, and video.",
+    "Dada's Mango": "Freelance social media manager. I handled the shop's social content, including graphics and captions.",
+    "Hyacinth Gadgets": "Social Media Specialist. I planned and made the shop's social content."
+  },
   "items": [
     {
       "id": "reel-five-things",

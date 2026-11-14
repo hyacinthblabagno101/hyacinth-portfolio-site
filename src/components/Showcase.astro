@@ -2,43 +2,72 @@
 /**
  * Work showcase: one tab per content type (reels, ads, AI, animations, statics, stories).
  * Items come from src/data/showcase.json; media loads from Cloudinary.
+ * - Statics and stories (the "grouped" tabs) show one cover per brand that opens the whole collection.
  * - Hover (mouse only): images lift, videos play a short silent preview.
- * - Click: opens a viewer with the full video (with sound) or the full image.
- * - Each tab shows the first few items, with a button to show the rest.
+ * - Click: opens the viewer with the full video (with sound) or full image, plus my role for that brand.
+ * - Other tabs show the first 10 items, with a button to show the rest.
  * Without JavaScript, every tile is a plain link to the full media file.
+ * The viewer also opens from any .tile-link elsewhere on the page (e.g. the preview strip in the hero).
  */
-import { showcase } from '../lib/data';
-import { imageUrl, imageSrcset, videoUrl, posterFor, videoPreviewUrl, aspectToSize } from '../lib/cloudinary';
+import { showcase, groupedTabs, roleFor } from '../lib/data';
+import { viewerEntry, tileMedia } from '../lib/showcaseMedia';
 
-/** How many items each tab shows before "Show all": two full rows on a laptop screen. */
-const initialFor = (key: string) => (key === 'statics' ? 8 : 10);
+const INITIAL = 10;
 
 /** Tile shape per tab, so each grid stays even. */
 const tileAspect = (key: string) => (key === 'statics' ? '4:5' : '9:16');
 const sizes = '(min-width: 80rem) 15rem, (min-width: 64rem) 22vw, (min-width: 40rem) 30vw, 46vw';
+const noun = (key: string, n: number) => (key === 'stories' ? (n === 1 ? 'story' : 'stories') : n === 1 ? 'design' : 'designs');
+
+type Tile = {
+  key: string;
+  label: string;
+  sub?: string;
+  media: ReturnType<typeof tileMedia>;
+  alt: string;
+  kind: 'image' | 'video';
+  entry: ReturnType<typeof viewerEntry>;
+  items?: string;
+  count?: number;
+};
 
 const tabs = showcase.map((c) => {
   const aspect = tileAspect(c.key);
-  const { width, height } = aspectToSize(aspect, 480);
-  return {
-    ...c,
-    aspect,
-    tiles: c.items.map((i) => {
-      const isVideo = i.kind === 'video';
-      return {
-        ...i,
-        width,
-        height,
-        poster: isVideo ? posterFor({ id: i.media }, 480, aspect) : imageUrl(i.media, 480, aspect),
-        srcset: isVideo
-          ? [320, 480, 720].map((w) => `${posterFor({ id: i.media }, w, aspect)} ${w}w`).join(', ')
-          : imageSrcset(i.media, aspect, [320, 480, 720]),
-        preview: isVideo ? videoPreviewUrl(i.media, 360, aspect) : undefined,
-        full: isVideo ? videoUrl(i.media) : imageUrl(i.media, 1600),
-        fullPoster: isVideo ? posterFor({ id: i.media }, 720) : undefined,
-      };
-    }),
-  };
+  let tiles: Tile[];
+  if (groupedTabs.has(c.key)) {
+    // One tile per brand, biggest collections first. A designs board (collage) makes the best cover.
+    const byBrand = new Map<string, typeof c.items>();
+    c.items.forEach((i) => byBrand.set(i.brand ?? 'More work', [...(byBrand.get(i.brand ?? 'More work') ?? []), i]));
+    tiles = [...byBrand.entries()]
+      .sort((a, b) => b[1].length - a[1].length)
+      .map(([brand, items]) => {
+        const ordered = [...items.filter((i) => i.board), ...items.filter((i) => !i.board)];
+        const cover = ordered[0];
+        return {
+          key: `${c.key}-${brand}`,
+          label: brand,
+          // A single designs board is a collage of many posts, so call it that rather than "1 design"
+          sub: items.length === 1 && cover.board ? 'Design board' : `${items.length} ${noun(c.key, items.length)}`,
+          media: tileMedia(cover, aspect),
+          alt: cover.alt,
+          kind: 'image',
+          entry: viewerEntry(cover),
+          items: JSON.stringify(ordered.map(viewerEntry)),
+          count: items.length > 1 ? items.length : undefined,
+        };
+      });
+  } else {
+    tiles = c.items.map((i) => ({
+      key: i.id,
+      label: i.title,
+      sub: i.brand,
+      media: tileMedia(i, aspect),
+      alt: i.alt,
+      kind: i.kind,
+      entry: viewerEntry(i),
+    }));
+  }
+  return { ...c, aspect, grouped: groupedTabs.has(c.key), tiles, total: c.items.length };
 });
 ---
 
@@ -49,7 +78,7 @@ const tabs = showcase.map((c) => {
       <h2 id="work-title">Work I've planned, made, and managed</h2>
       <p class="lede">
         Reels, ads, AI content, statics, and stories for brands in beauty, fashion, food, wellness, and e-commerce.
-        Hover to preview, select to view it in full.
+        Statics and stories are grouped by brand. Select anything to see it in full, with my role on it.
       </p>
     </header>
 
@@ -66,7 +95,7 @@ const tabs = showcase.map((c) => {
             data-tab={t.key}
           >
             {t.label}
-            <span class="count">{t.tiles.length}</span>
+            <span class="count">{t.total}</span>
           </button>
         ))
       }
@@ -75,27 +104,29 @@ const tabs = showcase.map((c) => {
     {
       tabs.map((t, n) => (
         <div class="panel" role="tabpanel" id={`panel-${t.key}`} aria-labelledby={`tab-${t.key}`} data-panel={t.key} hidden={n !== 0}>
-          <ul class:list={['grid', t.aspect === '4:5' ? 'grid-feed' : 'grid-tall']} role="list">
+          <ul class:list={['grid', t.aspect === '4:5' ? 'grid-feed' : 'grid-tall']} role="list" data-viewer-list>
             {t.tiles.map((i, k) => (
-              <li class:list={['tile', { extra: k >= initialFor(t.key) }]} style={`--i: ${k % initialFor(t.key)}`}>
+              <li class:list={['tile', { extra: !t.grouped && k >= INITIAL }]} style={`--i: ${k % INITIAL}`}>
                 <a
-                  class="tile-link"
-                  href={i.full}
-                  data-kind={i.kind}
-                  data-full={i.full}
-                  data-poster={i.fullPoster}
-                  data-preview={i.preview}
-                  data-title={i.title}
-                  data-brand={i.brand}
-                  data-alt={i.alt}
+                  class:list={['tile-link', { collection: !!i.items }]}
+                  href={i.entry.full}
+                  data-kind={i.entry.kind}
+                  data-full={i.entry.full}
+                  data-poster={i.entry.poster}
+                  data-preview={i.media.preview}
+                  data-title={i.entry.title}
+                  data-brand={i.entry.brand}
+                  data-alt={i.entry.alt}
+                  data-role={i.entry.role}
+                  data-items={i.items}
                 >
                   <span class="frame" style={`aspect-ratio: ${t.aspect.replace(':', ' / ')}`}>
                     <img
-                      src={i.poster}
-                      srcset={i.srcset}
+                      src={i.media.src}
+                      srcset={i.media.srcset}
                       sizes={sizes}
-                      width={i.width}
-                      height={i.height}
+                      width={i.media.width}
+                      height={i.media.height}
                       alt={i.alt}
                       loading={n === 0 && k < 5 ? 'eager' : 'lazy'}
                       decoding="async"
@@ -105,20 +136,36 @@ const tabs = showcase.map((c) => {
                         <svg viewBox="0 0 24 24" width="14" height="14"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
                       </span>
                     )}
+                    {i.count && (
+                      <span class="stack" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="13" height="13"><path d="M4 8h12v12H4zM8 4h12v12" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+                        {i.count}
+                      </span>
+                    )}
                     <span class="overlay" aria-hidden="true">
-                      {i.brand && <span class="brand">{i.brand}</span>}
-                      <span class="title">{i.title}</span>
+                      {i.items ? (
+                        <>
+                          <span class="title">{i.label}</span>
+                          <span class="brand">{i.sub} &middot; View collection</span>
+                        </>
+                      ) : (
+                        <>
+                          {i.sub && <span class="brand">{i.sub}</span>}
+                          <span class="title">{i.label}</span>
+                        </>
+                      )}
                     </span>
                   </span>
                   <span class="visually-hidden">
-                    {i.kind === 'video' ? 'Play video: ' : 'View image: '}
-                    {i.title}{i.brand ? `, ${i.brand}` : ''}
+                    {i.items
+                      ? `Open ${i.label} collection, ${i.sub}`
+                      : `${i.kind === 'video' ? 'Play video' : 'View image'}: ${i.label}${i.sub ? `, ${i.sub}` : ''}`}
                   </span>
                 </a>
               </li>
             ))}
           </ul>
-          {t.tiles.length > initialFor(t.key) && (
+          {!t.grouped && t.tiles.length > INITIAL && (
             <button type="button" class="more" aria-expanded="false" data-more>
               Show all {t.tiles.length} <span class="visually-hidden">{t.label}</span>
               <span aria-hidden="true">&darr;</span>
@@ -133,10 +180,11 @@ const tabs = showcase.map((c) => {
     <div class="viewer-inner">
       <div class="viewer-media" data-viewer-media></div>
       <div class="viewer-bar">
-        <p class="viewer-text">
-          <span class="viewer-brand" data-viewer-brand></span>
-          <span id="viewer-title" class="viewer-title" data-viewer-title></span>
-        </p>
+        <div class="viewer-text">
+          <p class="viewer-brand"><span data-viewer-brand></span> <span class="viewer-pos" data-viewer-pos></span></p>
+          <p id="viewer-title" class="viewer-title" data-viewer-title></p>
+          <p class="viewer-role" data-viewer-role></p>
+        </div>
         <div class="viewer-nav">
           <button type="button" data-viewer-prev aria-label="Previous">&larr;</button>
           <button type="button" data-viewer-next aria-label="Next">&rarr;</button>
@@ -229,6 +277,14 @@ const tabs = showcase.map((c) => {
     backdrop-filter: blur(4px);
     transition: opacity 0.3s ease;
   }
+  .stack {
+    position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.25rem 0.55rem; border-radius: 999px;
+    background: rgb(35 24 21 / 0.6); color: var(--cream);
+    font-size: 0.75rem; font-weight: 600;
+    backdrop-filter: blur(4px);
+  }
   .overlay {
     position: absolute; inset: auto 0 0 0; z-index: 2;
     display: grid; gap: 0.15rem;
@@ -246,6 +302,8 @@ const tabs = showcase.map((c) => {
   .tile-link:hover .overlay, .tile-link:focus-visible .overlay { opacity: 1; transform: none; }
   .tile-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
   /* Touch screens can't hover, so the title is always shown there */
+  /* Brand collections always show their name, since the cover alone doesn't say whose work it is */
+  .collection .overlay { opacity: 1; transform: none; }
   @media (hover: none) { .overlay { opacity: 1; transform: none; padding-top: 2rem; } .title { font-size: 1rem; } }
 
   .more {
@@ -282,9 +340,13 @@ const tabs = showcase.map((c) => {
   }
   .viewer-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem 1rem; }
   .viewer-text { margin: 0; display: grid; gap: 0.1rem; min-width: 0; }
+  .viewer-text p { margin: 0; }
+  .viewer-pos { margin-left: 0.5rem; color: var(--beige); font-weight: 400; letter-spacing: 0.04em; }
+  .viewer-role { font-size: var(--step-small); color: var(--beige); max-width: 60ch; }
   .viewer-brand { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bisque); }
   .viewer-title { font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.2; }
   .viewer-nav { display: flex; gap: 0.4rem; flex-shrink: 0; }
+  .viewer-nav button[hidden] { display: none; }
   .viewer-nav button {
     width: 2.75rem; height: 2.75rem; border-radius: 50%;
     background: rgb(248 241 231 / 0.1); color: var(--cream);
@@ -354,12 +416,13 @@ const tabs = showcase.map((c) => {
     });
   });
 
-  // Hover previews: a short silent loop, loaded only when the pointer arrives
-  document.querySelectorAll<HTMLAnchorElement>('.tile-link[data-preview]').forEach((link) => {
+  // Hover previews: a short silent loop, loaded only when the pointer arrives (any tile on the page)
+  document.querySelectorAll<HTMLAnchorElement>('a.tile-link[data-preview]').forEach((link) => {
     let video: HTMLVideoElement | null = null;
     link.addEventListener('pointerenter', () => {
       if (!canHover.matches || reduce.matches) return;
-      const frame = link.querySelector('.frame')!;
+      const frame = link.querySelector('.frame');
+      if (!frame) return;
       if (!video) {
         video = document.createElement('video');
         video.muted = true;
@@ -380,19 +443,26 @@ const tabs = showcase.map((c) => {
     });
   });
 
-  // Viewer
+  // Viewer: shows one item at a time from a list (a tab's tiles, a brand collection, or the hero strip)
+  type Entry = { kind: string; full: string; poster?: string; title?: string; brand?: string; alt?: string; role?: string };
   const viewer = document.querySelector<HTMLDialogElement>('[data-viewer]');
   const media = viewer?.querySelector<HTMLElement>('[data-viewer-media]');
   const titleEl = viewer?.querySelector<HTMLElement>('[data-viewer-title]');
   const brandEl = viewer?.querySelector<HTMLElement>('[data-viewer-brand]');
-  let list: HTMLAnchorElement[] = [];
+  const roleEl = viewer?.querySelector<HTMLElement>('[data-viewer-role]');
+  const posEl = viewer?.querySelector<HTMLElement>('[data-viewer-pos]');
+  const prevBtn = viewer?.querySelector<HTMLButtonElement>('[data-viewer-prev]');
+  const nextBtn = viewer?.querySelector<HTMLButtonElement>('[data-viewer-next]');
+  let list: Entry[] = [];
   let index = 0;
   let opener: HTMLElement | null = null;
 
+  const entryOf = (a: HTMLElement): Entry => ({ ...(a.dataset as unknown as Entry) });
+
   function show(i: number) {
-    if (!media || !titleEl || !brandEl) return;
+    if (!media || !titleEl || !brandEl || !roleEl || !posEl) return;
     index = (i + list.length) % list.length;
-    const d = list[index].dataset;
+    const d = list[index];
     media.replaceChildren();
     if (d.kind === 'video') {
       const v = document.createElement('video');
@@ -401,17 +471,20 @@ const tabs = showcase.map((c) => {
       v.autoplay = !reduce.matches;
       v.preload = 'auto';
       if (d.poster) v.poster = d.poster;
-      v.src = d.full!;
+      v.src = d.full;
       v.setAttribute('aria-label', d.alt ?? '');
       media.append(v);
     } else {
       const img = document.createElement('img');
-      img.src = d.full!;
+      img.src = d.full;
       img.alt = d.alt ?? '';
       media.append(img);
     }
     titleEl.textContent = d.title ?? '';
     brandEl.textContent = d.brand ?? '';
+    roleEl.textContent = d.role ? `My role: ${d.role}` : '';
+    posEl.textContent = list.length > 1 ? `${index + 1} / ${list.length}` : '';
+    if (prevBtn && nextBtn) prevBtn.hidden = nextBtn.hidden = list.length < 2;
   }
 
   function close() {
@@ -419,24 +492,33 @@ const tabs = showcase.map((c) => {
     viewer?.close();
   }
 
-  document.querySelectorAll<HTMLAnchorElement>('.tile-link').forEach((link) => {
-    link.addEventListener('click', (e) => {
-      if (!viewer || e.metaKey || e.ctrlKey || e.shiftKey) return;
-      e.preventDefault();
-      const panel = link.closest<HTMLElement>('[data-panel]')!;
-      list = [...panel.querySelectorAll<HTMLAnchorElement>('.tile-link')].filter((a) => a.offsetParent !== null);
-      opener = link;
-      show(list.indexOf(link));
-      viewer.showModal();
-      viewer.querySelector<HTMLButtonElement>('[data-viewer-close]')?.focus();
-    });
+  // One listener for every tile on the page, including the preview strip in the hero
+  document.addEventListener('click', (e) => {
+    const link = (e.target as HTMLElement).closest<HTMLAnchorElement>('a.tile-link');
+    if (!link || !viewer || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    if (link.dataset.items) {
+      list = JSON.parse(link.dataset.items);
+      index = 0;
+    } else {
+      const scope = link.closest<HTMLElement>('[data-viewer-list]');
+      const links = scope
+        ? [...scope.querySelectorAll<HTMLAnchorElement>('a.tile-link:not([data-items])')].filter((a) => a.offsetParent !== null && !a.closest('[aria-hidden="true"]'))
+        : [link];
+      list = links.map(entryOf);
+      index = Math.max(0, links.indexOf(link));
+    }
+    opener = link;
+    show(index);
+    viewer.showModal();
+    viewer.querySelector<HTMLButtonElement>('[data-viewer-close]')?.focus();
   });
 
-  viewer?.querySelector('[data-viewer-prev]')?.addEventListener('click', () => show(index - 1));
-  viewer?.querySelector('[data-viewer-next]')?.addEventListener('click', () => show(index + 1));
+  prevBtn?.addEventListener('click', () => show(index - 1));
+  nextBtn?.addEventListener('click', () => show(index + 1));
   viewer?.querySelector('[data-viewer-close]')?.addEventListener('click', close);
   viewer?.addEventListener('keydown', (e) => {
-    if ((e.target as HTMLElement).tagName === 'VIDEO') return; // arrow keys seek inside the video
+    if ((e.target as HTMLElement).tagName === 'VIDEO' || list.length < 2) return; // arrow keys seek inside the video
     if (e.key === 'ArrowRight') show(index + 1);
     if (e.key === 'ArrowLeft') show(index - 1);
   });

@@ -1,32 +1,41 @@
 ---
 /**
- * Tools grouped by purpose, as text (no logos, no skill bars). Edit src/data/tools.json.
+ * Tools grouped by purpose, each with a recognizable icon and its name. Edit src/data/tools.json;
+ * icons are matched by name in src/lib/toolIcons.ts.
  * Hidden on the live site until tools.json has confirmed: true.
  */
 import { tools, showTools } from '../lib/data';
+import { toolIcon } from '../lib/toolIcons';
 
 const items = (list: (string | { name: string; check?: string })[]) =>
-  list.map((t) => (typeof t === 'string' ? { name: t, check: undefined } : t));
+  list.map((t) => (typeof t === 'string' ? { name: t, check: undefined } : t)).map((t) => ({ ...t, icon: toolIcon(t.name) }));
 ---
 
 {
   showTools && (
     <section id="tools" class="tools band-dark" aria-labelledby="tools-title">
       <div class="wrap">
-        <header class="head">
+        <header class="head reveal">
           <p class="eyebrow">Tools</p>
           <h2 id="tools-title">What I work with</h2>
           {!tools.confirmed && <p><span class="placeholder">Tool list needs your confirmation</span></p>}
         </header>
 
         <div class="groups">
-          {tools.groups.map((g) => (
-            <div class="group">
+          {tools.groups.map((g, n) => (
+            <div class="group reveal" style={`--delay: ${(n % 3) * 70}ms`}>
               <h3>{g.name}</h3>
               <ul role="list">
                 {items(g.tools).map((t) => (
-                  <li>
-                    {t.name}
+                  <li class="tool">
+                    <span class="badge" aria-hidden="true">
+                      {t.icon.type === 'icon' ? (
+                        <svg viewBox="0 0 24 24" width="18" height="18"><path d={t.icon.path} fill={t.icon.color} /></svg>
+                      ) : (
+                        <span class="mono" style={`background:${t.icon.bg};color:${t.icon.fg}`}>{t.icon.text}</span>
+                      )}
+                    </span>
+                    <span class="label">{t.name}</span>
                     {t.check && <span class="placeholder check">Check: {t.check}</span>}
                   </li>
                 ))}
@@ -54,13 +63,29 @@ const items = (list: (string | { name: string; check?: string })[]) =>
 
   .group { padding-top: 1.25rem; border-top: 1px solid var(--line); }
   .group h3 { font-size: 1.5rem; color: var(--bisque); }
-  ul { list-style: none; margin: 1rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  li {
-    padding: 0.35rem 0.75rem;
-    border: 1px solid rgb(248 241 231 / 0.28);
-    border-radius: 999px;
-    font-size: var(--step-small);
-    line-height: 1.4;
+  ul { list-style: none; margin: 1.1rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+
+  .tool {
+    display: grid; grid-template-columns: 2rem minmax(0, 1fr); align-items: center; gap: 0.35rem 0.6rem;
+    padding: 0.4rem 0.6rem 0.4rem 0.4rem;
+    border-radius: 8px;
+    font-size: var(--step-small); line-height: 1.3;
+    transition: background 0.25s ease;
   }
-  .check { display: block; margin-top: 0.35rem; font-size: 0.75rem; }
+  .tool:hover { background: rgb(248 241 231 / 0.07); }
+  .badge {
+    flex-shrink: 0;
+    display: grid; place-items: center;
+    width: 2rem; height: 2rem; border-radius: 7px;
+    background: var(--cream);
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .tool:hover .badge { transform: translateY(-2px) scale(1.06); }
+  .mono {
+    display: grid; place-items: center;
+    width: 100%; height: 100%; border-radius: 7px;
+    font-weight: 700; font-size: 0.75rem; letter-spacing: -0.01em;
+  }
+  .label { min-width: 0; }
+  .check { grid-column: 1 / -1; font-size: 0.75rem; }
 </style>
