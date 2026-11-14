@@ -1,10 +1,10 @@
 ---
 /**
- * Hero, laid out like a magazine opener:
- * 1. Masthead: my name, very large.
- * 2. Info bar: role, location, and availability (availability only once it's set in site.json).
- * 3. Spread: photo with a compact profile caption (name, role, LinkedIn, email, Download CV),
- *    the headline, intro and an index of the page, then a stack of real work that opens in the viewer.
+ * Hero, set like a social media portfolio cover:
+ * 1. A thin meta line: my role on the left, where I'm based (and availability, once it's set) on the right.
+ * 2. Big type: "SOCIAL media MANAGER".
+ * 3. Below: my intro and buttons, a stack of polaroids (my photo plus two pieces of work that open in the viewer),
+ *    and a column of facts counted straight from the site's own data, so they are always true.
  * Text comes from "hero" in src/data/site.json. Photo: src/assets/portrait-about.jpg.
  */
 import { Picture } from 'astro:assets';
@@ -13,119 +13,109 @@ import { site, about, filled, publicEmail, publishedSocials, resumeFile, showUnc
 import { viewerEntry, tileMedia } from '../lib/showcaseMedia';
 
 const { hero } = site;
-const [first, ...rest] = site.name.split(' ');
-const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-// "hands-on work" is set in rust italics; hyphenated words never split across lines
-const headlineHtml = escape(hero.headline)
-  .replace(/hands-on work/i, (m) => `<em>${m}</em>`)
-  .replace(/(\S+-\S+)/g, '<span class="nowrap">$1</span>');
-
 const availability = filled(site.availability);
 const shortRole = site.role.split('|')[0].trim();
-const location = site.location.replace(', Philippines', ', PH');
+const location = site.location;
 const linkedin = publishedSocials.find((s) => s.label === 'LinkedIn');
 const mailto = publicEmail ? `mailto:${publicEmail}?subject=${encodeURIComponent('Job opportunity')}` : undefined;
 
-const total = showcase.reduce((n, c) => n + c.items.length, 0);
-const index = [
-  { label: 'Selected work', href: '#work', count: `${total} pieces` },
-  { label: 'Case studies', href: '#case-studies', count: String(proof.caseStudies.length).padStart(2, '0') },
-  { label: 'Client feedback', href: '#feedback', count: String(proof.testimonials.length).padStart(2, '0') },
-  { label: 'Certifications', href: '#certifications', count: String(proof.certifications.length).padStart(2, '0') },
+const items = showcase.flatMap((c) => c.items);
+const brands = new Set(items.map((i) => i.brand).filter(Boolean));
+
+// Facts: every number is counted from the data files, never typed in by hand
+const facts = [
+  { value: brands.size, label: 'brands featured', href: '#selected' },
+  { value: proof.caseStudies.length, label: 'case studies', href: '#case-studies' },
+  { value: proof.certifications.length, label: 'certificates', href: '#certifications' },
 ];
 
-// Stack of real work beside the intro: one reel and two design boards
-const items = showcase.flatMap((c) => c.items);
+// Two polaroids of real work beside my photo
 const pick = (id: string) => items.find((i) => i.id === id);
-const stack = [pick('reel-ss-top-trends') ?? items[0], pick('board-properecom'), pick('board-rabble')]
+const polaroids = [pick('board-properecom'), pick('reel-ss-top-trends') ?? items[0]]
   .filter((i): i is NonNullable<typeof i> => !!i)
-  .map((i, n) => ({ entry: viewerEntry(i), media: tileMedia(i, n === 0 ? '9:16' : '4:5', [320, 480]), kind: i.kind, alt: i.alt }));
+  .map((i) => ({ entry: viewerEntry(i), media: tileMedia(i, i.kind === 'video' ? '9:16' : '4:5', [320, 480]), kind: i.kind, alt: i.alt }));
 ---
 
 <section class="hero" aria-labelledby="hero-title">
   <div class="wrap">
-    <h1 id="hero-title" class="mast rise">
-      <span>{first}</span>
-      <span class="indent">{rest.join(' ')}</span>
-    </h1>
-
-    <p class="info rise" style="--delay: 0.06s">
+    <p class="meta rise">
       <span>{shortRole}</span>
-      <span class="loc">{location}</span>
-      {availability ? <span class="status"><i aria-hidden="true" />{availability}</span> : showUnconfirmed && <span class="placeholder">{site.availability}</span>}
+      <span class="right">
+        <span class="loc">Based in the {location}</span>
+        {availability ? <span class="status"><i aria-hidden="true" />{availability}</span> : showUnconfirmed && <span class="placeholder">{site.availability}</span>}
+      </span>
     </p>
 
-    <div class="spread">
-      <figure class="photo rise" style="--delay: 0.1s">
-        <Picture
-          src={portrait}
-          alt={about.portraitAlt}
-          widths={[400, 640, 900]}
-          sizes="(min-width: 64rem) 28vw, (min-width: 40rem) 60vw, 92vw"
-          formats={['avif', 'webp']}
-          loading="eager"
-          fetchpriority="high"
-        />
-        <figcaption class="profile">
-          <span class="who">
-            <strong>{site.name}</strong>
-            <span>{shortRole}</span>
-          </span>
-          <span class="links">
-            {linkedin && (
-              <a href={linkedin.url} target="_blank" rel="me noopener" aria-label="LinkedIn (opens in a new tab)">
-                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z" /></svg>
-              </a>
-            )}
-            {mailto && (
-              <a href={mailto} aria-label={`Email ${publicEmail}`}>
-                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" d="M3 5h18v14H3zM3 6l9 7 9-7" /></svg>
-              </a>
-            )}
-            {resumeFile && <a class="cv" href={resumeFile} download>Download CV</a>}
-          </span>
-        </figcaption>
-      </figure>
+    <div class="title rise" style="--delay: 0.05s">
+      <h1 id="hero-title" class="mast">
+        <span class="visually-hidden">{site.name}, </span>
+        <span class="l1">Social <em>media</em></span>
+        <span class="l2">Manager</span>
+      </h1>
+    </div>
 
-      <div class="copy rise" style="--delay: 0.16s">
-        <p class="headline" set:html={headlineHtml} />
-        <p class="intro">{hero.intro}</p>
-        <ul class="index" role="list" aria-label="On this page">
-          {index.map((i) => (
-            <li><a href={i.href}><span>{i.label}</span><span class="n">{i.count}</span></a></li>
-          ))}
-        </ul>
+    <div class="below">
+      <div class="copy rise" style="--delay: 0.12s">
+        <p class="hi">Hi, I'm <em>Hyacinth.</em></p>
+        <p class="intro">{hero.intro.replace(/^I'm Hyacinth, a/, 'A')}</p>
         <div class="actions">
           <a class="btn btn-primary" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
           <a class="btn btn-ghost" href={hero.secondaryCta.href}>{hero.secondaryCta.label}</a>
         </div>
+        <p class="links">
+          {linkedin && <a href={linkedin.url} target="_blank" rel="me noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span><span aria-hidden="true">&#8599;</span></a>}
+          {mailto && <a href={mailto}>Email</a>}
+          {resumeFile && <a href={resumeFile} download>Download CV</a>}
+        </p>
       </div>
 
-      <ul class="stack rise" style="--delay: 0.22s" role="list" aria-label="Recent work" data-viewer-list>
-        {stack.map((s) => (
+      <div class="polaroids rise" style="--delay: 0.2s">
+        <figure class="card me">
+          <Picture
+            src={portrait}
+            alt={about.portraitAlt}
+            widths={[320, 480, 640]}
+            sizes="(min-width: 64rem) 15rem, 46vw"
+            formats={['avif', 'webp']}
+            loading="eager"
+            fetchpriority="high"
+          />
+          <figcaption>that's me</figcaption>
+        </figure>
+        <ul role="list" aria-label="Recent work" data-viewer-list>
+          {polaroids.map((p, n) => (
+            <li class:list={['card', `work-${n + 1}`]}>
+              <a
+                class="tile-link"
+                href={p.entry.full}
+                data-kind={p.entry.kind}
+                data-full={p.entry.full}
+                data-poster={p.entry.poster}
+                data-title={p.entry.title}
+                data-brand={p.entry.brand}
+                data-alt={p.entry.alt}
+                data-role={p.entry.role}
+              >
+                <span class="frame">
+                  <img src={p.media.src} srcset={p.media.srcset} sizes="(min-width: 64rem) 12rem, 36vw" width={p.media.width} height={p.media.height} alt={p.alt} loading="eager" decoding="async" />
+                  {p.kind === 'video' && (
+                    <span class="play" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="11" height="11"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
+                    </span>
+                  )}
+                </span>
+                <span class="cap" aria-hidden="true">{p.entry.brand ?? p.entry.title}</span>
+                <span class="visually-hidden">{p.kind === 'video' ? 'Play video' : 'View'}: {p.entry.title}{p.entry.brand ? `, ${p.entry.brand}` : ''}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <ul class="facts rise" style="--delay: 0.26s" role="list" aria-label="This portfolio at a glance">
+        {facts.map((f) => (
           <li>
-            <a
-              class="tile-link"
-              href={s.entry.full}
-              data-kind={s.entry.kind}
-              data-full={s.entry.full}
-              data-poster={s.entry.poster}
-              data-preview={s.media.preview}
-              data-title={s.entry.title}
-              data-brand={s.entry.brand}
-              data-alt={s.entry.alt}
-              data-role={s.entry.role}
-            >
-              <span class="frame">
-                <img src={s.media.src} srcset={s.media.srcset} sizes="(min-width: 64rem) 14vw, 30vw" width={s.media.width} height={s.media.height} alt={s.alt} loading="eager" decoding="async" />
-                {s.kind === 'video' && (
-                  <span class="play" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="11" height="11"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
-                  </span>
-                )}
-              </span>
-              <span class="visually-hidden">{s.kind === 'video' ? 'Play video' : 'View'}: {s.entry.title}{s.entry.brand ? `, ${s.entry.brand}` : ''}</span>
-            </a>
+            <a href={f.href}><strong>{f.value}</strong><span>{f.label}</span></a>
           </li>
         ))}
       </ul>
@@ -134,109 +124,106 @@ const stack = [pick('reel-ss-top-trends') ?? items[0], pick('board-properecom'),
 </section>
 
 <style>
-  .hero { padding-block: clamp(1.25rem, 1rem + 2vw, 2.5rem) clamp(3rem, 2rem + 4vw, 5rem); }
+  .hero { padding-block: clamp(1.25rem, 1rem + 1.5vw, 2rem) clamp(3.5rem, 2.5rem + 4vw, 6rem); overflow-x: clip; }
 
-  /* 1. Masthead */
-  .mast {
-    font-size: var(--step-display);
-    font-weight: 500;
-    text-transform: uppercase;
-    line-height: 0.84;
-    letter-spacing: -0.055em;
-  }
-  .mast span { display: block; }
-  .mast .indent { padding-left: 12%; }
-
-  /* 2. Info bar */
-  .info {
+  .meta {
     display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1.5rem;
-    margin-top: clamp(1rem, 0.8rem + 1vw, 1.5rem);
-    padding: 0.7rem 0;
-    border-top: 1px solid var(--java); border-bottom: 1px solid var(--line);
-    font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);
+    font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted);
   }
-  .status { display: inline-flex; align-items: center; gap: 0.5rem; }
-  .status i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #2b8a3e; }
+  .meta .right { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; }
+  .meta .right { align-items: center; }
+  .status { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.2rem 0.65rem; border: 1px solid var(--line); border-radius: 999px; color: var(--java); }
+  .status i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #2b8a3e; box-shadow: 0 0 0 3px var(--pink-soft); }
 
-  /* 3. Spread */
-  .spread {
-    display: grid; gap: clamp(1.75rem, 1rem + 2vw, 2.5rem);
-    margin-top: clamp(1.75rem, 1rem + 2vw, 2.5rem);
+  /* Big type */
+  .title { position: relative; margin-top: clamp(1.25rem, 0.8rem + 2vw, 2.5rem); }
+  .mast {
+    font-family: var(--display-font);
+    font-size: var(--step-display);
+    font-weight: var(--display-weight);
+    text-transform: var(--display-transform);
+    letter-spacing: var(--display-tracking);
+    line-height: 0.86;
   }
-  @media (min-width: 64rem) { .spread { grid-template-columns: 1fr 1fr 1.05fr; align-items: start; } }
-  .spread > * { min-width: 0; }
-  .stack li { min-width: 0; }
+  .mast > span:not(.visually-hidden) { display: block; }
+  .mast em { font-size: 1.04em; letter-spacing: -0.02em; }
+  .mast .l2 { text-align: right; }
 
-  .photo { margin: 0; }
-  .photo :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 20%; background: var(--beige); }
-  .profile {
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;
-    margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--line);
+  /* Below: intro, polaroids, facts */
+  .below {
+    display: grid; gap: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+    margin-top: clamp(2.25rem, 1.5rem + 3vw, 4rem);
   }
-  .who { display: grid; font-size: var(--step-small); line-height: 1.35; }
-  .who span { color: var(--text-muted); }
-  .links { display: flex; align-items: center; gap: 0.4rem; }
-  .links a {
-    display: grid; place-items: center;
-    min-width: 2.5rem; height: 2.5rem; padding: 0 0.6rem;
-    border: 1px solid var(--line); color: var(--java);
-    transition: background 0.2s ease, color 0.2s ease;
+  @media (min-width: 64rem) {
+    .below { grid-template-columns: 1fr 1.15fr 0.8fr; align-items: end; gap: 3rem; margin-top: clamp(2.5rem, 2rem + 2vw, 3.5rem); }
   }
-  .links a:hover { background: var(--java); color: var(--cream); }
-  .links .cv { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; }
+  .below > * { min-width: 0; }
 
-  .headline {
-    font-family: var(--font-serif);
-    font-size: var(--step-lede);
-    line-height: 1.04;
-    color: var(--java);
-    text-wrap: balance;
-  }
-  .headline :global(em) { color: var(--rust); }
-  .headline :global(.nowrap) { white-space: nowrap; }
-  .intro { margin-top: 1.25rem; color: var(--text-muted); max-width: 46ch; }
-
-  .index { list-style: none; margin: 1.75rem 0 0; padding: 0; border-top: 1px solid var(--line); }
-  .index a {
-    display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
-    min-height: 2.75rem; padding: 0.7rem 0;
-    border-bottom: 1px solid var(--line);
-    color: var(--java); font-weight: 500; text-decoration: none;
-    transition: padding 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), color 0.2s ease;
-  }
-  .index a:hover { padding-left: 0.5rem; color: var(--rust); }
-  .n { color: var(--rust); font-weight: 500; }
-
-  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.75rem; }
+  .hi { font-family: var(--font-serif); font-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.4rem); line-height: 1.05; color: var(--java); }
+  .hi em { color: var(--rust); }
+  .intro { margin-top: 0.9rem; color: var(--text-muted); max-width: 44ch; }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.5rem; }
   @media (max-width: 30rem) { .actions .btn { flex: 1 1 100%; } }
-
-  /* Stack of work */
-  .stack { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1.1fr 1fr; grid-template-rows: 1fr 1fr; gap: 0.75rem; }
-  .stack li:first-child { grid-row: span 2; }
-  .tile-link { display: block; height: 100%; }
-  .tile-link:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
-  .frame { position: relative; display: block; height: 100%; min-height: 10rem; overflow: hidden; background: var(--beige); }
-  .stack li:first-child .frame { aspect-ratio: 9 / 16; }
-  .stack li:not(:first-child) .frame { aspect-ratio: 4 / 5; }
-  .frame img, .frame :global(video) {
-    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  .links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; margin-top: 1.1rem; }
+  .links a {
+    display: inline-flex; align-items: center; gap: 0.25rem; min-height: 2.75rem;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--java);
   }
-  .frame :global(video) { opacity: 0; transition: opacity 0.35s ease; }
-  .frame :global(video.playing) { opacity: 1; }
-  .tile-link:hover .frame img { transform: scale(1.04); }
+  .links a:hover { color: var(--rust); }
+
+  /* Polaroids */
+  .polaroids { position: relative; height: clamp(21rem, 15rem + 18vw, 27rem); }
+  .polaroids ul { list-style: none; margin: 0; padding: 0; }
+  .card {
+    position: absolute; margin: 0;
+    width: clamp(8.5rem, 5rem + 10vw, 12rem);
+    padding: 0.55rem 0.55rem 0;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(29 21 19 / 0.08), 0 14px 30px -12px rgb(29 21 19 / 0.35);
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .card :global(img), .frame img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: var(--beige); }
+  .me :global(img) { object-position: 50% 20%; }
+  .card figcaption, .cap {
+    display: block; padding: 0.45rem 0 0.55rem; text-align: center;
+    font-family: var(--font-serif); font-style: italic; font-size: 1.05rem; line-height: 1.2; color: var(--java);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .me { left: 0; top: 8%; transform: rotate(-5deg); z-index: 2; }
+  .work-1 { left: 27%; top: 0; transform: rotate(4deg); z-index: 1; }
+  .work-2 { right: 0; top: 22%; transform: rotate(-2deg); z-index: 3; }
+  .tile-link { display: block; color: inherit; text-decoration: none; }
+  .tile-link:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
+  .frame { position: relative; display: block; overflow: hidden; }
   .play {
-    position: absolute; top: 0.6rem; left: 0.6rem; z-index: 2;
-    display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%;
+    position: absolute; top: 0.5rem; left: 0.5rem;
+    display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%;
     background: var(--cream); color: var(--java);
   }
-  /* Phones and tablets: intro first, then the row of work, then the photo and profile */
-  @media (max-width: 63.99rem) {
-    .copy { order: -2; }
-    .stack { order: -1; }
-    .photo { max-width: 26rem; }
-    .stack { grid-template-columns: repeat(3, 1fr); grid-template-rows: auto; }
-    .stack li:first-child { grid-row: auto; }
-    .stack li .frame, .stack li:not(:first-child) .frame { aspect-ratio: 3 / 4; height: auto; min-height: 0; }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .card:hover { transform: rotate(0deg) translateY(-6px); z-index: 4; }
   }
+
+  /* Facts: number left, italic label right, hairlines between */
+  .facts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--java); }
+  .facts a {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+    padding: 0.8rem 0; border-bottom: 1px solid var(--line);
+    color: var(--java); text-decoration: none;
+    transition: padding 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .facts a:hover { padding-left: 0.4rem; }
+  .facts strong { font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
+  .facts span { font-family: var(--font-serif); font-style: italic; font-size: 1.05rem; color: var(--text-muted); }
+  .facts a:hover span { color: var(--rust); }
+
+  /* Phones and tablets: intro, then polaroids, then facts */
+  @media (max-width: 63.99rem) {
+    .polaroids { max-width: 30rem; width: 100%; justify-self: center; height: clamp(17rem, 12rem + 20vw, 22rem); }
+    .card { width: clamp(8rem, 5rem + 12vw, 10.5rem); }
+    .me { left: 0; top: 4%; }
+    .work-1 { left: 33%; top: 12%; transform: rotate(3deg); }
+    .work-2 { right: 0; top: 0; transform: rotate(-3deg); }
+  }
+  @media (max-width: 40rem) { .below { margin-top: 2.25rem; } }
 </style>

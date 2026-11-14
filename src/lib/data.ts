@@ -26,6 +26,8 @@ const siteSchema = z.object({
   resumeFile: z.string(),
   /** The resume download only appears on the live site once this is true. */
   resumeConfirmed: z.boolean(),
+  /** Color theme: "" (Fig, the default), "chambray", "butter" or "clay". */
+  theme: z.string().optional(),
   cloudName: z.string(),
   cloudFolder: z.string(),
   socials: z.array(z.object({ label: z.string(), url: z.string() })),
@@ -164,6 +166,10 @@ export const proof = parse(
         intro: z.string(),
         rows: z.array(z.object({ brand: z.string(), creator: z.string(), audience: z.string(), deal: z.string(), detail: z.string() })).optional(),
         points: z.array(z.string()).optional(),
+        /** UGC and creator videos (Cloudinary public IDs). Shown only when someone selects "Watch the videos". */
+        videos: z
+          .array(z.object({ media: z.string(), title: z.string(), alt: z.string(), brand: z.string().optional() }))
+          .optional(),
         reports: z
           .array(
             z.object({

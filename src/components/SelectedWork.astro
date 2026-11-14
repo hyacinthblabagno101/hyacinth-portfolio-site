@@ -1,0 +1,173 @@
+---
+/**
+ * Brands strip and "Selected work" by brand.
+ * - Strip: every brand that appears in src/data/showcase.json, set as simple wordmarks.
+ * - List: the brands with the most work, one numbered row each: the types of content, my role
+ *   (from "roles" in showcase.json, when set), how many pieces, and a thumbnail.
+ *   Selecting a row opens that brand's whole collection in the viewer (the viewer lives in Showcase.astro).
+ */
+import { showcase, roleFor } from '../lib/data';
+import { viewerEntry, tileMedia } from '../lib/showcaseMedia';
+
+const ROWS = 8;
+
+const labelOf = new Map(showcase.map((c) => [c.key, c.label]));
+const items = showcase.flatMap((c) => c.items);
+
+const byBrand = new Map<string, typeof items>();
+items.forEach((i) => { if (i.brand) byBrand.set(i.brand, [...(byBrand.get(i.brand) ?? []), i]); });
+
+const allBrands = [...byBrand.keys()].sort((a, b) => a.localeCompare(b));
+
+/**
+ * Logos live in public/logos (white, trimmed, 160px tall WebP). Brands without a logo file show their name.
+ * Width is set from each logo's shape so wide wordmarks and square marks look about the same size.
+ */
+const logos: Record<string, { file: string; w: number; h: number }> = {
+  'Epic Tales': { file: 'epictales', w: 597, h: 160 },
+  'Expert Biotics': { file: 'expertbiotics', w: 570, h: 160 },
+  'Hair Solution Nails and Spa': { file: 'hairsolution', w: 694, h: 160 },
+  'Hyacinth Gadgets': { file: 'hyacinthgadgets', w: 207, h: 160 },
+  'iLuxe Aesthetic Center': { file: 'iluxe', w: 128, h: 160 },
+  'Proper Ecom': { file: 'properecom', w: 780, h: 160 },
+  'Rabble': { file: 'rabble', w: 496, h: 160 },
+  'Stacked Science': { file: 'stackedscience', w: 370, h: 160 },
+  'Style State': { file: 'stylestate', w: 2063, h: 160 },
+  'Suezicu': { file: 'suezicu', w: 1281, h: 160 },
+  'T-James Sporty Bar': { file: 'tjamessportybar', w: 163, h: 160 },
+  'Uncle Scientist': { file: 'unclescientist', w: 364, h: 160 },
+  'Winnie & Co.': { file: 'winnieandco', w: 1254, h: 160 },
+};
+const logoSize = (l: { w: number; h: number }) => {
+  const ratio = l.w / l.h;
+  const width = Math.round(Math.min(190, 62 * Math.sqrt(ratio))); // equal visual area, capped for long wordmarks
+  return { width, height: Math.round(width / ratio) };
+};
+const strip = allBrands.map((name) => {
+  const l = logos[name];
+  return l ? { name, src: `/logos/${l.file}.webp`, ...logoSize(l) } : { name };
+});
+
+const rows = [...byBrand.entries()]
+  .sort((a, b) => b[1].length - a[1].length)
+  .slice(0, ROWS)
+  .map(([brand, list]) => {
+    const ordered = [...list.filter((i) => i.board), ...list.filter((i) => !i.board && i.kind === 'image'), ...list.filter((i) => i.kind === 'video')];
+    const cover = ordered[0];
+    const types = [...new Set(list.map((i) => i.category))].map((k) => labelOf.get(k) ?? k);
+    return {
+      brand,
+      types,
+      role: roleFor(brand),
+      thumb: tileMedia(cover, cover.kind === 'video' ? '9:16' : '1:1', [160, 320]),
+      alt: cover.alt,
+      items: JSON.stringify(ordered.map(viewerEntry)),
+      first: viewerEntry(cover),
+    };
+  });
+---
+
+<section class="strip band-dark" aria-labelledby="brands-title">
+  <div class="wrap">
+    <h2 id="brands-title" class="strip-title">Brands I've made content for</h2>
+    <ul role="list" class="names">
+      {strip.map((b, n) =>
+        'src' in b ? (
+          <li class="logo" style={`--w: ${b.width}px`}><img src={b.src} alt={b.name} width={b.width} height={b.height} loading="lazy" decoding="async" /></li>
+        ) : (
+          <li class:list={{ alt: n % 2 === 1 }}>{b.name}</li>
+        ),
+      )}
+    </ul>
+  </div>
+</section>
+
+<section id="selected" class="selected" aria-labelledby="selected-title">
+  <div class="wrap">
+    <header class="top reveal">
+      <h2 id="selected-title">Selected <em>work</em></h2>
+      <a class="all" href="#work">Browse all work <span aria-hidden="true">&darr;</span></a>
+    </header>
+
+    <ol class="rows" role="list">
+      {rows.map((r, n) => (
+        <li class="reveal" style={`--delay: ${(n % 4) * 60}ms`}>
+          <a class="tile-link row" href={r.first.full} data-items={r.items}>
+            <span class="no">No. {n + 1}</span>
+            <span class="brand">{r.brand}</span>
+            <span class="what">
+              <span class="types">{r.types.join(' · ')}</span>
+              {r.role && <span class="role">{r.role}</span>}
+            </span>
+            <span class="thumb">
+              <img src={r.thumb.src} srcset={r.thumb.srcset} sizes="5rem" width="80" height="80" alt="" loading="lazy" decoding="async" />
+            </span>
+            <span class="visually-hidden">, open the collection</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  /* Brands strip */
+  .strip { background: var(--beet); --line: rgb(244 244 241 / 0.18); padding-block: clamp(2.5rem, 2rem + 2vw, 3.75rem); }
+  .strip-title {
+    max-width: none; text-align: center;
+    font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.18em; line-height: 1.4; text-transform: uppercase; color: var(--bisque);
+  }
+  .names {
+    list-style: none; margin: 1.25rem 0 0; padding: 0;
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.5rem clamp(1.75rem, 1rem + 2.5vw, 3.25rem);
+  }
+  .names li {
+    font-weight: 700; font-size: clamp(0.95rem, 0.88rem + 0.3vw, 1.1rem); letter-spacing: -0.03em; text-transform: uppercase; color: var(--cream);
+  }
+  .names .logo img { display: block; width: var(--w); max-width: none; height: auto; opacity: 0.88; transition: opacity 0.2s ease; }
+  .names .logo:hover img { opacity: 1; }
+  @media (max-width: 40rem) { .names .logo img { width: calc(var(--w) * 0.74); } .names { gap: 1.25rem 1.5rem; } }
+  .names li.alt { font-family: var(--font-serif); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: clamp(1.2rem, 1.05rem + 0.6vw, 1.55rem); color: var(--chambray); }
+
+  /* Selected work */
+  .selected { padding-block: var(--section) clamp(3rem, 2rem + 3vw, 4.5rem); }
+  .top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: clamp(1.5rem, 1rem + 2vw, 2.5rem); }
+  .all {
+    display: inline-flex; gap: 0.4rem; align-items: center; min-height: 2.75rem;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--java);
+  }
+
+  .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--java); }
+  .rows li { border-bottom: 1px solid var(--line); }
+  .row {
+    display: grid; align-items: center; gap: 0.25rem 1rem;
+    grid-template-columns: 1fr 4rem;
+    grid-template-areas: 'brand thumb' 'what thumb';
+    padding: 1rem 0;
+    color: var(--java); text-decoration: none;
+    transition: background 0.3s ease, padding 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .no { display: none; }
+  .brand { grid-area: brand; font-weight: 800; font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem); letter-spacing: -0.04em; text-transform: uppercase; line-height: 1.05; }
+  .what { grid-area: what; display: grid; gap: 0.1rem; }
+  .types { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rust); }
+  .role { font-family: var(--font-serif); font-style: italic; font-size: 1.05rem; line-height: 1.3; color: var(--text-muted); }
+  .thumb { grid-area: thumb; display: block; width: 4rem; aspect-ratio: 1; overflow: hidden; border-radius: var(--media-radius); background: var(--beige); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .row:hover .thumb img, .row:focus-visible .thumb img { transform: scale(1.08); }
+  .row:hover .brand { color: var(--rust); }
+  .row:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  @media (min-width: 48rem) {
+    .row {
+      grid-template-columns: 4rem minmax(0, 1.1fr) minmax(0, 1.5fr) 5rem;
+      grid-template-areas: 'no brand what thumb';
+      gap: 1.5rem; padding: 1.1rem 0;
+    }
+    .no { display: block; grid-area: no; font-size: 0.75rem; color: var(--text-muted); }
+    .thumb { width: 5rem; }
+  }
+  @media (hover: hover) and (min-width: 48rem) {
+    .row:hover { padding-inline: 0.75rem; background: var(--pink-soft); }
+  }
+</style>

@@ -21,7 +21,7 @@ import { about, isPlaceholder } from '../lib/data';
 
     <div class="copy">
       <p class="eyebrow">About</p>
-      <h2 id="about-title">{about.heading}</h2>
+      <h2 id="about-title" set:html={about.heading.replace(/&/g, '&amp;').replace(/(\S+)$/, '<em>$1</em>')} />
       {!about.confirmed && <p><span class="placeholder">Draft bio: needs your confirmation</span></p>}
       <div class="bio">
         {about.bio.map((p) => <p>{p}</p>)}
@@ -55,7 +55,7 @@ import { about, isPlaceholder } from '../lib/data';
     aspect-ratio: 4 / 5;
     object-fit: cover;
     object-position: 50% 30%;
-    border-radius: 0;
+    border-radius: var(--media-radius);
     background: #fff;
   }
 

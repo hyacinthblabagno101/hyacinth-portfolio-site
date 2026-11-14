@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import SelectedWork from '../components/SelectedWork.astro';
 import Showcase from '../components/Showcase.astro';
 import CaseStudies from '../components/CaseStudies.astro';
 import Testimonials from '../components/Testimonials.astro';
@@ -15,9 +16,10 @@ import { showAbout, showExperience } from '../lib/data';
 
 <Base>
   <Hero />
+  <SelectedWork />
   <Showcase />
-  <CaseStudies />
   <Skills />
+  <CaseStudies />
   {showAbout && <About />}
   {showExperience && <Experience />}
   <Testimonials />

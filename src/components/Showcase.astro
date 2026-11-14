@@ -17,7 +17,6 @@ const INITIAL = 10;
 /** Tile shape per tab, so each grid stays even. */
 const tileAspect = (key: string) => (key === 'statics' ? '4:5' : '9:16');
 const sizes = '(min-width: 80rem) 15rem, (min-width: 64rem) 22vw, (min-width: 40rem) 30vw, 46vw';
-const noun = (key: string, n: number) => (key === 'stories' ? (n === 1 ? 'story' : 'stories') : n === 1 ? 'design' : 'designs');
 
 type Tile = {
   key: string;
@@ -47,7 +46,7 @@ const tabs = showcase.map((c) => {
           key: `${c.key}-${brand}`,
           label: brand,
           // A single designs board is a collage of many posts, so call it that rather than "1 design"
-          sub: items.length === 1 && cover.board ? 'Design board' : `${items.length} ${noun(c.key, items.length)}`,
+          sub: items.length === 1 && cover.board ? 'Design board' : 'Collection',
           media: tileMedia(cover, aspect),
           alt: cover.alt,
           kind: 'image',
@@ -74,8 +73,8 @@ const tabs = showcase.map((c) => {
 <section id="work" class="showcase" aria-labelledby="work-title">
   <div class="wrap">
     <header class="head reveal">
-      <p class="eyebrow">Selected work</p>
-      <h2 id="work-title">Work I've planned, made, and managed</h2>
+      <p class="eyebrow">Content library</p>
+      <h2 id="work-title">On the <em>feed</em></h2>
       <p class="lede">
         Reels, ads, AI content, statics, and stories for brands in beauty, fashion, food, wellness, and e-commerce.
         Statics and stories are grouped by brand. Select anything to see it in full, with my role on it.
@@ -95,7 +94,6 @@ const tabs = showcase.map((c) => {
             data-tab={t.key}
           >
             {t.label}
-            <span class="count">{t.total}</span>
           </button>
         ))
       }
@@ -139,14 +137,13 @@ const tabs = showcase.map((c) => {
                     {i.count && (
                       <span class="stack" aria-hidden="true">
                         <svg viewBox="0 0 24 24" width="13" height="13"><path d="M4 8h12v12H4zM8 4h12v12" fill="none" stroke="currentColor" stroke-width="2" /></svg>
-                        {i.count}
                       </span>
                     )}
                     <span class="overlay" aria-hidden="true">
                       {i.items ? (
                         <>
                           <span class="title">{i.label}</span>
-                          <span class="brand">{i.sub} &middot; View collection</span>
+                          <span class="brand">View collection</span>
                         </>
                       ) : (
                         <>
@@ -158,7 +155,7 @@ const tabs = showcase.map((c) => {
                   </span>
                   <span class="visually-hidden">
                     {i.items
-                      ? `Open ${i.label} collection, ${i.sub}`
+                      ? `Open ${i.label} collection`
                       : `${i.kind === 'video' ? 'Play video' : 'View image'}: ${i.label}${i.sub ? `, ${i.sub}` : ''}`}
                   </span>
                 </a>
@@ -167,7 +164,7 @@ const tabs = showcase.map((c) => {
           </ul>
           {!t.grouped && t.tiles.length > INITIAL && (
             <button type="button" class="more" aria-expanded="false" data-more>
-              Show all {t.tiles.length} <span class="visually-hidden">{t.label}</span>
+              Show all <span class="visually-hidden">{t.label}</span>
               <span aria-hidden="true">&darr;</span>
             </button>
           )}
@@ -237,7 +234,6 @@ const tabs = showcase.map((c) => {
   .tabs button:hover { color: var(--burgundy); }
   .tabs button[aria-selected='true'] { color: var(--burgundy); }
   .tabs button[aria-selected='true']::after { transform: scaleX(1); }
-  .count { font-weight: 400; letter-spacing: 0; color: var(--rust); font-size: 0.75rem; }
 
   .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
   .grid-tall { grid-template-columns: repeat(2, 1fr); }
@@ -255,10 +251,10 @@ const tabs = showcase.map((c) => {
   .tile.extra { display: none; }
   .panel[data-expanded] .tile.extra { display: block; }
 
-  .tile-link { display: block; color: inherit; text-decoration: none; border-radius: var(--radius); }
+  .tile-link { display: block; color: inherit; text-decoration: none; border-radius: var(--media-radius); }
   .frame {
     position: relative; display: block; overflow: hidden;
-    border-radius: var(--radius);
+    border-radius: var(--media-radius);
     background: var(--beige);
   }
   .frame img, .frame :global(video) {
@@ -311,7 +307,7 @@ const tabs = showcase.map((c) => {
     margin: 2rem auto 0;
     min-height: 2.75rem; padding: 0.6rem 1.4rem;
     background: transparent; color: var(--java);
-    border: 1px solid var(--java); border-radius: 0;
+    border: 1px solid var(--java); border-radius: var(--btn-radius);
     font: inherit; font-weight: 500; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
     transition: background 0.25s ease, color 0.25s ease;
   }
@@ -327,7 +323,7 @@ const tabs = showcase.map((c) => {
   /* Viewer */
   .viewer {
     width: min(100vw - 2rem, 64rem); max-height: calc(100vh - 2rem);
-    padding: 0; border: 0; border-radius: 0;
+    padding: 0; border: 0; border-radius: var(--media-radius); overflow: hidden;
     background: var(--java); color: var(--cream);
   }
   .viewer::backdrop { background: rgb(35 24 21 / 0.86); backdrop-filter: blur(3px); }

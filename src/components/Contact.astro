@@ -11,12 +11,13 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
 
 <section id="contact" class="contact" aria-labelledby="contact-title">
   <div class="wrap grid">
+    <div class="left">
     <div class="intro">
       <p class="eyebrow">Contact</p>
-      <h2 id="contact-title">Let's talk about the role</h2>
+      <h2 id="contact-title">Let's work <em>together</em></h2>
       <p class="lede">
-        If you're hiring for social media, content, or creative support, email me and tell me a little about the team
-        and the role.
+        If you're hiring for social media, content, or creative support, send me a message here or by email and tell
+        me a little about the team and the role.
       </p>
     </div>
 
@@ -64,6 +65,42 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
         )
       }
     </div>
+      </div>
+
+    <form
+      class="form"
+      name="contact"
+      method="POST"
+      action="/?sent=1#contact"
+      data-netlify="true"
+      netlify-honeypot="company-website"
+      data-contact-form
+    >
+      <input type="hidden" name="form-name" value="contact" />
+      <p class="hp" aria-hidden="true">
+        <label>Leave this empty <input name="company-website" tabindex="-1" autocomplete="off" /></label>
+      </p>
+
+      <div class="field">
+        <label for="cf-name">Your name</label>
+        <input id="cf-name" name="name" type="text" autocomplete="name" required />
+      </div>
+      <div class="field">
+        <label for="cf-email">Email</label>
+        <input id="cf-email" name="email" type="email" autocomplete="email" required />
+      </div>
+      <div class="field">
+        <label for="cf-company">Company <span class="opt">(optional)</span></label>
+        <input id="cf-company" name="company" type="text" autocomplete="organization" />
+      </div>
+      <div class="field">
+        <label for="cf-message">Message</label>
+        <textarea id="cf-message" name="message" rows="5" required></textarea>
+      </div>
+
+      <button class="btn btn-light submit" type="submit">Send message</button>
+      <p class="form-status" role="status" aria-live="polite" data-form-status></p>
+    </form>
   </div>
 </section>
 
@@ -82,8 +119,29 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
     color: var(--text);
     padding-block: var(--section);
   }
-  .grid { display: grid; gap: 3rem; align-items: end; }
-  @media (min-width: 64rem) { .grid { grid-template-columns: 1.1fr 1fr; gap: 5rem; } }
+  .grid { display: grid; gap: 3.5rem; align-items: start; }
+  @media (min-width: 64rem) { .grid { grid-template-columns: 1fr 1fr; gap: 5rem; } }
+  .left { display: grid; gap: 2.5rem; align-content: start; }
+
+  /* Contact form (Netlify Forms) */
+  .form { display: grid; gap: 1.1rem; }
+  .hp { position: absolute; left: -9999px; }
+  .field { display: grid; gap: 0.4rem; }
+  .field label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--bisque); }
+  .opt { font-weight: 400; letter-spacing: 0; text-transform: none; }
+  .field input, .field textarea {
+    width: 100%; min-height: 3rem; padding: 0.75rem 0.9rem;
+    font: inherit; font-size: 1rem; color: var(--cream);
+    background: rgb(244 244 241 / 0.06);
+    border: 1px solid rgb(244 244 241 / 0.45); border-radius: 6px;
+  }
+  .field textarea { resize: vertical; min-height: 8rem; }
+  .field input:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--chambray); outline-offset: 2px; border-color: var(--cream); }
+  .field input:user-invalid, .field textarea:user-invalid { border-color: var(--chambray); }
+  .submit { justify-self: start; cursor: pointer; }
+  .submit[disabled] { opacity: 0.6; cursor: progress; }
+  @media (max-width: 30rem) { .submit { justify-self: stretch; } }
+  .form-status { min-height: 1.5em; font-size: var(--step-small); color: var(--bisque); }
 
   .intro { display: grid; gap: 1.25rem; }
   .eyebrow { color: var(--bisque); }
@@ -131,6 +189,30 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
 </style>
 
 <script>
+  // Contact form: send without leaving the page; without JavaScript it posts normally and Netlify redirects back
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  const formStatus = form?.querySelector<HTMLElement>('[data-form-status]');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (button) button.disabled = true;
+    if (formStatus) formStatus.textContent = 'Sending...';
+    try {
+      const body = new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString();
+      const res = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
+      if (!res.ok) throw new Error(String(res.status));
+      form.reset();
+      if (formStatus) formStatus.textContent = "Thanks, your message was sent. I'll reply by email.";
+    } catch {
+      if (formStatus) formStatus.textContent = "Sorry, that didn't send. Please email me directly instead.";
+    } finally {
+      if (button) button.disabled = false;
+    }
+  });
+  if (formStatus && new URLSearchParams(location.search).has('sent')) {
+    formStatus.textContent = "Thanks, your message was sent. I'll reply by email.";
+  }
+
   document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
     const status = btn.closest('.email')?.querySelector<HTMLElement>('[data-copy-status]');
     btn.addEventListener('click', async () => {

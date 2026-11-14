@@ -2,14 +2,19 @@
 /**
  * Case studies: influencer marketing, UGC, and analytics. Text lives in "caseStudies" in src/data/proof.json.
  */
-import { proof } from '../lib/data';
+import { proof, showUnconfirmed } from '../lib/data';
+import { videoUrl, posterFor } from '../lib/cloudinary';
+
+/** Viewer entries for a case study's videos (the viewer itself lives in Showcase.astro). */
+const videoEntries = (c: (typeof proof.caseStudies)[number]) =>
+  (c.videos ?? []).map((v) => ({ kind: 'video', full: videoUrl(v.media), poster: posterFor({ id: v.media }, 720), title: v.title, brand: v.brand, alt: v.alt }));
 ---
 
 <section id="case-studies" class="cases" aria-labelledby="cases-title">
   <div class="wrap">
     <header class="head reveal">
-      <p class="eyebrow">Case studies</p>
-      <h2 id="cases-title">Influencer, UGC, and the numbers behind them</h2>
+      <p class="eyebrow">Influencer, UGC and reporting</p>
+      <h2 id="cases-title">Case <em>studies</em></h2>
     </header>
 
     <div class="list">
@@ -24,6 +29,23 @@ import { proof } from '../lib/data';
             </div>
 
             <div class="case-body">
+              {c.videos && (
+                videoEntries(c).length > 0 ? (
+                  <a class="tile-link btn btn-primary watch" href={videoEntries(c)[0].full} data-items={JSON.stringify(videoEntries(c))}>
+                    <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
+                    Watch the videos <span class="visually-hidden">for {c.title}</span>
+                  </a>
+                ) : (
+                  showUnconfirmed && <p><span class="placeholder">[PLACEHOLDER: {c.eyebrow} videos, uploading to Cloudinary]</span></p>
+                )
+              )}
+
+              {(c.rows || c.points) ? (
+                <details class="more">
+                  <summary>
+                    <span>{c.rows ? 'See the creators I worked with' : 'See how I ran it'}</span>
+                    <span class="plus" aria-hidden="true"></span>
+                  </summary>
               {c.rows && (
                 <ul class="collabs" role="list">
                   {c.rows.map((r) => (
@@ -53,6 +75,8 @@ import { proof } from '../lib/data';
                   ))}
                 </ol>
               )}
+                </details>
+              ) : null}
 
               {c.reports && (
                 <div class="reports">
@@ -84,7 +108,9 @@ import { proof } from '../lib/data';
 </section>
 
 <style>
-  .cases { padding-block: var(--section); background: var(--glacier); }
+  .cases {
+    padding-block: var(--section); background: var(--glacier);
+  }
   .head { display: grid; gap: 1rem; margin-bottom: clamp(1rem, 0.5rem + 2vw, 2rem); }
 
   .list { display: grid; }
@@ -97,9 +123,30 @@ import { proof } from '../lib/data';
   @media (min-width: 64rem) { .case { grid-template-columns: 5fr 7fr; gap: 5rem; } }
 
   .case-head { display: grid; gap: 0.6rem; align-content: start; }
-  .num { font-family: var(--font-serif); font-size: 1.25rem; color: var(--rust); }
-  h3 { font-size: var(--step-h3); line-height: 1.15; }
+  .num { font-family: var(--font-serif); font-style: italic; font-size: 1.25rem; color: var(--rust); }
+  h3 { font-family: var(--font-sans); font-weight: 700; letter-spacing: -0.035em; font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem); line-height: 1; }
   .intro { color: var(--text-muted); max-width: 40ch; }
+
+  .case-body { display: grid; gap: 1.25rem; align-content: start; }
+  .watch { justify-self: start; }
+
+  /* Details stay folded until someone asks for them */
+  .more { border-top: 1px solid var(--java); }
+  .more summary {
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    min-height: 3.25rem; cursor: pointer; list-style: none;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--java);
+  }
+  .more summary::-webkit-details-marker { display: none; }
+  .more summary:hover { color: var(--rust); }
+  .plus { position: relative; width: 0.9rem; height: 0.9rem; flex: none; }
+  .plus::before, .plus::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; background: currentColor; transition: transform 0.25s ease; }
+  .plus::after { transform: rotate(90deg); }
+  .more[open] .plus::after { transform: rotate(0deg); }
+  .more[open] > :not(summary) { animation: unfold 0.35s ease; }
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes unfold { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  }
 
   /* Creator partnerships: simple rows divided by hairlines */
   .collabs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
@@ -111,7 +158,8 @@ import { proof } from '../lib/data';
   }
   .collab:hover { padding-left: 0.5rem; }
   .pair { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem; font-size: 1.0625rem; }
-  .pair strong { font-weight: 600; }
+  .pair strong { font-weight: 800; text-transform: uppercase; letter-spacing: -0.02em; }
+  .pair span:last-child { font-family: var(--font-serif); font-style: italic; font-size: 1.15rem; }
   .x { color: var(--rust); }
   .tags { margin: 0; display: flex; flex-wrap: wrap; gap: 0 0.5rem; font-size: 0.8125rem; color: var(--rust); }
   .tags span + span::before { content: '\00b7'; margin-right: 0.5rem; }
@@ -133,7 +181,7 @@ import { proof } from '../lib/data';
   .stat { display: grid; gap: 0.1rem; }
   .stat dt { font-size: var(--step-small); color: var(--text-muted); order: 2; }
   .stat dd { margin: 0; display: flex; align-items: baseline; gap: 0.5rem; order: 1; }
-  .value { font-family: var(--font-serif); font-size: 2.5rem; line-height: 1; color: var(--java); }
+  .value { font-weight: 800; letter-spacing: -0.05em; font-size: 2.5rem; line-height: 1; color: var(--java); }
   .change { font-size: var(--step-small); font-weight: 600; color: var(--rust); }
   .note { margin: 0; font-size: var(--step-small); color: var(--text-muted); }
 </style>

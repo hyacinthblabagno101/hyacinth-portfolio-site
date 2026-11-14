@@ -22,14 +22,14 @@ const ogUrl = new URL(ogImage, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme={site.theme || undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content="#efe5d3" />
+    <meta name="theme-color" content="#f4f4f1" />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -46,11 +46,16 @@ const ogUrl = new URL(ogImage, Astro.site);
     <meta name="twitter:card" content="summary_large_image" />
 
     <script is:inline>document.documentElement.classList.add('js');</script>
+    {
+      import.meta.env.DEV && (
+        <script is:inline set:html={"/* Preview only: ?theme=fig|chambray|butter|clay tries a theme without changing site.json */ var t = new URLSearchParams(location.search).get('theme'); if (t) document.documentElement.dataset.theme = t === 'oxblood' ? '' : t;"} />
+      )
+    }
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400..800;1,400..600&family=Instrument+Serif:ital@0;1&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400..800;1,400..600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap"
     />
   </head>
   <body>

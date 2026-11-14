@@ -7,11 +7,36 @@
       "title": "Creator partnerships for local and e-commerce brands",
       "intro": "I found creators whose audiences matched each brand, handled the outreach and the deal, briefed them on what to make, and then turned their posts into Facebook ads.",
       "rows": [
-        { "brand": "Hair Solution Nails & Spa", "creator": "Run Dolph Vibes", "audience": "1M Facebook, 800K TikTok, 115K YouTube, 61K Instagram", "deal": "Creator collaboration", "detail": "She filmed and posted content at the salon. I repurposed it as Facebook ads." },
-        { "brand": "iLuxe Aesthetic Center", "creator": "Jana Monteverde", "audience": "80K TikTok", "deal": "Ex-deal (service exchange)", "detail": "She shared content across her platforms. I used it in Facebook ads." },
-        { "brand": "Epic Tales", "creator": "Emily", "audience": "40K Instagram", "deal": "Gifting collaboration", "detail": "She posted about our personalized children's books for parents. The team and I repurposed her content for ads." },
-        { "brand": "Epic Tales", "creator": "Daniela", "audience": "30K Instagram", "deal": "Gifting collaboration", "detail": "She featured the personalized books on her account. Her content also went into our ads." }
-      ]
+        {
+          "brand": "Hair Solution Nails & Spa",
+          "creator": "Run Dolph Vibes",
+          "audience": "1M Facebook, 800K TikTok, 115K YouTube, 61K Instagram",
+          "deal": "Creator collaboration",
+          "detail": "She filmed and posted content at the salon. I repurposed it as Facebook ads."
+        },
+        {
+          "brand": "iLuxe Aesthetic Center",
+          "creator": "Jana Monteverde",
+          "audience": "80K TikTok",
+          "deal": "Ex-deal (service exchange)",
+          "detail": "She shared content across her platforms. I used it in Facebook ads."
+        },
+        {
+          "brand": "Epic Tales",
+          "creator": "Emily",
+          "audience": "40K Instagram",
+          "deal": "Gifting collaboration",
+          "detail": "She posted about our personalized children's books for parents. The team and I repurposed her content for ads."
+        },
+        {
+          "brand": "Epic Tales",
+          "creator": "Daniela",
+          "audience": "30K Instagram",
+          "deal": "Gifting collaboration",
+          "detail": "She featured the personalized books on her account. Her content also went into our ads."
+        }
+      ],
+      "videos": []
     },
     {
       "id": "ugc",
@@ -24,7 +49,8 @@
         "Checked every piece against the brand's goals and visual style",
         "Got creators' consent so their content could be reused in ads and marketing",
         "Built a library of content the brand could keep using for advertising"
-      ]
+      ],
+      "videos": []
     },
     {
       "id": "analytics",
@@ -35,18 +61,39 @@
         {
           "label": "Monthly report A",
           "stats": [
-            { "value": "96.7K", "label": "Views", "change": "+6.2%" },
-            { "value": "+103.8%", "label": "1-minute views" },
-            { "value": "+46.8%", "label": "Engagement" }
+            {
+              "value": "96.7K",
+              "label": "Views",
+              "change": "+6.2%"
+            },
+            {
+              "value": "+103.8%",
+              "label": "1-minute views"
+            },
+            {
+              "value": "+46.8%",
+              "label": "Engagement"
+            }
           ],
           "note": "Reach and 3-second views dipped slightly, while people watched longer and interacted more."
         },
         {
           "label": "Monthly report B",
           "stats": [
-            { "value": "1.5M", "label": "Views", "change": "+7.9%" },
-            { "value": "358.9K", "label": "Reach", "change": "+6.7%" },
-            { "value": "+31.5%", "label": "Content interactions" }
+            {
+              "value": "1.5M",
+              "label": "Views",
+              "change": "+7.9%"
+            },
+            {
+              "value": "358.9K",
+              "label": "Reach",
+              "change": "+6.7%"
+            },
+            {
+              "value": "+31.5%",
+              "label": "Content interactions"
+            }
           ],
           "note": "3-second views doubled and ad reach grew 100%, a balanced mix of organic and paid results."
         }
@@ -83,12 +130,47 @@
     }
   ],
   "certifications": [
-    { "title": "The Complete Digital Marketing Guide: 27 Courses in 1", "issuer": "Udemy", "date": "Aug 2025", "image": "UC-fdcd280e-9d3c-4917-8e0a-c83edd42c145" },
-    { "title": "The Social Media Marketing & Management Masterclass 2025", "issuer": "Udemy", "date": "May 2025", "image": "UC-32821d41-4c0e-4e3f-b11e-155393708bfe" },
-    { "title": "Social Media Marketing II Certified", "issuer": "HubSpot Academy", "date": "Apr 2025", "image": "ad025b61a5a94528a906c2b06b694d09" },
-    { "title": "Digital Marketing Certified", "issuer": "HubSpot Academy", "date": "Apr 2025", "image": "5eb376651d464fdda816aafb81d117ae" },
-    { "title": "Must-Have Skills (Training) for Virtual Assistants", "issuer": "Udemy", "date": "Apr 2025", "image": "UC-d7f6b63f-0289-43e5-9a61-f63099d88e10" },
-    { "title": "Social Media Certified", "issuer": "HubSpot Academy", "date": "Nov 2024", "image": "3520c5cf42f94724a92546526e0b2979" },
-    { "title": "Social Media Management", "issuer": "Kurso.ph", "date": "May 2023", "image": "Hyacinth-Marr-Blabagno-Social-Media-Management-Social-Media-Management-Kurso.ph" }
+    {
+      "title": "The Complete Digital Marketing Guide: 27 Courses in 1",
+      "issuer": "Udemy",
+      "date": "Aug 2025",
+      "image": "UC-fdcd280e-9d3c-4917-8e0a-c83edd42c145"
+    },
+    {
+      "title": "The Social Media Marketing & Management Masterclass 2025",
+      "issuer": "Udemy",
+      "date": "May 2025",
+      "image": "UC-32821d41-4c0e-4e3f-b11e-155393708bfe"
+    },
+    {
+      "title": "Social Media Marketing II Certified",
+      "issuer": "HubSpot Academy",
+      "date": "Apr 2025",
+      "image": "ad025b61a5a94528a906c2b06b694d09"
+    },
+    {
+      "title": "Digital Marketing Certified",
+      "issuer": "HubSpot Academy",
+      "date": "Apr 2025",
+      "image": "5eb376651d464fdda816aafb81d117ae"
+    },
+    {
+      "title": "Must-Have Skills (Training) for Virtual Assistants",
+      "issuer": "Udemy",
+      "date": "Apr 2025",
+      "image": "UC-d7f6b63f-0289-43e5-9a61-f63099d88e10"
+    },
+    {
+      "title": "Social Media Certified",
+      "issuer": "HubSpot Academy",
+      "date": "Nov 2024",
+      "image": "3520c5cf42f94724a92546526e0b2979"
+    },
+    {
+      "title": "Social Media Management",
+      "issuer": "Kurso.ph",
+      "date": "May 2023",
+      "image": "Hyacinth-Marr-Blabagno-Social-Media-Management-Social-Media-Management-Kurso.ph"
+    }
   ]
 }
