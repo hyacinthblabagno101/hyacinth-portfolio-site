@@ -9,3 +9,6 @@ dist/
 
 # Draft resume stays local until resumeConfirmed is true in site.json
 public/hyacinth-blabagno-resume.pdf
+
+# Local design previews
+design-directions/

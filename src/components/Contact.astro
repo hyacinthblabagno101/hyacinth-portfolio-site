@@ -70,13 +70,14 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
 
 <style>
   .contact {
-    --bg: var(--burgundy);
-    --text: var(--cream);          /* 9.3:1 */
-    --text-muted: var(--bisque);   /* 6.9:1 */
+    --bg: var(--espresso);
+    --text: var(--cream);          /* 13.6:1 */
+    --text-muted: var(--bisque);   /* 9.5:1 */
     --heading: var(--cream);
-    --accent: var(--cream);
-    --focus: var(--glacier);       /* 7.8:1 */
-    --line: rgb(248 241 231 / 0.25);
+    --accent: var(--chambray);
+    --focus: var(--chambray);
+    --rule: var(--cream);
+    --line: rgb(239 229 211 / 0.22);
     background: var(--bg);
     color: var(--text);
     padding-block: var(--section);
@@ -105,7 +106,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
   .btn-light { background: var(--cream); border-color: var(--cream); color: var(--java); }
   .btn-light:hover { background: var(--bisque); border-color: var(--bisque); }
   .btn-outline { background: transparent; color: var(--cream); cursor: pointer; }
-  .btn-outline:hover { background: var(--cream); color: var(--burgundy); }
+  .btn-outline:hover { background: var(--cream); color: var(--java); }
   @media (max-width: 30rem) { .buttons .btn { flex: 1 1 100%; } }
   .copied { min-height: 1.5em; font-size: var(--step-small); color: var(--bisque); }
 

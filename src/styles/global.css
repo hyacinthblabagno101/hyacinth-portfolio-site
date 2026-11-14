@@ -3,34 +3,38 @@
  * Contrast ratios are noted next to the pairs the site actually uses (WCAG AA body text needs 4.5:1).
  */
 :root {
-  /* Palette */
-  --cream: #f8f1e7;        /* Vintage Soul: main background */
-  --bisque: #ebcdb7;       /* Chambray board: surfaces, buttons on dark */
-  --beige: #d8c3a5;        /* Vintage Soul: borders, quiet surfaces */
-  --chambray: #79a3c3;     /* Chambray board: dusty blue accent. Fill only on light (fails as text on cream) */
-  --glacier: #d2e2ec;      /* Chambray board: soft blue surface */
-  --burgundy: #6b2c2c;     /* Vintage Soul: headlines, links on light (9.3:1 on cream) */
-  --rust: #8d4d3a;         /* Fig board: secondary accent text (5.8:1 on cream) */
-  --espresso: #3a2119;     /* Chambray board: dark bands */
-  --java: #231815;         /* Pantone board: body text (15.4:1 on cream) */
+  /*
+   * Palette: "Fig" from the brief (fig, rust, sand, blush). Older token names are kept so every
+   * component picks up the new colors; the comment says what each one is now.
+   */
+  --cream: #efe5d3;        /* Sand: main background */
+  --bisque: #d1beaf;       /* Blush: soft surfaces, light text on dark */
+  --beige: #d1beaf;        /* Blush: borders, image backgrounds */
+  --chambray: #e0a993;     /* Light rust: accent text on dark (8.3:1 on fig) */
+  --glacier: #e6d9c3;      /* Deeper sand: alternate light band */
+  --burgundy: #8d4d3a;     /* Rust: links and accents on light (5.2:1 on sand) */
+  --rust: #8d4d3a;         /* Rust */
+  --espresso: #35110e;     /* Fig: dark bands */
+  --java: #35110e;         /* Fig: body text (13.6:1 on sand) */
 
   /* Roles (light sections) */
   --bg: var(--cream);
   --text: var(--java);
-  --text-muted: #4a2e27;   /* Potting Soil, 11:1 on cream */
+  --text-muted: #6e4a3e;   /* 6.2:1 on sand */
   --heading: var(--java);
-  --accent: var(--burgundy);
-  --line: var(--beige);
-  --focus: var(--burgundy);
+  --accent: var(--rust);
+  --line: rgb(53 17 14 / 0.22);
+  --rule: var(--java);
+  --focus: var(--rust);
 
-  /* Type */
+  /* Type: Inter Tight (close to Helvetica Now) for headlines and text, Instrument Serif for accents */
   --font-serif: 'Instrument Serif', 'Times New Roman', serif;
-  --font-sans: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
-  --step-display: clamp(3.25rem, 1.6rem + 8vw, 8rem);
+  --step-display: clamp(3.25rem, 0.5rem + 11.5vw, 10rem);
   --step-h1: clamp(2.5rem, 1.5rem + 5vw, 5rem);
-  --step-h2: clamp(2.25rem, 1.4rem + 3.6vw, 4rem);
-  --step-lede: clamp(1.625rem, 1.2rem + 1.8vw, 2.5rem);
+  --step-h2: clamp(2rem, 1.3rem + 2.6vw, 3.4rem);
+  --step-lede: clamp(1.75rem, 1.2rem + 2vw, 2.9rem);
   --step-h3: clamp(1.5rem, 1.3rem + 0.6vw, 1.875rem);
   --step-body: 1.0625rem;
   --step-small: 0.875rem;
@@ -38,20 +42,21 @@
 
   /* Space and layout */
   --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
-  --section: clamp(4rem, 3rem + 6vw, 8rem);
-  --max: 78rem;
-  --radius: 4px;
+  --section: clamp(4.5rem, 3rem + 6vw, 8.5rem);
+  --max: 82rem;
+  --radius: 0px;
 }
 
 /* Dark band: put class="band-dark" on any section */
 .band-dark {
   --bg: var(--espresso);
-  --text: var(--cream);              /* 13.3:1 */
-  --text-muted: var(--beige);        /* 8.7:1 */
+  --text: var(--cream);              /* 13.6:1 */
+  --text-muted: var(--bisque);       /* 9.5:1 */
   --heading: var(--cream);
-  --accent: var(--bisque);           /* 9.9:1 */
-  --line: rgb(248 241 231 / 0.18);
-  --focus: var(--chambray);          /* 5.6:1 */
+  --accent: var(--chambray);         /* 8.3:1 */
+  --line: rgb(239 229 211 / 0.2);
+  --rule: var(--cream);
+  --focus: var(--chambray);
   background: var(--bg);
   color: var(--text);
 }
@@ -83,15 +88,23 @@ main { flex: 1; }
 img, video { display: block; max-width: 100%; height: auto; }
 
 h1, h2, h3 {
-  font-family: var(--font-serif);
-  font-weight: 400;
   color: var(--heading);
   margin: 0;
   text-wrap: balance;
 }
-h1 { font-size: var(--step-h1); line-height: 1; letter-spacing: -0.01em; }
-h2 { font-size: var(--step-h2); line-height: 1.05; letter-spacing: -0.01em; }
-h3 { font-size: var(--step-h3); line-height: 1.15; }
+/* Titles: clean sans, medium weight, sentence case. Quiet, so the work does the talking */
+h1, h2 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+h1 { font-size: var(--step-h1); line-height: 0.95; }
+h2 { font-size: var(--step-h2); line-height: 1.02; max-width: 22ch; }
+h3 { font-family: var(--font-serif); font-weight: 400; font-size: var(--step-h3); line-height: 1.12; }
+
+/* Every section header opens with a strong rule, like a magazine page */
+.head { border-top: 1px solid var(--rule); padding-top: clamp(1.25rem, 1rem + 1vw, 1.75rem); }
+.head .eyebrow { color: var(--accent); }
 
 p { margin: 0; text-wrap: pretty; }
 
@@ -126,24 +139,24 @@ a:hover { text-decoration-thickness: 2px; }
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 3rem;
-  padding: 0.75rem 1.5rem;
+  min-height: 2.875rem;
+  padding: 0.7rem 1.4rem;
   font-family: var(--font-sans);
   font-size: var(--step-label);
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   text-decoration: none;
-  border: 1.5px solid currentColor;
+  border: 1px solid currentColor;
   border-radius: var(--radius);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
-.btn-primary { background: var(--burgundy); border-color: var(--burgundy); color: var(--cream); }
-.btn-primary:hover { background: var(--java); border-color: var(--java); }
+.btn-primary { background: var(--java); border-color: var(--java); color: var(--cream); }
+.btn-primary:hover { background: var(--rust); border-color: var(--rust); }
 .btn-ghost { color: var(--text); background: transparent; }
 .btn-ghost:hover { background: var(--text); color: var(--bg); }
-.band-dark .btn-primary { background: var(--bisque); border-color: var(--bisque); color: var(--java); }
-.band-dark .btn-primary:hover { background: var(--cream); border-color: var(--cream); }
+.band-dark .btn-primary { background: var(--cream); border-color: var(--cream); color: var(--java); }
+.band-dark .btn-primary:hover { background: var(--bisque); border-color: var(--bisque); }
 
 /* Development placeholders: obvious on purpose so nothing ships by accident */
 .placeholder {

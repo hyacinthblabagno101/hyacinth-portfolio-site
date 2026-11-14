@@ -15,9 +15,9 @@ const links = [
 ].filter((l): l is { label: string; href: string } => Boolean(l));
 ---
 
-<header class="site-header band-dark">
+<header class="site-header">
   <div class="wrap bar">
-    <a class="brand" href="/">{site.name}</a>
+    <a class="brand" href="/">{site.name} <span aria-hidden="true">|</span> <span class="tag">Portfolio</span></a>
 
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
       <span class="menu-label">Menu</span>
@@ -38,6 +38,8 @@ const links = [
     position: sticky;
     top: 0;
     z-index: 50;
+    background: rgb(239 229 211 / 0.94);
+    backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--line);
   }
   .bar {
@@ -48,12 +50,16 @@ const links = [
     min-height: 4rem;
   }
   .brand {
-    font-family: var(--font-serif);
-    font-size: 1.5rem;
+    font-size: var(--step-label);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     line-height: 1;
-    color: var(--cream);
+    color: var(--java);
     text-decoration: none;
+    white-space: nowrap;
   }
+  @media (max-width: 30rem) { .brand .tag, .brand [aria-hidden] { display: none; } }
 
   .menu-toggle {
     display: inline-flex;
@@ -63,7 +69,7 @@ const links = [
     padding: 0 0.25rem;
     background: none;
     border: 0;
-    color: var(--cream);
+    color: var(--java);
     font: 600 var(--step-label) / 1 var(--font-sans);
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -88,50 +94,53 @@ const links = [
     padding: 0;
   }
   .menu a {
-    color: var(--cream);
+    color: var(--java);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
   }
-  .menu a:hover { text-decoration: underline; text-underline-offset: 0.3em; }
+  .menu a:hover { color: var(--rust); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.35em; }
 
   /* Mobile: drop-down panel */
-  @media (max-width: 47.99rem) {
+  @media (max-width: 63.99rem) {
     .menu {
       position: absolute;
       inset: 100% 0 auto 0;
-      background: var(--espresso);
-      border-bottom: 1px solid var(--line);
+      background: var(--cream);
+      border-bottom: 2px solid var(--java);
       padding: 0.5rem var(--gutter) 1.5rem;
     }
     .menu[data-open='false'] { display: none; }
     .menu a {
       display: block;
       padding: 0.75rem 0;
-      font-family: var(--font-serif);
       font-size: 2rem;
-      font-weight: 400;
-      line-height: 1.1;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      line-height: 1;
+      border-bottom: 1px solid var(--line);
     }
   }
 
   /* Desktop: inline links */
-  @media (min-width: 48rem) {
+  @media (min-width: 64rem) {
     .menu-toggle { display: none; }
-    .menu ul { display: flex; gap: 2rem; }
+    .menu ul { display: flex; gap: 1.75rem; }
+    .menu a { white-space: nowrap; }
     .menu a {
       font-size: var(--step-label);
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
     }
-    .menu .resume { color: var(--bisque); }
+    .menu .resume { color: var(--rust); }
   }
 </style>
 
 <script>
   const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
   const menu = document.getElementById('site-menu');
-  const mq = window.matchMedia('(max-width: 47.99rem)');
+  const mq = window.matchMedia('(max-width: 63.99rem)');
 
   function setOpen(open: boolean) {
     if (!toggle || !menu) return;

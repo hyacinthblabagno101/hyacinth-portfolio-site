@@ -197,8 +197,8 @@ const tabs = showcase.map((c) => {
 
 <style>
   .showcase { padding-block: var(--section); }
-  .head { display: grid; gap: 1rem; max-width: 46rem; margin-bottom: 2.5rem; }
-  .lede { color: var(--text-muted); }
+  .head { display: grid; gap: 1rem; margin-bottom: 2.5rem; }
+  .lede { color: var(--text-muted); max-width: 46rem; }
 
   /* Tabs: a quiet underline that slides to the active tab */
   .tabs {
@@ -310,12 +310,12 @@ const tabs = showcase.map((c) => {
     display: flex; align-items: center; gap: 0.5rem;
     margin: 2rem auto 0;
     min-height: 2.75rem; padding: 0.6rem 1.4rem;
-    background: transparent; color: var(--burgundy);
-    border: 1px solid var(--burgundy); border-radius: 999px;
-    font: inherit; font-weight: 600; font-size: var(--step-small); cursor: pointer;
+    background: transparent; color: var(--java);
+    border: 1px solid var(--java); border-radius: 0;
+    font: inherit; font-weight: 500; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
     transition: background 0.25s ease, color 0.25s ease;
   }
-  .more:hover { background: var(--burgundy); color: var(--cream); }
+  .more:hover { background: var(--java); color: var(--cream); }
   .panel[data-expanded] .more { display: none; }
 
   /* Staggered fade-in when a tab opens or more items are shown */
@@ -327,7 +327,7 @@ const tabs = showcase.map((c) => {
   /* Viewer */
   .viewer {
     width: min(100vw - 2rem, 64rem); max-height: calc(100vh - 2rem);
-    padding: 0; border: 0; border-radius: 6px;
+    padding: 0; border: 0; border-radius: 0;
     background: var(--java); color: var(--cream);
   }
   .viewer::backdrop { background: rgb(35 24 21 / 0.86); backdrop-filter: blur(3px); }
