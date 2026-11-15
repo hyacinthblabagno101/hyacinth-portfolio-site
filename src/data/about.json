@@ -7,39 +7,51 @@
     "I also handle the less visible work that keeps a team moving, like organizing files, tracking deliverables, and keeping product listings up to date."
   ],
   "facts": [
-    { "label": "Based in", "value": "Philippines" },
-    { "label": "Open to", "value": "[PLACEHOLDER: e.g. remote full-time roles, contract work]" }
+    {
+      "label": "Based in",
+      "value": "Philippines"
+    },
+    {
+      "label": "Open to",
+      "value": "[PLACEHOLDER: e.g. remote full-time roles, contract work]"
+    }
   ],
   "portraitAlt": "Hyacinth Blabagno in a brown suit, on a phone call while working on a laptop",
   "skills": [
     {
       "title": "Social media management",
       "text": "Account setup and profile optimization, content strategy and calendars, research and ideation, scheduling and publishing, and replying to comments and messages.",
-      "category": "Social Media & Design"
+      "category": "Social Media & Design",
+      "help": "I can take day-to-day ownership of your accounts: set up and optimize profiles, plan the content strategy and calendar, research ideas, schedule and publish, and reply to comments and messages."
     },
     {
       "title": "Creative production",
       "text": "Static posts, carousels, and short-form video for organic content and ads. I take an idea from brief and script through design, editing, and resizing for each platform.",
-      "category": "Short-Form Video"
+      "category": "Short-Form Video",
+      "help": "I can make the content your channels run on, from static posts and carousels to short-form video for organic posts and ads. I take each idea from brief and script through design, editing, and resizing for every platform."
     },
     {
       "title": "UGC and influencer coordination",
       "text": "Brand and creator research, outreach, campaign briefs, scripts and visual hooks, and tracking deliverables through review, by direct outreach or inside a client's influencer platform.",
-      "category": "UGC & Influencer"
+      "category": "UGC & Influencer",
+      "help": "I can run creator collaborations from start to finish: research brands and creators, handle outreach, write briefs, scripts, and visual hooks, and track deliverables through review, by direct outreach or inside your influencer platform."
     },
     {
       "title": "E-commerce support",
       "text": "Product image editing in Photoshop and Lightroom, product presentation, and website listings, with close attention to fabric, color, and garment details.",
-      "category": "E-commerce"
+      "category": "E-commerce",
+      "help": "I can get your products ready to sell online: edit product images in Photoshop and Lightroom, present each product clearly, and handle website listings with close attention to fabric, color, and garment details."
     },
     {
       "title": "AI-assisted workflows",
       "text": "Landing pages, forms, spreadsheet workflows, and simple automations built with AI tools, each one made to solve a specific day-to-day problem.",
-      "category": "Digital Workflows"
+      "category": "Digital Workflows",
+      "help": "I can use AI tools to build the small things that save your team time: landing pages, forms, spreadsheet workflows, and simple automations, each one made for a specific day-to-day problem."
     },
     {
       "title": "Virtual assistance",
-      "text": "File organization, content coordination, and admin support that keeps campaigns and teams on schedule."
+      "text": "File organization, content coordination, and admin support that keeps campaigns and teams on schedule.",
+      "help": "I can keep files organized, coordinate content, and handle the admin work that keeps campaigns and teams on schedule."
     }
   ]
 }

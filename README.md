@@ -20,7 +20,7 @@ My personal portfolio for job applications. It's a static Astro site: every page
 
 ## Booking link and brand groups
 
-- **Book a call:** paste your Calendly link into `"bookingUrl"` in `src/data/site.json`. Until then, every "Book a call" button goes to the contact form and picks the right service in "What can I help with?".
+- **Schedule a call:** paste your Calendly link into `"bookingUrl"` in `src/data/site.json`. Until then, "Schedule a call" and every "Talk about a role" button go to the contact form, which notes the skill the visitor asked about.
 - **Brands handled through a client:** `"groups"` in `src/data/showcase.json` lists brands that show inside one client's card (for example Expert Biotics, Uncle Scientist and Stacked Science under Proper Ecom).
 
 ## Two safety rules built in

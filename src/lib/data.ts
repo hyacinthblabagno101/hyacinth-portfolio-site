@@ -26,7 +26,7 @@ const siteSchema = z.object({
   resumeFile: z.string(),
   /** The resume download only appears on the live site once this is true. */
   resumeConfirmed: z.boolean(),
-  /** Calendly (or other booking) link for "Book a call". While it's a [PLACEHOLDER], the buttons go to the contact form. */
+  /** Calendly (or other booking) link for "Schedule a call" and "Talk about a role". While it's a [PLACEHOLDER], the buttons go to the contact form. */
   bookingUrl: z.string().optional(),
   cloudName: z.string(),
   cloudFolder: z.string(),
@@ -76,7 +76,7 @@ export const about = parse(
     bio: z.array(z.string()),
     facts: z.array(z.object({ label: z.string(), value: z.string() })),
     portraitAlt: z.string(),
-    skills: z.array(z.object({ title: z.string(), text: z.string(), category: z.string().optional() })),
+    skills: z.array(z.object({ title: z.string(), text: z.string(), help: z.string().optional(), category: z.string().optional() })),
   }),
   aboutJson,
   'about.json',

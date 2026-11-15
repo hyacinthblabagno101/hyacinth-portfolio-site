@@ -3,7 +3,7 @@
  * Contact. Email, profile links and resume all come from src/data/site.json.
  * Anything still a [PLACEHOLDER] is left off the live site, so a fake address is never published.
  */
-import { about, site, publicEmail, publishedSocials, resumeFile, isPlaceholder, showUnconfirmed } from '../lib/data';
+import { site, publicEmail, publishedSocials, resumeFile, isPlaceholder, showUnconfirmed } from '../lib/data';
 
 const mailto = publicEmail ? `mailto:${publicEmail}?subject=${encodeURIComponent('Job opportunity')}` : undefined;
 const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholder(s.url)) : [];
@@ -95,12 +95,15 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
         <input id="cf-company" name="company" type="text" autocomplete="organization" />
       </div>
       <div class="field">
-        <label for="cf-topic">What can I help with?</label>
-        <select id="cf-topic" name="topic" data-topic>
-          <option value="A job opening">A job opening on your team</option>
-          {about.skills.map((s) => <option value={s.title}>{s.title}</option>)}
-          <option value="Something else">Something else</option>
+        <label for="cf-topic">What's this about?</label>
+        <select id="cf-topic" name="topic">
+          <option>A full-time role</option>
+          <option>A part-time role</option>
+          <option>A contract role</option>
+          <option>Something else</option>
         </select>
+        <input type="hidden" name="skill" value="" data-skill />
+        <p class="skill-note" data-skill-note hidden></p>
       </div>
       <div class="field">
         <label for="cf-message">Message</label>
@@ -148,6 +151,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
     appearance: none;
   }
   .field select option { color: var(--ink); background: var(--paper); }
+  .skill-note { font-size: var(--fs-small); color: var(--rose); }
   .field select:focus-visible { outline: 3px solid var(--rose); outline-offset: 2px; border-color: var(--paper); }
   .field input:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--rose); outline-offset: 2px; border-color: var(--paper); }
   .field input:user-invalid, .field textarea:user-invalid { border-color: var(--rose); }
@@ -205,12 +209,15 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
 </style>
 
 <script>
-  // "Book a call" buttons (while there's no booking link) pick their service in the form, then the page scrolls here
-  const topic = document.querySelector<HTMLSelectElement>('[data-topic]');
+  // "Talk about a role" buttons (while there's no booking link) note the skill in the form, then the page scrolls here
+  const skillField = document.querySelector<HTMLInputElement>('[data-skill]');
+  const skillNote = document.querySelector<HTMLElement>('[data-skill-note]');
   document.addEventListener('click', (e) => {
     const link = (e.target as HTMLElement).closest<HTMLElement>('[data-service]');
-    if (!link || !topic) return;
-    topic.value = link.dataset.service!;
+    if (!link || !skillField || !skillNote) return;
+    skillField.value = link.dataset.service!;
+    skillNote.textContent = `Skill you asked about: ${link.dataset.service}`;
+    skillNote.hidden = false;
     // After the scroll, put the cursor in the first field
     window.setTimeout(() => document.getElementById('cf-name')?.focus({ preventScroll: true }), 600);
   });

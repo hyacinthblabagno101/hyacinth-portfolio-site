@@ -1,11 +1,13 @@
 ---
 /**
  * "What I do": one card per skill, text from "skills" in src/data/about.json.
+ * Each card shows "help": one first-person line on how I can help a team with that skill.
  * Each card has two buttons:
  * - "See details" opens a panel with everything the skill covers (split from the skill text) and a link to
  *   matching work when there is some.
- * - "Book a call" opens my booking link (bookingUrl in site.json) when it's set. Until then it jumps to the
- *   contact form and picks this skill in "What can I help with?".
+ * - "Talk about a role" opens my booking link (bookingUrl in site.json) when it's set. Until then it jumps to
+ *   the contact form and notes which skill the visitor asked about.
+ * Wording is for hiring managers: this is a job portfolio, not a list of services for sale.
  */
 import { about, showcase, bookingUrl } from '../lib/data';
 
@@ -24,7 +26,7 @@ function split(text: string) {
     .replace(/\.$/, '')
     .split(/,\s*(?:and\s+)?/i)
     .map((p) => p.trim())
-    .filter(Boolean)
+    .filter((p) => p && !/^by /i.test(p)) // "by direct outreach or..." describes how, not a task; the help line covers it
     .map((p) => p.charAt(0).toUpperCase() + p.slice(1));
   return { parts, note: rest.join(' ') };
 }
@@ -39,7 +41,7 @@ const skills = about.skills.map((s, i) => {
   <div class="wrap">
     <header class="top">
       <h2 id="skills-title">What I <em>do</em></h2>
-      <p class="lede">Open any service for the details, or book a call about it.</p>
+      <p class="lede">How I can help your team. Open a skill to see what it covers, or set up a call to talk about your open role.</p>
     </header>
 
     <ul class="cards" role="list">
@@ -47,20 +49,18 @@ const skills = about.skills.map((s, i) => {
         <li class="card reveal" style={`--delay: ${(n % 3) * 70}ms`}>
           <span class="num" aria-hidden="true">{s.num}</span>
           <h3>{s.title}</h3>
-          <ul class="tags" role="list">
-            {s.parts.filter((p) => p.length <= 34).slice(0, 3).map((p) => <li>{p}</li>)}
-          </ul>
+          <p class="help">{s.help ?? s.text}</p>
           <div class="buttons">
             <button type="button" class="btn btn-ghost small" data-open={s.id} aria-haspopup="dialog">
               See details <span class="visually-hidden">about {s.title}</span>
             </button>
             {bookingUrl ? (
               <a class="btn btn-primary small" href={bookingUrl} target="_blank" rel="noopener">
-                Book a call <span class="visually-hidden">about {s.title} (opens in a new tab)</span>
+                Talk about a role <span class="visually-hidden">that needs {s.title.toLowerCase()} (opens in a new tab)</span>
               </a>
             ) : (
               <a class="btn btn-primary small" href="#contact" data-service={s.title}>
-                Book a call <span class="visually-hidden">about {s.title}</span>
+                Talk about a role <span class="visually-hidden">that needs {s.title.toLowerCase()}</span>
               </a>
             )}
           </div>
@@ -70,16 +70,17 @@ const skills = about.skills.map((s, i) => {
               <button type="button" class="close" data-close aria-label="Close">&times;</button>
               <p class="num" aria-hidden="true">{s.num}</p>
               <h3 id={`${s.id}-dtitle`}>{s.title}</h3>
-              <p class="label">What's included</p>
+              {s.help && <p class="lead">{s.help}</p>}
+              <p class="label">What this covers</p>
               <ul class="included" role="list">
                 {s.parts.map((p) => <li>{p}</li>)}
               </ul>
               {s.note && <p class="note">{s.note}</p>}
               <div class="buttons">
                 {bookingUrl ? (
-                  <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Book a call <span class="visually-hidden">(opens in a new tab)</span></a>
+                  <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Talk about a role <span class="visually-hidden">(opens in a new tab)</span></a>
                 ) : (
-                  <a class="btn btn-primary" href="#contact" data-service={s.title} data-close>Book a call</a>
+                  <a class="btn btn-primary" href="#contact" data-service={s.title} data-close>Talk about a role</a>
                 )}
                 {s.link && <a class="btn btn-ghost" href={s.link.href} data-close>{s.link.label}</a>}
               </div>
@@ -109,11 +110,7 @@ const skills = about.skills.map((s, i) => {
   }
   .card:hover { border-color: rgb(244 244 241 / 0.4); background: rgb(244 244 241 / 0.06); }
   .num { font-family: var(--font-serif); font-style: italic; color: var(--rose); }
-  .tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; align-content: start; }
-  .tags li {
-    padding: 0.25rem 0.65rem; border: 1px solid var(--line); border-radius: var(--radius-pill);
-    font-size: var(--fs-small); color: var(--text-muted);
-  }
+  .help { color: var(--text-muted); }
   .buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .btn.small { min-height: 2.75rem; padding: 0.5rem 1.1rem; }
 
@@ -135,6 +132,7 @@ const skills = about.skills.map((s, i) => {
   .included li { padding: 0.6rem 0 0.6rem 1.5rem; border-bottom: 1px solid var(--line); position: relative; }
   .included li::before { content: ''; position: absolute; left: 0.2rem; top: 1.25rem; width: 0.55rem; height: 1px; background: var(--wine); }
   .note { color: var(--text-muted); }
+  .lead { font-family: var(--font-serif); font-size: var(--fs-body); line-height: 1.6; }
   .details .buttons { margin-top: 0.5rem; }
   .details .btn-ghost { color: var(--ink); }
   .details .btn-ghost:hover { background: var(--ink); color: var(--paper); }
