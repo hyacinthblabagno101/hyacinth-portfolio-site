@@ -16,12 +16,12 @@ import { showAbout, showExperience } from '../lib/data';
 
 <Base>
   <Hero />
+  {showAbout && <About />}
   <SelectedWork />
   <Showcase />
   <Testimonials />
   <Skills />
   <CaseStudies />
-  {showAbout && <About />}
   {showExperience && <Experience />}
   <Certifications />
   <Tools />
