@@ -15,7 +15,7 @@ const quotes = proof.testimonials.slice(0, SHOWN).map((t, i) => ({ ...t, id: `qu
 
 <section id="feedback" class="feedback" aria-labelledby="feedback-title">
   <div class="wrap">
-    <header class="top reveal">
+    <header class="section-head reveal">
       <h2 id="feedback-title">Client <em>feedback</em></h2>
       <p class="lede">A few words from brands I've worked with directly.</p>
     </header>
@@ -53,12 +53,7 @@ const quotes = proof.testimonials.slice(0, SHOWN).map((t, i) => ({ ...t, id: `qu
 </section>
 
 <style>
-  .feedback { padding-block: var(--section); background: var(--greige); }
-  .top {
-    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1rem 2rem;
-    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
-  }
-  .lede { color: var(--text-muted); max-width: 34ch; }
+  .feedback { padding-block: var(--section); }
 
   .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; align-items: start; }
   @media (min-width: 48rem) { .cards { grid-template-columns: repeat(2, 1fr); } }
@@ -68,7 +63,7 @@ const quotes = proof.testimonials.slice(0, SHOWN).map((t, i) => ({ ...t, id: `qu
   .card {
     display: grid; gap: 1rem;
     padding: clamp(1.5rem, 1.2rem + 1vw, 2rem);
-    border-radius: var(--radius-media); background: var(--paper);
+    border-radius: var(--radius-media); background: #fff; border: 1px solid var(--line);
     transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s ease;
   }
   @media (hover: hover) {
@@ -89,7 +84,7 @@ const quotes = proof.testimonials.slice(0, SHOWN).map((t, i) => ({ ...t, id: `qu
   }
   .quote.folded::after {
     content: ''; position: absolute; inset: auto 0 0 0; height: 2.5em;
-    background: linear-gradient(to bottom, rgb(244 244 241 / 0), var(--paper));
+    background: linear-gradient(to bottom, rgb(255 255 255 / 0), #fff);
     transition: opacity 0.3s ease;
   }
   .quote.folded.open { max-height: 40em; }

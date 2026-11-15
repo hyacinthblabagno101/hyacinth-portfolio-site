@@ -39,7 +39,7 @@ const skills = about.skills.map((s, i) => {
 
 <section id="skills" class="skills band-dark" aria-labelledby="skills-title">
   <div class="wrap">
-    <header class="top">
+    <header class="section-head">
       <h2 id="skills-title">What I <em>do</em></h2>
       <p class="lede">How I can help your team. Open a skill to see what it covers, or set up a call to talk about your open role.</p>
     </header>
@@ -94,8 +94,6 @@ const skills = about.skills.map((s, i) => {
 
 <style>
   .skills { padding-block: var(--section); }
-  .top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1rem 2rem; margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem); }
-  .lede { color: var(--text-muted); max-width: 36ch; }
 
   .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
   @media (min-width: 40rem) { .cards { grid-template-columns: repeat(2, 1fr); } }

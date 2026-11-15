@@ -110,9 +110,16 @@ h1 em, h2 em {
 }
 h3 { font-size: var(--fs-h3); line-height: 1.1; letter-spacing: -0.02em; }
 
-/* Every section header opens with a strong rule, like a magazine page */
-.head { border-top: 1px solid var(--rule); padding-top: clamp(1.25rem, 1rem + 1vw, 1.75rem); }
-.head .eyebrow { color: var(--accent); }
+/* One header pattern for every section: the title on the left, one short line or link on the right */
+.section-head {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1rem 2rem;
+  margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+}
+.section-head .lede { color: var(--text-muted); max-width: 40ch; }
+.section-head .head-link {
+  display: inline-flex; gap: 0.4rem; align-items: center; min-height: 2.75rem;
+  font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text);
+}
 
 p { margin: 0; text-wrap: pretty; }
 

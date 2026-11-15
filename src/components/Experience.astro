@@ -14,8 +14,9 @@ const rest = roles.slice(OPEN);
 
 <section id="experience" class="experience" aria-labelledby="experience-title">
   <div class="wrap">
-    <header class="head">
+    <header class="section-head">
       <h2 id="experience-title">Where I've <em>worked</em></h2>
+      <p class="lede">Roles I've held, most recent first.</p>
     </header>
 
     <ol class="timeline" role="list">
@@ -40,9 +41,8 @@ const rest = roles.slice(OPEN);
 
 <style>
   .experience { padding-block: var(--section); }
-  .head { display: grid; gap: 1rem; }
 
-  .timeline { list-style: none; margin: 3rem 0 0; padding: 0; }
+  .timeline { list-style: none; margin: 0; padding: 0; }
   .more .timeline { margin-top: 0; }
   .timeline :global(.item) {
     display: grid;
