@@ -1,229 +1,233 @@
 ---
 /**
- * Hero, set like a social media portfolio cover:
- * 1. A thin meta line: my role on the left, where I'm based (and availability, once it's set) on the right.
- * 2. Big type: "SOCIAL media MANAGER".
- * 3. Below: my intro and buttons, a stack of polaroids (my photo plus two pieces of work that open in the viewer),
- *    and a column of facts counted straight from the site's own data, so they are always true.
- * Text comes from "hero" in src/data/site.json. Photo: src/assets/portrait-about.jpg.
+ * Hero: my name, role and status, a short headline and intro, two buttons, and a wall of my real reels.
+ * - The wall is three columns that drift slowly in opposite directions. One reel per column plays a short
+ *   silent preview; the rest are still frames. Selecting a reel opens it in the viewer (Showcase.astro).
+ * - With reduced motion turned on, the wall stands still and nothing plays.
+ * - On phones and tablets the wall becomes one row of reels you can swipe, under the text.
+ * Text comes from "hero" in src/data/site.json. "Book a call" uses bookingUrl when it's set, otherwise the form.
  */
-import { Picture } from 'astro:assets';
-import portrait from '../assets/portrait-about.jpg';
-import { site, about, filled, publicEmail, publishedSocials, resumeFile, showUnconfirmed, showcase, proof } from '../lib/data';
-import { viewerEntry, tileMedia } from '../lib/showcaseMedia';
+import { site, filled, showUnconfirmed, showcase, proof, bookingUrl } from '../lib/data';
+import { viewerEntry } from '../lib/showcaseMedia';
+import { posterFor, videoPreviewUrl } from '../lib/cloudinary';
 
 const { hero } = site;
 const availability = filled(site.availability);
 const shortRole = site.role.split('|')[0].trim();
-const location = site.location;
-const linkedin = publishedSocials.find((s) => s.label === 'LinkedIn');
-const mailto = publicEmail ? `mailto:${publicEmail}?subject=${encodeURIComponent('Job opportunity')}` : undefined;
+const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+// "scrolling" is set in the italic accent
+const headlineHtml = escape(hero.headline).replace(/scrolling/i, (m) => `<em>${m}</em>`);
 
 const items = showcase.flatMap((c) => c.items);
 const brands = new Set(items.map((i) => i.brand).filter(Boolean));
-
 // Facts: every number is counted from the data files, never typed in by hand
 const facts = [
-  { value: brands.size, label: 'brands featured', href: '#selected' },
-  { value: showcase.length, label: 'content formats', href: '#work' },
-  { value: proof.testimonials.length, label: 'client reviews', href: '#feedback' },
+  { value: brands.size, label: 'brands' },
+  { value: showcase.length, label: 'content formats' },
+  { value: proof.testimonials.length, label: 'client reviews' },
 ];
 
-// Two polaroids of real work beside my photo
-const pick = (id: string) => items.find((i) => i.id === id);
-const polaroids = [pick('board-properecom'), pick('reel-ss-top-trends') ?? items[0]]
-  .filter((i): i is NonNullable<typeof i> => !!i)
-  .map((i) => ({ entry: viewerEntry(i), media: tileMedia(i, i.kind === 'video' ? '9:16' : '4:5', [320, 480]), kind: i.kind, alt: i.alt }));
+// Reel wall: branded reels first, then featured ones, 12 in all, split into 3 columns
+const reels = (showcase.find((c) => c.key === 'reels')?.items ?? [])
+  .slice()
+  .sort((a, b) => Number(!!b.brand) - Number(!!a.brand) || Number(!!b.featured) - Number(!!a.featured))
+  .slice(0, 12);
+const columns = [0, 1, 2].map((c) =>
+  reels
+    .filter((_, i) => i % 3 === c)
+    .map((r, i) => ({
+      entry: viewerEntry(r),
+      poster: posterFor({ id: r.media }, 360, '9:16'),
+      // The second reel in each column plays a short silent preview
+      preview: i === 1 ? videoPreviewUrl(r.media, 360, '9:16') : undefined,
+      alt: r.alt,
+    })),
+);
+
+const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.secondaryCta.href, external: false };
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <div class="wrap">
-    <p class="meta rise">
-      <span class="who"><strong>{site.name}</strong> <span aria-hidden="true">/</span> {shortRole}</span>
-      <span class="right">
-        <span class="loc">Based in the {location}</span>
-        {availability ? <span class="status"><i aria-hidden="true" />{availability}</span> : showUnconfirmed && <span class="placeholder">{site.availability}</span>}
-      </span>
-    </p>
+  <div class="wrap grid">
+    <div class="copy">
+      <p class="meta rise">
+        <span class="who"><strong>{site.name}</strong> <span aria-hidden="true">/</span> {shortRole}</span>
+        <span class="right">
+          <span>Based in the {site.location}</span>
+          {availability ? <span class="status"><i aria-hidden="true" />{availability}</span> : showUnconfirmed && <span class="placeholder">{site.availability}</span>}
+        </span>
+      </p>
 
-    <div class="title rise" style="--delay: 0.05s">
-      <h1 id="hero-title" class="mast">
-        <span class="visually-hidden">{site.name}, </span>
-        <span class="l1">Social <em>media</em></span>
-        <span class="l2">Manager</span>
+      <h1 id="hero-title" class="rise" style="--delay: 0.06s">
+        <span class="visually-hidden">{site.name}, {shortRole}. </span>
+        <span set:html={headlineHtml} />
       </h1>
+
+      <p class="intro rise" style="--delay: 0.12s">{hero.intro}</p>
+
+      <div class="actions rise" style="--delay: 0.18s">
+        <a class="btn btn-primary" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
+        <a class="btn btn-ghost" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>
+          {hero.secondaryCta.label}
+          {book.external && <span class="visually-hidden">(opens in a new tab)</span>}
+        </a>
+      </div>
+
+      <ul class="facts rise" style="--delay: 0.24s" role="list" aria-label="This portfolio at a glance">
+        {facts.map((f) => <li><strong>{f.value}</strong> <span>{f.label}</span></li>)}
+      </ul>
     </div>
 
-    <div class="below">
-      <div class="copy rise" style="--delay: 0.12s">
-        <p class="hi">Hi, I'm <em>Hyacinth.</em></p>
-        <p class="intro">{hero.intro.replace(/^I'm Hyacinth, a/, 'A')}</p>
-        <div class="actions">
-          <a class="btn btn-primary" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
-          <a class="btn btn-ghost" href={hero.secondaryCta.href}>{hero.secondaryCta.label}</a>
-        </div>
-        <p class="links">
-          {linkedin && <a href={linkedin.url} target="_blank" rel="me noopener">LinkedIn <span class="visually-hidden">(opens in a new tab)</span><span aria-hidden="true">&#8599;</span></a>}
-          {mailto && <a href={mailto}>Email</a>}
-          {resumeFile && <a href={resumeFile} download>Download CV</a>}
-        </p>
-      </div>
-
-      <div class="polaroids rise" style="--delay: 0.2s">
-        <figure class="card me">
-          <Picture
-            src={portrait}
-            alt={about.portraitAlt}
-            widths={[320, 480, 640]}
-            sizes="(min-width: 64rem) 15rem, 46vw"
-            formats={['avif', 'webp']}
-            loading="eager"
-            fetchpriority="high"
-          />
-          <figcaption>that's me</figcaption>
-        </figure>
-        <ul role="list" aria-label="Recent work" data-viewer-list>
-          {polaroids.map((p, n) => (
-            <li class:list={['card', `work-${n + 1}`]}>
-              <a
-                class="tile-link"
-                href={p.entry.full}
-                data-kind={p.entry.kind}
-                data-full={p.entry.full}
-                data-poster={p.entry.poster}
-                data-title={p.entry.title}
-                data-brand={p.entry.brand}
-                data-alt={p.entry.alt}
-                data-role={p.entry.role}
-              >
-                <span class="frame">
-                  <img src={p.media.src} srcset={p.media.srcset} sizes="(min-width: 64rem) 12rem, 36vw" width={p.media.width} height={p.media.height} alt={p.alt} loading="eager" decoding="async" />
-                  {p.kind === 'video' && (
-                    <span class="play" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" width="11" height="11"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
-                    </span>
-                  )}
-                </span>
-                <span class="cap" aria-hidden="true">{p.entry.brand ?? p.entry.title}</span>
-                <span class="visually-hidden">{p.kind === 'video' ? 'Play video' : 'View'}: {p.entry.title}{p.entry.brand ? `, ${p.entry.brand}` : ''}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <ul class="facts rise" style="--delay: 0.26s" role="list" aria-label="This portfolio at a glance">
-        {facts.map((f) => (
-          <li>
-            <a href={f.href}><strong>{f.value}</strong><span>{f.label}</span></a>
-          </li>
-        ))}
-      </ul>
+    <div class="wall rise" style="--delay: 0.15s" role="group" aria-label="Recent reels">
+      {
+        columns.map((col, c) => (
+          <div class:list={['col', `col-${c + 1}`]}>
+            <ul class="track" role="list" data-viewer-list>
+              {col.map((r) => (
+                <li>
+                  <a
+                    class="tile-link reel"
+                    href={r.entry.full}
+                    data-kind={r.entry.kind}
+                    data-full={r.entry.full}
+                    data-poster={r.entry.poster}
+                    data-title={r.entry.title}
+                    data-brand={r.entry.brand}
+                    data-alt={r.entry.alt}
+                    data-role={r.entry.role}
+                  >
+                    <img src={r.poster} width="360" height="640" alt={r.alt} loading={c === 1 ? 'eager' : 'lazy'} decoding="async" />
+                    {r.preview && <video muted loop playsinline preload="none" data-wall-src={r.preview} aria-hidden="true" />}
+                    {r.entry.brand && <span class="tag" aria-hidden="true">{r.entry.brand}</span>}
+                    <span class="visually-hidden">Play video: {r.entry.title}{r.entry.brand ? `, ${r.entry.brand}` : ''}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            {/* A copy of the column so the drift loops without a gap; hidden from screen readers and the viewer */}
+            <ul class="track copy-track" role="list" aria-hidden="true">
+              {col.map((r) => (
+                <li>
+                  <span class="reel">
+                    <img src={r.poster} width="360" height="640" alt="" loading="lazy" decoding="async" />
+                    {r.entry.brand && <span class="tag">{r.entry.brand}</span>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
     </div>
   </div>
 </section>
 
 <style>
-  .hero { padding-block: clamp(1.25rem, 1rem + 1.5vw, 2rem) clamp(3.5rem, 2.5rem + 4vw, 6rem); overflow-x: clip; }
+  .hero { padding-block: clamp(1.5rem, 1rem + 2vw, 2.5rem) clamp(3rem, 2rem + 4vw, 5rem); overflow-x: clip; }
+  .grid { display: grid; gap: clamp(2rem, 1rem + 3vw, 3.5rem); align-items: center; }
+  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 4rem; } }
+  .grid > * { min-width: 0; }
 
+  .copy { display: grid; gap: clamp(1.25rem, 1rem + 1vw, 1.75rem); align-content: center; }
   .meta {
-    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1.5rem;
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1.5rem;
     font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);
   }
   .meta .who strong { color: var(--ink); font-weight: 700; }
-  .meta .right { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 1.5rem; }
+  .meta .right { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; }
   .status { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.2rem 0.65rem; border: 1px solid var(--line); border-radius: var(--radius-pill); color: var(--ink); }
   .status i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #2b8a3e; box-shadow: 0 0 0 3px var(--greige-soft); }
 
-  /* Big type */
-  .title { position: relative; margin-top: clamp(1.25rem, 0.8rem + 2vw, 2.5rem); }
-  .mast {
-    font-family: var(--font-sans);
-    font-size: var(--fs-display);
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: -0.06em;
-    line-height: 0.86;
+  h1 {
+    font-size: clamp(2.75rem, 1.2rem + 5.4vw, 5.75rem);
+    font-weight: 800; letter-spacing: -0.055em; line-height: 0.95;
+    max-width: 11ch;
   }
-  .mast > span:not(.visually-hidden) { display: block; }
-  .mast em { font-size: 1.04em; letter-spacing: -0.02em; }
-  .mast .l2 { text-align: right; }
-
-  /* Below: intro, polaroids, facts */
-  .below {
-    display: grid; gap: clamp(2.5rem, 2rem + 2vw, 3.5rem);
-    margin-top: clamp(2.25rem, 1.5rem + 3vw, 4rem);
-  }
-  @media (min-width: 64rem) {
-    .below { grid-template-columns: 1fr 1.15fr 0.8fr; align-items: end; gap: 3rem; margin-top: clamp(2.5rem, 2rem + 2vw, 3.5rem); }
-  }
-  .below > * { min-width: 0; }
-
-  .hi { font-family: var(--font-serif); font-size: var(--fs-stat); line-height: 1.1; color: var(--ink); }
-  .hi em { color: var(--wine); }
-  .intro { margin-top: 0.9rem; color: var(--text-muted); max-width: 44ch; }
-  .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.5rem; }
+  h1 :global(em) { font-size: 0.92em; }
+  .intro { color: var(--text-muted); max-width: 46ch; font-size: var(--fs-lead); line-height: 1.5; }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
   @media (max-width: 30rem) { .actions .btn { flex: 1 1 100%; } }
-  .links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; margin-top: 1.1rem; }
-  .links a {
-    display: inline-flex; align-items: center; gap: 0.25rem; min-height: 2.75rem;
-    font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink);
-  }
-  .links a:hover { color: var(--wine); }
 
-  /* Polaroids */
-  .polaroids { position: relative; height: clamp(21rem, 15rem + 18vw, 27rem); }
-  .polaroids ul { list-style: none; margin: 0; padding: 0; }
-  .card {
-    position: absolute; margin: 0;
-    width: clamp(8.5rem, 5rem + 10vw, 12rem);
-    padding: 0.55rem 0.55rem 0;
-    background: #fff;
-    box-shadow: 0 1px 2px rgb(34 21 22 / 0.06), 0 12px 28px -14px rgb(34 21 22 / 0.3);
-    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-  .card :global(img), .frame img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: var(--greige); }
-  .me :global(img) { object-position: 50% 20%; }
-  .card figcaption, .cap {
-    display: block; padding: 0.45rem 0 0.55rem; text-align: center;
-    font-family: var(--font-serif); font-style: italic; font-size: var(--fs-body); line-height: 1.2; color: var(--ink);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .me { left: 0; top: 8%; transform: rotate(-5deg); z-index: 2; }
-  .work-1 { left: 27%; top: 0; transform: rotate(4deg); z-index: 1; }
-  .work-2 { right: 0; top: 22%; transform: rotate(-2deg); z-index: 3; }
-  .tile-link { display: block; color: inherit; text-decoration: none; }
-  .tile-link:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
-  .frame { position: relative; display: block; overflow: hidden; }
-  .play {
-    position: absolute; top: 0.5rem; left: 0.5rem;
-    display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%;
-    background: var(--paper); color: var(--ink);
-  }
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .card:hover { transform: rotate(0deg) translateY(-6px); z-index: 4; }
-  }
+  .facts { list-style: none; margin: 0; padding: 1rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; border-top: 1px solid var(--line); }
+  .facts li { display: flex; align-items: baseline; gap: 0.45rem; }
+  .facts strong { font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.04em; }
+  .facts span { font-family: var(--font-serif); font-style: italic; color: var(--text-muted); }
 
-  /* Facts: number left, italic label right, hairlines between */
-  .facts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
-  .facts a {
-    display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
-    padding: 0.8rem 0; border-bottom: 1px solid var(--line);
-    color: var(--ink); text-decoration: none;
-    transition: padding 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* Reel wall */
+  .wall {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem;
+    height: clamp(30rem, 24rem + 14vw, 40rem);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
   }
-  .facts a:hover { padding-left: 0.4rem; }
-  .facts strong { font-size: var(--fs-stat); font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
-  .facts span { font-family: var(--font-serif); font-style: italic; font-size: var(--fs-body); color: var(--text-muted); }
-  .facts a:hover span { color: var(--wine); }
+  .col { display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
+  .col-2 { margin-top: -4rem; }
+  .track { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+  .reel {
+    position: relative; display: block; overflow: hidden;
+    aspect-ratio: 9 / 16; border-radius: var(--radius-media); background: var(--greige);
+    color: inherit; text-decoration: none;
+  }
+  .reel img, .reel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .reel img { transition: transform 0.5s ease; }
+  a.reel:hover img { transform: scale(1.03); }
+  .reel video { opacity: 0; transition: opacity 0.6s ease; }
+  .reel :global(video.playing) { opacity: 1; }
+  .tag {
+    position: absolute; left: 0.5rem; bottom: 0.5rem; z-index: 1;
+    padding: 0.2rem 0.55rem; border-radius: var(--radius-pill);
+    background: rgb(34 21 22 / 0.6); color: var(--paper); backdrop-filter: blur(4px);
+    font-size: var(--fs-label); font-weight: 600;
+    max-width: calc(100% - 1rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  a.reel:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
 
-  /* Phones and tablets: intro, then polaroids, then facts */
+  /* The drift: each column moves by exactly one copy of itself, then repeats. Hover or focus pauses it. */
+  @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+    .col { animation: drift-up 48s linear infinite; }
+    .col-2 { animation-name: drift-down; animation-duration: 56s; }
+    .col-3 { animation-duration: 52s; }
+    .wall:hover .col, .wall:focus-within .col { animation-play-state: paused; }
+    @keyframes drift-up { to { transform: translateY(calc(-50% - 0.375rem)); } }
+    @keyframes drift-down { from { transform: translateY(calc(-50% - 0.375rem)); } to { transform: translateY(0); } }
+  }
+  @media (prefers-reduced-motion: reduce) { .copy-track { display: none; } }
+
+  /* Phones and tablets: one row of reels to swipe through, under the text */
   @media (max-width: 63.99rem) {
-    .polaroids { max-width: 30rem; width: 100%; justify-self: center; height: clamp(17rem, 12rem + 20vw, 22rem); }
-    .card { width: clamp(8rem, 5rem + 12vw, 10.5rem); }
-    .me { left: 0; top: 4%; }
-    .work-1 { left: 33%; top: 12%; transform: rotate(3deg); }
-    .work-2 { right: 0; top: 0; transform: rotate(-3deg); }
+    .wall {
+      display: flex; height: auto; gap: 0.6rem;
+      overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+      margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter);
+      -webkit-mask-image: none; mask-image: none;
+    }
+    .wall::-webkit-scrollbar { display: none; }
+    .col, .track { display: contents; }
+    .col-2 { margin: 0; }
+    .copy-track { display: none; }
+    .track li { flex: none; width: clamp(8rem, 5rem + 14vw, 11rem); scroll-snap-align: start; }
   }
-  @media (max-width: 40rem) { .below { margin-top: 2.25rem; } }
 </style>
+
+<script>
+  // Start the few wall previews once the wall is on screen; never with reduced motion or data saver
+  const wall = document.querySelector<HTMLElement>('.hero .wall');
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+  if (wall && !calm && !saveData) {
+    const start = () => {
+      wall.querySelectorAll<HTMLVideoElement>('video[data-wall-src]').forEach((v) => {
+        v.src = v.dataset.wallSrc!;
+        v.addEventListener('playing', () => v.classList.add('playing'), { once: true });
+        v.play().catch(() => {});
+      });
+    };
+    new IntersectionObserver((entries, obs) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        start();
+        obs.disconnect();
+      }
+    }).observe(wall);
+  }
+</script>

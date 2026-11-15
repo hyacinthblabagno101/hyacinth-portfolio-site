@@ -1,69 +1,171 @@
 ---
 /**
- * "What I do". Text comes from "skills" in src/data/about.json.
- * A skill with a category gets a link to matching work, but only when that category has projects.
+ * "What I do": one card per skill, text from "skills" in src/data/about.json.
+ * Each card has two buttons:
+ * - "See details" opens a panel with everything the skill covers (split from the skill text) and a link to
+ *   matching work when there is some.
+ * - "Book a call" opens my booking link (bookingUrl in site.json) when it's set. Until then it jumps to the
+ *   contact form and picks this skill in "What can I help with?".
  */
-import { about } from '../lib/data';
-import { showcase } from '../lib/data';
+import { about, showcase, bookingUrl } from '../lib/data';
 
 /** Where each skill's "see the work" link goes. Showcase links only appear when that tab has items. */
 const has = (key: string) => showcase.some((c) => c.key === key);
 const links: Record<string, { label: string; href: string } | undefined> = {
-  'Short-Form Video': has('reels') ? { label: 'See video reels', href: '/?work=reels#work' } : undefined,
-  'Social Media & Design': has('statics') ? { label: 'See statics', href: '/?work=statics#work' } : undefined,
+  'Short-Form Video': has('reels') ? { label: 'See my video reels', href: '/?work=reels#work' } : undefined,
+  'Social Media & Design': has('statics') ? { label: 'See my statics', href: '/?work=statics#work' } : undefined,
   'UGC & Influencer': { label: 'See the case studies', href: '/#case-studies' },
 };
+
+/** "A, B, and C. More sentences." becomes the list [A, B, C] plus the remaining sentences as a note. */
+function split(text: string) {
+  const [first, ...rest] = text.split(/(?<=\.)\s+/);
+  const parts = first
+    .replace(/\.$/, '')
+    .split(/,\s*(?:and\s+)?/i)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => p.charAt(0).toUpperCase() + p.slice(1));
+  return { parts, note: rest.join(' ') };
+}
+
+const skills = about.skills.map((s, i) => {
+  const { parts, note } = split(s.text);
+  return { ...s, id: `skill-${i + 1}`, num: String(i + 1).padStart(2, '0'), parts, note, link: s.category ? links[s.category] : undefined };
+});
 ---
 
 <section id="skills" class="skills band-dark" aria-labelledby="skills-title">
-  <div class="wrap grid">
-    <header class="side">
+  <div class="wrap">
+    <header class="top">
       <h2 id="skills-title">What I <em>do</em></h2>
+      <p class="lede">Open any service for the details, or book a call about it.</p>
     </header>
 
-    <ol class="list" role="list">
-      {
-        about.skills.map((s, i) => (
-          <li class="reveal" style={`--delay: ${(i % 3) * 70}ms`}>
-            <span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-            <div class="body">
-              <h3>{s.title}</h3>
-              <p>{s.text}</p>
-            </div>
-            {s.category && links[s.category] && (
-              <a class="see" href={links[s.category]!.href}>
-                {links[s.category]!.label} <span aria-hidden="true">&rarr;</span>
+    <ul class="cards" role="list">
+      {skills.map((s, n) => (
+        <li class="card reveal" style={`--delay: ${(n % 3) * 70}ms`}>
+          <span class="num" aria-hidden="true">{s.num}</span>
+          <h3>{s.title}</h3>
+          <ul class="tags" role="list">
+            {s.parts.filter((p) => p.length <= 34).slice(0, 3).map((p) => <li>{p}</li>)}
+          </ul>
+          <div class="buttons">
+            <button type="button" class="btn btn-ghost small" data-open={s.id} aria-haspopup="dialog">
+              See details <span class="visually-hidden">about {s.title}</span>
+            </button>
+            {bookingUrl ? (
+              <a class="btn btn-primary small" href={bookingUrl} target="_blank" rel="noopener">
+                Book a call <span class="visually-hidden">about {s.title} (opens in a new tab)</span>
+              </a>
+            ) : (
+              <a class="btn btn-primary small" href="#contact" data-service={s.title}>
+                Book a call <span class="visually-hidden">about {s.title}</span>
               </a>
             )}
-          </li>
-        ))
-      }
-    </ol>
+          </div>
+
+          <dialog class="details" id={s.id} aria-labelledby={`${s.id}-dtitle`}>
+            <div class="details-inner">
+              <button type="button" class="close" data-close aria-label="Close">&times;</button>
+              <p class="num" aria-hidden="true">{s.num}</p>
+              <h3 id={`${s.id}-dtitle`}>{s.title}</h3>
+              <p class="label">What's included</p>
+              <ul class="included" role="list">
+                {s.parts.map((p) => <li>{p}</li>)}
+              </ul>
+              {s.note && <p class="note">{s.note}</p>}
+              <div class="buttons">
+                {bookingUrl ? (
+                  <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Book a call <span class="visually-hidden">(opens in a new tab)</span></a>
+                ) : (
+                  <a class="btn btn-primary" href="#contact" data-service={s.title} data-close>Book a call</a>
+                )}
+                {s.link && <a class="btn btn-ghost" href={s.link.href} data-close>{s.link.label}</a>}
+              </div>
+            </div>
+          </dialog>
+        </li>
+      ))}
+    </ul>
   </div>
 </section>
 
 <style>
   .skills { padding-block: var(--section); }
-  .grid { display: grid; gap: 2.5rem; }
-  @media (min-width: 64rem) { .grid { grid-template-columns: 0.8fr 1.4fr; gap: 4rem; align-items: start; } .side { position: sticky; top: 6rem; } }
-  .side { display: grid; gap: 1rem; }
+  .top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1rem 2rem; margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem); }
+  .lede { color: var(--text-muted); max-width: 36ch; }
 
-  .list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
-  li {
-    display: grid; gap: 0.75rem 1.25rem; grid-template-columns: 2.5rem minmax(0, 1fr);
-    padding: 1.5rem 0; border-bottom: 1px solid var(--line);
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+  @media (min-width: 40rem) { .cards { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .cards { grid-template-columns: repeat(3, 1fr); } }
+
+  .card {
+    display: grid; grid-template-rows: auto auto 1fr auto; gap: 0.9rem;
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    border: 1px solid var(--line); border-radius: var(--radius-media);
+    background: rgb(244 244 241 / 0.03);
+    transition: border-color 0.3s ease, background 0.3s ease;
   }
-  .num { font-family: var(--font-serif); font-style: italic; font-size: var(--fs-lead); color: var(--rose); line-height: 1.2; }
-  .body { display: grid; gap: 0.5rem; }
-  .body p { color: var(--text-muted); max-width: 52ch; }
-  .see {
-    grid-column: 2; justify-self: start;
-    display: inline-flex; gap: 0.5rem; align-items: center; min-height: 2.75rem;
-    font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper);
+  .card:hover { border-color: rgb(244 244 241 / 0.4); background: rgb(244 244 241 / 0.06); }
+  .num { font-family: var(--font-serif); font-style: italic; color: var(--rose); }
+  .tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; align-content: start; }
+  .tags li {
+    padding: 0.25rem 0.65rem; border: 1px solid var(--line); border-radius: var(--radius-pill);
+    font-size: var(--fs-small); color: var(--text-muted);
   }
-  .see:hover { color: var(--rose); }
-  @media (min-width: 48rem) {
-    li { grid-template-columns: 3rem minmax(0, 1fr) auto; align-items: start; }
-    .see { grid-column: 3; }
+  .buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .btn.small { min-height: 2.75rem; padding: 0.5rem 1.1rem; }
+
+  /* Details panel */
+  .details {
+    width: min(100vw - 2rem, 36rem); max-height: calc(100vh - 2rem);
+    padding: 0; border: 0; border-radius: var(--radius-media);
+    background: var(--paper); color: var(--ink);
+    --text-muted: #5a4a4c; --line: rgb(34 21 22 / 0.15); --focus: var(--wine); --heading: var(--ink);
   }
+  .details::backdrop { background: rgb(34 21 22 / 0.7); backdrop-filter: blur(3px); }
+  .details[open] { animation: pop 0.25s ease; }
+  @keyframes pop { from { opacity: 0; transform: translateY(8px); } }
+  .details-inner { position: relative; display: grid; gap: 0.9rem; padding: clamp(1.5rem, 1rem + 2vw, 2.25rem); }
+  .details h3 { padding-right: 2.5rem; }
+  .details .num { color: var(--wine); }
+  .label { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--wine); margin-top: 0.5rem; }
+  .included { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+  .included li { padding: 0.6rem 0 0.6rem 1.5rem; border-bottom: 1px solid var(--line); position: relative; }
+  .included li::before { content: ''; position: absolute; left: 0.2rem; top: 1.25rem; width: 0.55rem; height: 1px; background: var(--wine); }
+  .note { color: var(--text-muted); }
+  .details .buttons { margin-top: 0.5rem; }
+  .details .btn-ghost { color: var(--ink); }
+  .details .btn-ghost:hover { background: var(--ink); color: var(--paper); }
+  .details .btn-primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .details .btn-primary:hover { background: var(--wine); border-color: var(--wine); }
+  .close {
+    position: absolute; top: 1rem; right: 1rem;
+    width: 2.75rem; height: 2.75rem; border-radius: 50%;
+    background: transparent; border: 1px solid var(--line); color: var(--ink);
+    font-size: 1.4rem; line-height: 1; cursor: pointer;
+  }
+  .close:hover { border-color: var(--ink); }
 </style>
+
+<script>
+  // "See details" opens that skill's panel; closing returns focus to the button
+  document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((btn) => {
+    const dialog = document.getElementById(btn.dataset.open!) as HTMLDialogElement | null;
+    if (!dialog) return;
+    btn.addEventListener('click', () => dialog.showModal());
+    dialog.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      if (t === dialog || t.closest('[data-close]')) {
+        if (t.closest('a')) dialog.dataset.leaving = '1';
+        dialog.close();
+      }
+    });
+    dialog.addEventListener('close', () => {
+      // Focus goes back to the button, unless a link inside the panel is taking the visitor elsewhere
+      if (!dialog.dataset.leaving) btn.focus();
+      delete dialog.dataset.leaving;
+    });
+  });
+</script>

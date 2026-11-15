@@ -26,6 +26,8 @@ const siteSchema = z.object({
   resumeFile: z.string(),
   /** The resume download only appears on the live site once this is true. */
   resumeConfirmed: z.boolean(),
+  /** Calendly (or other booking) link for "Book a call". While it's a [PLACEHOLDER], the buttons go to the contact form. */
+  bookingUrl: z.string().optional(),
   cloudName: z.string(),
   cloudFolder: z.string(),
   socials: z.array(z.object({ label: z.string(), url: z.string() })),
@@ -47,6 +49,7 @@ if (!result.success) {
 export const site = result.data;
 export const publicEmail = filled(site.email);
 export const resumeFile = site.resumeConfirmed || import.meta.env.DEV ? filled(site.resumeFile) : undefined;
+export const bookingUrl = filled(site.bookingUrl);
 export const publishedSocials = site.socials.filter((s) => !isPlaceholder(s.url));
 
 /* ---------- about.json, experience.json, tools.json ---------- */
@@ -121,6 +124,8 @@ const showcaseData = parse(
     categories: z.array(z.object({ key: z.string(), label: z.string() })),
     grouped: z.array(z.string()),
     roles: z.record(z.string(), z.string()),
+    /** Brands I handled through an agency or client, shown together under that client (e.g. Proper Ecom). */
+    groups: z.record(z.string(), z.object({ brands: z.array(z.string()), note: z.string() })).optional(),
     items: z.array(
       z.object({
         id: z.string(),
@@ -143,7 +148,12 @@ const showcaseData = parse(
 export type ShowcaseItem = (typeof showcaseData.items)[number];
 /** Tabs that show one cover per brand, and the "my role" line for each brand. */
 export const groupedTabs = new Set(showcaseData.grouped);
-export const roleFor = (brand?: string) => (brand ? showcaseData.roles[brand] : undefined);
+/** The client a brand belongs to, if I handled it through one (e.g. Expert Biotics through Proper Ecom). */
+export const brandGroups = showcaseData.groups ?? {};
+export const groupOf = (brand?: string) =>
+  brand ? Object.keys(brandGroups).find((g) => brandGroups[g].brands.includes(brand)) : undefined;
+export const roleFor = (brand?: string) =>
+  brand ? showcaseData.roles[brand] ?? showcaseData.roles[groupOf(brand) ?? ''] : undefined;
 /** Categories that have at least one visible item, each with its items (featured first). */
 export const showcase = showcaseData.categories
   .map((c) => ({

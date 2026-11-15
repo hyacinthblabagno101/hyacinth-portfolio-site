@@ -18,6 +18,11 @@ My personal portfolio for job applications. It's a static Astro site: every page
 | Browser tab icon | `public/favicon.svg` and `public/apple-touch-icon.png` |
 | Colors, type sizes and corners (the only place to change them) | `src/styles/global.css` (top of the file) |
 
+## Booking link and brand groups
+
+- **Book a call:** paste your Calendly link into `"bookingUrl"` in `src/data/site.json`. Until then, every "Book a call" button goes to the contact form and picks the right service in "What can I help with?".
+- **Brands handled through a client:** `"groups"` in `src/data/showcase.json` lists brands that show inside one client's card (for example Expert Biotics, Uncle Scientist and Stacked Science under Proper Ecom).
+
 ## Two safety rules built in
 
 1. **Placeholders never go live.** Any value written as `[PLACEHOLDER: ...]` is hidden on the live site. While previewing, it shows in a yellow box so I can spot it.

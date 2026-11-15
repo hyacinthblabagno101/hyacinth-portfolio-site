@@ -1,22 +1,24 @@
 ---
 /**
- * Brands strip and "Selected work" by brand.
- * - Strip: every brand that appears in src/data/showcase.json, set as simple wordmarks.
- * - List: the brands with the most work, one numbered row each: the types of content, my role
- *   (from "roles" in showcase.json, when set), how many pieces, and a thumbnail.
- *   Selecting a row opens that brand's whole collection in the viewer (the viewer lives in Showcase.astro).
+ * Brand logos and "Selected work".
+ * - Logos: every brand in src/data/showcase.json, in one band that drifts sideways and loops.
+ *   Hover pauses it; with reduced motion it stands still and wraps onto lines instead.
+ * - Selected work: one card per client, biggest collections first. Each card's picture cycles through a
+ *   few pieces of that client's work. Brands I handled through a client (the "groups" in showcase.json,
+ *   e.g. Expert Biotics through Proper Ecom) sit inside that client's card.
+ *   Selecting a card opens the whole collection in the viewer (the viewer lives in Showcase.astro).
  */
-import { showcase, roleFor } from '../lib/data';
-import { viewerEntry, tileMedia } from '../lib/showcaseMedia';
+import { showcase, roleFor, brandGroups, groupOf } from '../lib/data';
+import { tileMedia, viewerEntry } from '../lib/showcaseMedia';
 
-const ROWS = 8;
+const CARDS = 9; // 3 x 3 grid with the first card taking a 2 x 2 spot
+const FRAMES = 3; // pieces each card cycles through
 
 const labelOf = new Map(showcase.map((c) => [c.key, c.label]));
 const items = showcase.flatMap((c) => c.items);
 
 const byBrand = new Map<string, typeof items>();
 items.forEach((i) => { if (i.brand) byBrand.set(i.brand, [...(byBrand.get(i.brand) ?? []), i]); });
-
 const allBrands = [...byBrand.keys()].sort((a, b) => a.localeCompare(b));
 
 /**
@@ -38,46 +40,68 @@ const logos: Record<string, { file: string; w: number; h: number }> = {
   'Uncle Scientist': { file: 'unclescientist', w: 364, h: 160 },
   'Winnie & Co.': { file: 'winnieandco', w: 1254, h: 160 },
 };
-const logoSize = (l: { w: number; h: number }) => {
+const logoSize = (l: { w: number; h: number }, scale = 62, cap = 190) => {
   const ratio = l.w / l.h;
-  const width = Math.round(Math.min(190, 62 * Math.sqrt(ratio))); // equal visual area, capped for long wordmarks
+  const width = Math.round(Math.min(cap, scale * Math.sqrt(ratio))); // equal visual area, capped for long wordmarks
   return { width, height: Math.round(width / ratio) };
 };
-const strip = allBrands.map((name) => {
+const band = allBrands.map((name) => {
   const l = logos[name];
   return l ? { name, src: `/logos/${l.file}.webp`, ...logoSize(l) } : { name };
 });
 
-const rows = [...byBrand.entries()]
+// Cards: brands handled through a client are counted under that client
+const byClient = new Map<string, typeof items>();
+byBrand.forEach((list, brand) => {
+  const client = groupOf(brand) ?? brand;
+  byClient.set(client, [...(byClient.get(client) ?? []), ...list]);
+});
+
+const cards = [...byClient.entries()]
   .sort((a, b) => b[1].length - a[1].length)
-  .slice(0, ROWS)
-  .map(([brand, list]) => {
-    const ordered = [...list.filter((i) => i.board), ...list.filter((i) => !i.board && i.kind === 'image'), ...list.filter((i) => i.kind === 'video')];
-    const cover = ordered[0];
-    const types = [...new Set(list.map((i) => i.category))].map((k) => labelOf.get(k) ?? k);
+  .slice(0, CARDS)
+  .map(([client, list], n) => {
+    const ordered = [
+      ...list.filter((i) => i.board),
+      ...list.filter((i) => !i.board && i.kind === 'image'),
+      ...list.filter((i) => i.kind === 'video'),
+    ];
+    // Frames: a spread of different pieces (and different brands, for a client with several)
+    const seen = new Set<string>();
+    const frames: typeof ordered = [];
+    for (const i of ordered) if (!seen.has(i.brand ?? '') && frames.length < FRAMES) { frames.push(i); seen.add(i.brand ?? ''); }
+    for (const i of ordered) if (frames.length < FRAMES && !frames.includes(i)) frames.push(i);
+    const big = n === 0;
+    const aspect = big ? '1:1' : '4:5';
+    const group = brandGroups[client];
+    const logo = logos[client];
     return {
-      brand,
-      types,
-      role: roleFor(brand),
-      thumb: tileMedia(cover, cover.kind === 'video' ? '9:16' : '1:1', [160, 320]),
-      alt: cover.alt,
+      client,
+      big,
+      logo: logo ? { src: `/logos/${logo.file}.webp`, ...logoSize(logo, big ? 70 : 52, big ? 220 : 150) } : undefined,
+      types: [...new Set(list.map((i) => i.category))].map((k) => labelOf.get(k) ?? k),
+      role: roleFor(client),
+      group,
+      frames: frames.map((f) => ({ ...tileMedia(f, f.kind === 'video' ? '9:16' : aspect, big ? [480, 720, 960] : [320, 480, 720]), alt: f.alt })),
       items: ordered.map((i) => i.id).join(','), // ids; the viewer looks them up in one shared list
-      first: viewerEntry(cover),
+      first: viewerEntry(ordered[0]),
     };
   });
 ---
 
 <section class="strip band-dark" aria-labelledby="brands-title">
-  <div class="wrap">
-    <h2 id="brands-title" class="strip-title">Brands I've made content for</h2>
-    <ul role="list" class="names">
-      {strip.map((b, n) =>
-        'src' in b ? (
-          <li class="logo" style={`--w: ${b.width}px`}><img src={b.src} alt={b.name} width={b.width} height={b.height} decoding="async" /></li>
-        ) : (
-          <li class:list={{ alt: n % 2 === 1 }}>{b.name}</li>
-        ),
-      )}
+  <h2 id="brands-title" class="strip-title">Brands I've made content for</h2>
+  <div class="marquee">
+    <ul role="list" class="logos">
+      {band.map((b) => (
+        'src' in b
+          ? <li class="logo" style={`--w: ${b.width}px`}><img src={b.src} alt={b.name} width={b.width} height={b.height} decoding="async" /></li>
+          : <li class="name">{b.name}</li>
+      ))}
+    </ul>
+    {/* A copy so the band loops without a gap; hidden from screen readers */}
+    <ul role="list" class="logos copy" aria-hidden="true">
+      {band.map((b) => ('src' in b ? <li class="logo" style={`--w: ${b.width}px`}><img src={b.src} alt="" width={b.width} height={b.height} decoding="async" /></li> : <li class="name">{b.name}</li>))}
     </ul>
   </div>
 </section>
@@ -89,45 +113,59 @@ const rows = [...byBrand.entries()]
       <a class="all" href="#work">Browse all work <span aria-hidden="true">&darr;</span></a>
     </header>
 
-    <ol class="rows" role="list">
-      {rows.map((r, n) => (
-        <li class="reveal" style={`--delay: ${(n % 4) * 60}ms`}>
-          <a class="tile-link row" href={r.first.full} data-items={r.items}>
-            <span class="no">No. {n + 1}</span>
-            <span class="brand">{r.brand}</span>
-            <span class="what">
-              <span class="types">{r.types.join(' · ')}</span>
-              {r.role && <span class="role">{r.role}</span>}
+    <ul class="cards" role="list">
+      {cards.map((c, n) => (
+        <li class:list={['reveal', { big: c.big }]} style={`--delay: ${(n % 3) * 70}ms; --offset: ${n * -1.3}s`}>
+          <a class="tile-link card" href={c.first.full} data-items={c.items}>
+            <span class:list={['frames', `n${c.frames.length}`]}>
+              {c.frames.map((f, i) => (
+                <img src={f.src} srcset={f.srcset} sizes={c.big ? '(min-width: 64rem) 40rem, 92vw' : '(min-width: 64rem) 20rem, (min-width: 40rem) 45vw, 92vw'} width={f.width} height={f.height} alt={i === 0 ? f.alt : ''} loading={n < 3 ? 'eager' : 'lazy'} decoding="async" style={`--i: ${i}`} />
+              ))}
             </span>
-            <span class="thumb">
-              <img src={r.thumb.src} srcset={r.thumb.srcset} sizes="5rem" width="80" height="80" alt="" loading="lazy" decoding="async" />
+            <span class="info">
+              {c.logo
+                ? <img class="mark" src={c.logo.src} alt="" width={c.logo.width} height={c.logo.height} decoding="async" />
+                : <span class="mark-text" aria-hidden="true">{c.client}</span>}
+              <span class="card-name">{c.client}</span>
+              {c.group && <span class="group">{c.group.note}: {c.group.brands.join(', ')}</span>}
+              <span class="types">{c.types.join(' · ')}</span>
+              {c.role && c.big && <span class="role">{c.role}</span>}
+              <span class="open" aria-hidden="true">View collection <span>&rarr;</span></span>
             </span>
-            <span class="visually-hidden">, open the collection</span>
           </a>
         </li>
       ))}
-    </ol>
+    </ul>
   </div>
 </section>
 
 <style>
-  /* Brands strip */
-  .strip { background: var(--wine); --line: rgb(244 244 241 / 0.18); padding-block: clamp(2.5rem, 2rem + 2vw, 3.75rem); }
+  /* Logo band */
+  .strip { background: var(--wine); padding-block: clamp(2.25rem, 1.75rem + 2vw, 3.25rem); overflow: hidden; }
   .strip-title {
-    max-width: none; text-align: center;
+    max-width: none; text-align: center; padding-inline: var(--gutter);
     font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; line-height: 1.4; text-transform: uppercase; color: var(--paper);
   }
-  .names {
-    list-style: none; margin: 1.25rem 0 0; padding: 0;
-    display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.5rem clamp(1.75rem, 1rem + 2.5vw, 3.25rem);
+  .marquee {
+    display: flex; width: max-content; margin-top: 1.5rem;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
   }
-  .names li {
-    font-weight: 700; font-size: var(--fs-body); letter-spacing: -0.02em; text-transform: uppercase; color: var(--paper);
+  .logos { list-style: none; margin: 0; padding: 0 clamp(1.5rem, 1rem + 2vw, 3rem) 0 0; display: flex; align-items: center; gap: clamp(2rem, 1.25rem + 3vw, 4rem); flex: none; }
+  .logos .logo img { display: block; width: var(--w); max-width: none; height: auto; opacity: 0.9; }
+  .logos .name { font-weight: 700; font-size: var(--fs-body); letter-spacing: -0.02em; text-transform: uppercase; color: var(--paper); white-space: nowrap; }
+  @media (max-width: 40rem) { .logos .logo img { width: calc(var(--w) * 0.75); } }
+  @media (prefers-reduced-motion: no-preference) {
+    .marquee { animation: slide 45s linear infinite; }
+    .strip:hover .marquee { animation-play-state: paused; }
+    @keyframes slide { to { transform: translateX(-50%); } }
   }
-  .names .logo img { display: block; width: var(--w); max-width: none; height: auto; opacity: 0.88; transition: opacity 0.2s ease; }
-  .names .logo:hover img { opacity: 1; }
-  @media (max-width: 40rem) { .names .logo img { width: calc(var(--w) * 0.74); } .names { gap: 1.25rem 1.5rem; } }
-  .names li.alt { font-family: var(--font-serif); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: var(--fs-lead); color: var(--rose); }
+  /* Reduced motion: one still, centered set that wraps onto lines */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee { width: auto; justify-content: center; -webkit-mask-image: none; mask-image: none; padding-inline: var(--gutter); }
+    .logos { flex-wrap: wrap; justify-content: center; padding: 0; row-gap: 1.25rem; }
+    .logos.copy { display: none; }
+  }
 
   /* Selected work */
   .selected { padding-block: var(--section) clamp(3rem, 2rem + 3vw, 4.5rem); }
@@ -137,37 +175,52 @@ const rows = [...byBrand.entries()]
     font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink);
   }
 
-  .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
-  .rows li { border-bottom: 1px solid var(--line); }
-  .row {
-    display: grid; align-items: center; gap: 0.25rem 1rem;
-    grid-template-columns: 1fr 4rem;
-    grid-template-areas: 'brand thumb' 'what thumb';
-    padding: 1rem 0;
-    color: var(--ink); text-decoration: none;
-    transition: background 0.3s ease, padding 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-  .no { display: none; }
-  .brand { grid-area: brand; font-weight: 700; font-size: var(--fs-h3); letter-spacing: -0.04em; text-transform: uppercase; line-height: 1.05; }
-  .what { grid-area: what; display: grid; gap: 0.1rem; }
-  .types { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--wine); }
-  .role { font-family: var(--font-serif); font-style: italic; font-size: var(--fs-body); line-height: 1.3; color: var(--text-muted); }
-  .thumb { grid-area: thumb; display: block; width: 4rem; aspect-ratio: 1; overflow: hidden; border-radius: var(--radius-media); background: var(--greige); }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .row:hover .thumb img, .row:focus-visible .thumb img { transform: scale(1.08); }
-  .row:hover .brand { color: var(--wine); }
-  .row:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; grid-template-columns: 1fr; }
+  @media (min-width: 40rem) { .cards { grid-template-columns: repeat(2, 1fr); } .cards .big { grid-column: span 2; } }
+  @media (min-width: 64rem) { .cards { grid-template-columns: repeat(3, 1fr); gap: 1rem; } .cards .big { grid-column: span 2; grid-row: span 2; } }
 
-  @media (min-width: 48rem) {
-    .row {
-      grid-template-columns: 4rem minmax(0, 1.1fr) minmax(0, 1.5fr) 5rem;
-      grid-template-areas: 'no brand what thumb';
-      gap: 1.5rem; padding: 1.1rem 0;
-    }
-    .no { display: block; grid-area: no; font-size: var(--fs-label); color: var(--text-muted); }
-    .thumb { width: 5rem; }
+  .card {
+    position: relative; display: block; height: 100%; min-height: 22rem;
+    overflow: hidden; border-radius: var(--radius-media); background: var(--ink);
+    color: var(--paper); text-decoration: none;
   }
-  @media (hover: hover) and (min-width: 48rem) {
-    .row:hover { padding-inline: 0.75rem; background: var(--greige-soft); }
+  .big .card { min-height: 26rem; }
+  .card:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+  /* Pictures: stacked, the first one showing; with motion allowed they take turns fading in */
+  .frames { position: absolute; inset: 0; }
+  .frames img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    opacity: 0; transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
+  .frames img:first-child { opacity: 1; }
+  .card:hover .frames img, .card:focus-visible .frames img { transform: scale(1.04); }
+  @media (prefers-reduced-motion: no-preference) {
+    .frames.n3 img { animation: frame3 12s ease-in-out infinite; animation-delay: calc(var(--i) * 4s + var(--offset, 0s)); }
+    .frames.n2 img { animation: frame2 8s ease-in-out infinite; animation-delay: calc(var(--i) * 4s + var(--offset, 0s)); }
+    .frames.n3 img, .frames.n2 img { opacity: 0; }
+    @keyframes frame3 { 0% { opacity: 0; } 6% { opacity: 1; } 33% { opacity: 1; } 40% { opacity: 0; } 100% { opacity: 0; } }
+    @keyframes frame2 { 0% { opacity: 0; } 8% { opacity: 1; } 50% { opacity: 1; } 58% { opacity: 0; } 100% { opacity: 0; } }
+  }
+
+  /* Text over the bottom of the picture */
+  .info {
+    position: absolute; inset: auto 0 0 0; z-index: 1;
+    display: grid; gap: 0.35rem; justify-items: start;
+    padding: 4rem 1.1rem 1.1rem;
+    background: linear-gradient(to top, rgb(34 21 22 / 0.92), rgb(34 21 22 / 0.6) 60%, rgb(34 21 22 / 0));
+  }
+  .big .info { padding: 6rem 1.5rem 1.5rem; gap: 0.5rem; }
+  .mark { display: block; height: auto; max-width: 70%; margin-bottom: 0.25rem; }
+  .mark-text { font-weight: 700; font-size: var(--fs-h3); letter-spacing: -0.03em; text-transform: uppercase; line-height: 1; }
+  .card-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } /* the logo shows it; kept for screen readers */
+  .group { font-family: var(--font-serif); font-style: italic; font-size: var(--fs-small); color: var(--rose); }
+  .types { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--greige); }
+  .role { max-width: 46ch; font-size: var(--fs-small); color: var(--greige); }
+  .open {
+    display: inline-flex; gap: 0.4rem; align-items: center; margin-top: 0.35rem;
+    font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper);
+  }
+  .open span { transition: transform 0.3s ease; }
+  .card:hover .open span, .card:focus-visible .open span { transform: translateX(4px); }
 </style>

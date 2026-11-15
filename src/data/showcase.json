@@ -42,6 +42,16 @@
     "Dada's Mango": "Freelance social media manager. I handled the shop's social content, including graphics and captions.",
     "Hyacinth Gadgets": "Social Media Specialist. I planned and made the shop's social content."
   },
+  "groups": {
+    "Proper Ecom": {
+      "brands": [
+        "Expert Biotics",
+        "Uncle Scientist",
+        "Stacked Science"
+      ],
+      "note": "Multiple brands in beauty & wellness"
+    }
+  },
   "items": [
     {
       "id": "reel-five-things",

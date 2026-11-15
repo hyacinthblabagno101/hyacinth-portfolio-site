@@ -9,7 +9,7 @@
  * Without JavaScript, every tile is a plain link to the full media file.
  * The viewer also opens from any .tile-link elsewhere on the page (e.g. the preview strip in the hero).
  */
-import { showcase, groupedTabs, roleFor } from '../lib/data';
+import { showcase, groupedTabs, roleFor, groupOf } from '../lib/data';
 import { viewerEntry, tileMedia } from '../lib/showcaseMedia';
 
 const INITIAL = 6;
@@ -39,7 +39,9 @@ const tabs = showcase.map((c) => {
   if (groupedTabs.has(c.key)) {
     // One tile per brand, biggest collections first. A designs board (collage) makes the best cover.
     const byBrand = new Map<string, typeof c.items>();
-    c.items.forEach((i) => byBrand.set(i.brand ?? 'More work', [...(byBrand.get(i.brand ?? 'More work') ?? []), i]));
+    // Brands I handled through a client (e.g. Expert Biotics through Proper Ecom) share that client's cover
+    const keyOf = (i: (typeof c.items)[number]) => groupOf(i.brand) ?? i.brand ?? 'More work';
+    c.items.forEach((i) => byBrand.set(keyOf(i), [...(byBrand.get(keyOf(i)) ?? []), i]));
     tiles = [...byBrand.entries()]
       .sort((a, b) => b[1].length - a[1].length)
       .map(([brand, items]) => {
