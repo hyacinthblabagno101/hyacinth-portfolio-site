@@ -1,0 +1,22 @@
+---
+/** One role in the Experience timeline. Dates show only when they're filled in (or as a placeholder in preview). */
+import { isPlaceholder, showUnconfirmed } from '../lib/data';
+import type { roles } from '../lib/data';
+
+interface Props { r: (typeof roles)[number] }
+const { r } = Astro.props;
+const hasDates = !isPlaceholder(r.dates) || showUnconfirmed;
+---
+
+<li class="item">
+  {hasDates && <p class="dates">{isPlaceholder(r.dates) ? <span class="placeholder">{r.dates}</span> : r.dates}</p>}
+  <div class="detail">
+    <h3>{r.role}</h3>
+    <p class="org">
+      <strong>{r.company}</strong>
+      {r.type && <span>{r.type}</span>}
+    </p>
+    {!r.confirmed && <p><span class="placeholder">Needs your confirmation</span></p>}
+    <ul>{r.points.map((pt) => <li>{pt}</li>)}</ul>
+  </div>
+</li>

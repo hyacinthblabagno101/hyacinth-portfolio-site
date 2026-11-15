@@ -1,123 +1,63 @@
 /*
- * Design tokens. Palette: Soft White #F4F4F1, Greige #E1DBD7, Wine #3B0510, Espresso Black #221516,
- * plus one soft rose (taken from the same reference) for accent words on dark sections.
- * Older token names are kept so every component picks up the colors; comments say what each one is.
+ * Design tokens. Every color, type size and corner radius on the site comes from here.
+ * Palette: Soft White, Greige, Wine, Espresso Black, plus a soft rose for accent words on dark sections.
  * Contrast ratios are WCAG (AA body text needs 4.5:1).
  */
 :root {
-  --cream: #f4f4f1;        /* Soft White: main background */
-  --bisque: #f4f4f1;       /* Soft White: light text on dark (16:1 on Espresso Black) */
-  --beige: #e1dbd7;        /* Greige: image backgrounds */
-  --chambray: #d9b8bd;     /* Soft rose: accent text on dark (9.6:1 on Espresso Black, 9:1 on Wine) */
-  --glacier: #e1dbd7;      /* Greige: alternate band (Wine 13:1, muted text 6:1 on it) */
-  --pink: #d9b8bd;         /* Soft rose: decoration */
-  --pink-soft: #ebe6e2;    /* Greige tint: hover backgrounds */
-  --burgundy: #3b0510;     /* Wine: links and accents (16:1 on Soft White) */
-  --rust: #3b0510;         /* Wine */
-  --beet: #3b0510;         /* Wine: the brands band */
-  --espresso: #221516;     /* Espresso Black: dark bands */
-  --java: #221516;         /* Espresso Black: body text (17:1 on Soft White) */
+  /* Palette */
+  --paper: #f4f4f1;        /* Soft White: background, and light text on dark (16:1 on ink) */
+  --greige: #e1dbd7;       /* Greige: alternate band, image backgrounds (wine 13:1, muted text 6.1:1 on it) */
+  --greige-soft: #ebe6e2;  /* Greige tint: hover backgrounds */
+  --wine: #3b0510;         /* Wine: accents, links, the brands band (16:1 on paper) */
+  --ink: #221516;          /* Espresso Black: text and dark sections (17:1 on paper) */
+  --rose: #d9b8bd;         /* Soft rose: accent text on dark (9.6:1 on ink, 9:1 on wine) */
 
-  /* Roles (light sections) */
-  --bg: var(--cream);
-  --text: var(--java);
-  --text-muted: #5a4a4c;   /* 7.6:1 on Soft White, 6.1:1 on Greige */
-  --heading: var(--java);
-  --accent: var(--rust);
+  /* Roles (light sections); dark sections swap these in .band-dark */
+  --bg: var(--paper);
+  --text: var(--ink);
+  --text-muted: #5a4a4c;   /* 7.6:1 on paper, 6.1:1 on greige */
+  --heading: var(--ink);
+  --accent: var(--wine);
   --line: rgb(34 21 22 / 0.15);
-  --rule: var(--java);
-  --focus: var(--rust);
+  --rule: var(--ink);
+  --focus: var(--wine);
 
   /*
-   * Type: Helvetica Now for everything plain, Libre Baskerville (regular and italic) for the creative accents,
-   * Helvetica Now is a licensed font: it's used when installed (or when
-   * licensed web font files are added to public/fonts), then Helvetica Neue on Apple devices, then Inter Tight.
+   * Type: Helvetica Now for everything plain, Libre Baskerville italic for the one accent word in titles
+   * and for captions. Helvetica Now is a licensed font: it's used when installed (or when licensed web
+   * font files are added to public/fonts), then Helvetica Neue on Apple devices, then Inter Tight.
    */
   --font-serif: 'Libre Baskerville', Baskerville, 'Times New Roman', serif;
   --font-sans: 'Helvetica Now Display', 'Helvetica Now Text', 'Helvetica Neue', Helvetica, 'Inter Tight', Arial, sans-serif;
 
-  --step-display: clamp(3.25rem, 0.4rem + 11vw, 9.5rem);
-  --step-h1: clamp(2.5rem, 1.5rem + 5vw, 5rem);
-  --step-h2: clamp(2.25rem, 1.4rem + 3.4vw, 4.25rem);
-  --step-lede: clamp(1.75rem, 1.2rem + 2vw, 2.9rem);
-  --step-h3: clamp(1.4rem, 1.25rem + 0.6vw, 1.75rem);
-  --step-body: 1.0625rem;
-  --step-small: 0.875rem;
-  --step-label: 0.75rem;
+  /* Type scale: the only sizes used on the site */
+  --fs-display: clamp(3.25rem, 0.4rem + 11vw, 9.5rem);   /* hero */
+  --fs-h2: clamp(2.25rem, 1.4rem + 3.4vw, 4.25rem);      /* section titles */
+  --fs-h3: clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem);     /* item titles, brand names */
+  --fs-stat: clamp(1.75rem, 1.4rem + 1.2vw, 2.5rem);     /* numbers */
+  --fs-lead: clamp(1.1875rem, 1.1rem + 0.4vw, 1.375rem);  /* intro lines, pull quotes */
+  --fs-body: 1.0625rem;
+  --fs-small: 0.875rem;
+  --fs-label: 0.75rem;                                    /* small uppercase labels (never smaller) */
 
-  /* Space and layout */
+  /* Space, layout, corners */
   --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
   --section: clamp(4.5rem, 3rem + 6vw, 8rem);
   --max: 82rem;
-  --radius: 0px;
-
-  /* Vibe: how headlines, corners and buttons look. Each theme below changes these. */
-  --display-font: var(--font-sans);   /* the big type in the hero */
-  --display-weight: 800;
-  --display-transform: uppercase;
-  --display-tracking: -0.06em;
-  --title-font: var(--font-sans);     /* section titles */
-  --title-weight: 700;
-  --title-tracking: -0.045em;
-  --title-transform: none;
-  --btn-radius: 999px;
-  --media-radius: 8px;                /* photos, tiles, cards */
-}
-
-/*
- * Earlier looks, kept for comparison. Set one on <html data-theme="..."> (see Base.astro).
- */
-/* Fig Editorial: sand, fig and rust; medium sans titles, square corners. */
-:root[data-theme='fig'] {
-  --cream: #efe5d3;  --bisque: #d1beaf;  --beige: #d1beaf;  --chambray: #e0a993;  --glacier: #e6d9c3;
-  --burgundy: #8d4d3a; --rust: #8d4d3a;  --espresso: #35110e;  --java: #35110e;
-  --text-muted: #6e4a3e;   /* 6.2:1 on sand */
-  --line: rgb(53 17 14 / 0.22);
-  --display-weight: 500; --display-tracking: -0.055em;
-  --title-weight: 500; --title-tracking: -0.035em; --title-transform: none;
-  --btn-radius: 0px; --media-radius: 0px;
-}
-/* Chambray Air: calm, airy and soft. Warm white, glacier blue, espresso; serif headlines, rounded corners. */
-:root[data-theme='chambray'] {
-  --cream: #f7f5f1;  --bisque: #d2e2ec;  --beige: #dfe7ec;  --chambray: #a9c7dd;  --glacier: #e8f0f5;
-  --burgundy: #3f6e92; --rust: #3f6e92;  --espresso: #2f1d16;  --java: #3a2119;
-  --text-muted: #5f4c42;   /* 7.4:1 on warm white */
-  --line: rgb(58 33 25 / 0.16);
-  --display-font: var(--font-serif); --display-weight: 400; --display-transform: none; --display-tracking: -0.02em;
-  --title-font: var(--font-serif); --title-weight: 400; --title-tracking: -0.01em; --title-transform: none;
-  --btn-radius: 999px; --media-radius: 18px;
-}
-/* Butter & Sceptre: bold and retro. Butter yellow, java brown, sceptre red, cerulean; heavy uppercase. */
-:root[data-theme='butter'] {
-  --cream: #f5efc6;  --bisque: #f5efc6;  --beige: #e6dcae;  --chambray: #a5bcd6;  --glacier: #dfe7ef;
-  --burgundy: #7a1820; --rust: #7a1820;  --espresso: #4d0e12;  --java: #231815;
-  --text-muted: #4a2e27;   /* 10.5:1 on butter */
-  --line: rgb(35 24 21 / 0.22);
-  --display-weight: 800; --display-tracking: -0.06em;
-  --title-weight: 800; --title-tracking: -0.045em; --title-transform: uppercase;
-  --btn-radius: 0px; --media-radius: 0px;
-}
-/* Clay Studio: warm, modern and friendly. Bisque, cream, deep clay; rounded cards and pill buttons. */
-:root[data-theme='clay'] {
-  --cream: #f6ece3;  --bisque: #ebcdb7;  --beige: #e8d5c6;  --chambray: #ebcdb7;  --glacier: #efdccd;
-  --burgundy: #7a5442; --rust: #7a5442;  --espresso: #4b3328;  --java: #33231c;
-  --text-muted: #65493c;   /* 7.0:1 on cream */
-  --line: rgb(51 35 28 / 0.16);
-  --display-weight: 600; --display-transform: none; --display-tracking: -0.05em;
-  --title-weight: 600; --title-tracking: -0.04em; --title-transform: none;
-  --btn-radius: 999px; --media-radius: 24px;
+  --radius-media: 8px;     /* photos, tiles, inputs */
+  --radius-pill: 999px;    /* buttons, badges */
 }
 
 /* Dark band: put class="band-dark" on any section */
 .band-dark {
-  --bg: var(--espresso);
-  --text: var(--cream);              /* 17:1 */
-  --text-muted: var(--bisque);       /* 11:1 */
-  --heading: var(--cream);
-  --accent: var(--chambray);         /* 8.3:1 */
+  --bg: var(--ink);
+  --text: var(--paper);              /* 16:1 */
+  --text-muted: var(--greige);       /* 12:1 */
+  --heading: var(--paper);
+  --accent: var(--rose);            /* 9.6:1 */
   --line: rgb(244 244 241 / 0.18);
-  --rule: var(--cream);
-  --focus: var(--chambray);
+  --rule: var(--paper);
+  --focus: var(--rose);
   background: var(--bg);
   color: var(--text);
 }
@@ -135,7 +75,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: var(--step-body);
+  font-size: var(--fs-body);
   line-height: 1.65;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -153,15 +93,10 @@ h1, h2, h3 {
   margin: 0;
   text-wrap: balance;
 }
-/* Titles: clean sans, medium weight, sentence case. Quiet, so the work does the talking */
-h1, h2 {
-  font-family: var(--title-font);
-  font-weight: var(--title-weight);
-  letter-spacing: var(--title-tracking);
-  text-transform: var(--title-transform);
-}
-h1 { font-size: var(--step-h1); line-height: 0.95; }
-h2 { font-size: var(--step-h2); line-height: 0.95; max-width: 22ch; }
+/* Titles: bold sans, sentence case. Quiet, so the work does the talking */
+h1, h2, h3 { font-family: var(--font-sans); font-weight: 700; letter-spacing: -0.04em; }
+h1, h2 { font-size: var(--fs-h2); line-height: 0.95; }
+h2 { max-width: 22ch; }
 /* One word in each title is set in italic serif, lower case, in the accent color: "Selected <em>work</em>" */
 h1 em, h2 em {
   font-family: var(--font-serif);
@@ -169,11 +104,11 @@ h1 em, h2 em {
   font-weight: 400;
   text-transform: none;
   font-size: 0.86em;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   color: var(--accent);
   padding-right: 0.04em;
 }
-h3 { font-family: var(--font-serif); font-weight: 400; font-size: var(--step-h3); line-height: 1.12; }
+h3 { font-size: var(--fs-h3); line-height: 1.1; letter-spacing: -0.02em; }
 
 /* Every section header opens with a strong rule, like a magazine page */
 .head { border-top: 1px solid var(--rule); padding-top: clamp(1.25rem, 1rem + 1vw, 1.75rem); }
@@ -199,7 +134,7 @@ a:hover { text-decoration-thickness: 2px; }
 
 .eyebrow {
   font-family: var(--font-sans);
-  font-size: var(--step-label);
+  font-size: var(--fs-label);
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -214,22 +149,23 @@ a:hover { text-decoration-thickness: 2px; }
   gap: 0.5rem;
   min-height: 2.875rem;
   padding: 0.7rem 1.4rem;
+  cursor: pointer;
   font-family: var(--font-sans);
-  font-size: var(--step-label);
+  font-size: var(--fs-label);
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   text-decoration: none;
   border: 1px solid currentColor;
-  border-radius: var(--btn-radius);
+  border-radius: var(--radius-pill);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
-.btn-primary { background: var(--java); border-color: var(--java); color: var(--cream); }
-.btn-primary:hover { background: var(--rust); border-color: var(--rust); }
+.btn-primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.btn-primary:hover { background: var(--wine); border-color: var(--wine); }
 .btn-ghost { color: var(--text); background: transparent; }
 .btn-ghost:hover { background: var(--text); color: var(--bg); }
-.band-dark .btn-primary { background: var(--cream); border-color: var(--cream); color: var(--java); }
-.band-dark .btn-primary:hover { background: var(--bisque); border-color: var(--bisque); }
+.band-dark .btn-primary { background: var(--paper); border-color: var(--paper); color: var(--ink); }
+.band-dark .btn-primary:hover { background: var(--paper); border-color: var(--paper); }
 
 /* Development placeholders: obvious on purpose so nothing ships by accident */
 .placeholder {
@@ -239,20 +175,10 @@ a:hover { text-decoration-thickness: 2px; }
   color: #3d2b00;
   border: 1px dashed #8a6d00;
   font-family: var(--font-sans);
-  font-size: 0.875rem;
+  font-size: var(--fs-small);
   font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
-}
-.media-placeholder {
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  background: repeating-linear-gradient(45deg, var(--glacier), var(--glacier) 12px, #c6d8e4 12px, #c6d8e4 24px);
-  color: var(--java);
-  font-size: var(--step-small);
-  font-weight: 600;
-  text-align: center;
 }
 
 .visually-hidden {
@@ -268,8 +194,8 @@ a:hover { text-decoration-thickness: 2px; }
   left: 1rem; top: -4rem;
   z-index: 100;
   padding: 0.75rem 1rem;
-  background: var(--java);
-  color: var(--cream);
+  background: var(--ink);
+  color: var(--paper);
   font-weight: 600;
   text-decoration: none;
 }

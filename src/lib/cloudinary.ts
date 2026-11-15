@@ -2,22 +2,16 @@
  * Cloudinary URL helpers. Nothing here calls the Cloudinary API, it only builds
  * delivery URLs, so it needs no keys.
  *
- * Media IDs in project files are Cloudinary public IDs, e.g. "hyacinth portfolio/rabble/flatlay-01".
- * - IDs in [BRACKETS] are placeholders and render as a labeled striped block.
- * - IDs starting with "demo:" load from Cloudinary's public sample account. Only used to test
- *   video playback on placeholder projects; never use it for real work.
+ * Media IDs in src/data/showcase.json and proof.json are Cloudinary public IDs.
  */
 import { site, isPlaceholder } from './data';
 
 export const isMissing = (id: string | undefined) => !id || isPlaceholder(id);
 
 function resolve(id: string): { base: string; path: string } {
-  const demo = id.startsWith('demo:');
-  const cloud = demo ? 'demo' : site.cloudName;
-  const publicId = demo ? id.slice(5) : id;
   return {
-    base: `https://res.cloudinary.com/${cloud}`,
-    path: publicId.split('/').map(encodeURIComponent).join('/'),
+    base: `https://res.cloudinary.com/${site.cloudName}`,
+    path: id.split('/').map(encodeURIComponent).join('/'),
   };
 }
 

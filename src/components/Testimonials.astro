@@ -11,7 +11,6 @@ const [lead, ...rest] = proof.testimonials;
 <section id="feedback" class="feedback" aria-labelledby="feedback-title">
   <div class="wrap">
     <header class="head reveal">
-      <p class="eyebrow">In their words</p>
       <h2 id="feedback-title">Client <em>feedback</em></h2>
     </header>
 
@@ -34,7 +33,6 @@ const [lead, ...rest] = proof.testimonials;
         rest.map((t, i) => (
           <li class="reveal" style={`--delay: ${i * 80}ms`}>
             <figure class="card">
-              <span class="mark" aria-hidden="true">&ldquo;</span>
               <blockquote>
                 <p>{t.quote}</p>
               </blockquote>
@@ -64,25 +62,25 @@ const [lead, ...rest] = proof.testimonials;
 
   blockquote { margin: 0; }
   figure { margin: 0; }
-  figcaption { display: grid; gap: 0.1rem; font-size: var(--step-small); }
+  figcaption { display: grid; gap: 0.1rem; font-size: var(--fs-small); }
   figcaption strong { font-weight: 600; }
   figcaption span { color: var(--text-muted); }
-  figcaption a { color: var(--rust); }
+  figcaption a { color: var(--wine); }
 
   .lead { display: grid; gap: 1.5rem; padding-bottom: clamp(2rem, 1.5rem + 2vw, 3rem); }
+  /* Pull quote: large enough to lead, short enough lines to read (about 60 characters) */
   .lead p {
-    margin: 0; max-width: 32em;
+    margin: 0; max-width: 60ch;
     font-family: var(--font-serif);
-    font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.25rem);
-    line-height: 1.22; color: var(--java);
+    font-size: var(--fs-lead);
+    line-height: 1.55; color: var(--ink);
   }
-  .lead p::before { content: '\201C'; color: var(--rust); }
-  .lead p::after { content: '\201D'; color: var(--rust); }
+  .lead p::before { content: '\201C'; color: var(--wine); }
+  .lead p::after { content: '\201D'; color: var(--wine); }
 
   .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 0 3rem; border-top: 1px solid var(--line); }
   @media (min-width: 48rem) { .grid { grid-template-columns: 1fr 1fr; } }
   .grid li { display: flex; border-bottom: 1px solid var(--line); }
   .card { flex: 1; display: grid; gap: 1rem; align-content: space-between; padding: 1.5rem 0; }
-  .mark { display: none; }
-  .card p { margin: 0; color: var(--java); }
+  .card p { margin: 0; color: var(--ink); }
 </style>

@@ -1,59 +1,74 @@
 ---
 /**
  * Experience timeline from src/data/experience.json, in the order listed there.
- * Roles with confirmed: false only show while previewing.
+ * Roles with confirmed: false only show while previewing. The first 3 are open; the rest fold away.
  */
-import { roles, isPlaceholder, showUnconfirmed } from '../lib/data';
+import { roles } from '../lib/data';
+import Role from './ExperienceRole.astro';
+
+/** The most recent roles stay open; the rest fold behind "See all roles". */
+const OPEN = 3;
+const first = roles.slice(0, OPEN);
+const rest = roles.slice(OPEN);
 ---
 
 <section id="experience" class="experience" aria-labelledby="experience-title">
   <div class="wrap">
     <header class="head">
-      <p class="eyebrow">Experience</p>
       <h2 id="experience-title">Where I've <em>worked</em></h2>
     </header>
 
     <ol class="timeline" role="list">
-      {
-        roles.map((r) => (
-          <li class="item">
-            <p class="dates">
-              {isPlaceholder(r.dates) ? showUnconfirmed && <span class="placeholder">{r.dates}</span> : r.dates}
-            </p>
-            <div class="detail">
-              <h3>{r.role}</h3>
-              <p class="org">
-                <strong>{r.company}</strong>
-                {r.type && <span>{r.type}</span>}
-              </p>
-              {!r.confirmed && <p><span class="placeholder">Needs your confirmation</span></p>}
-              <ul>{r.points.map((pt) => <li>{pt}</li>)}</ul>
-            </div>
-          </li>
-        ))
-      }
+      {first.map((r) => <Role r={r} />)}
     </ol>
+
+    {
+      rest.length > 0 && (
+        <details class="more">
+          <summary>
+            <span>See all {roles.length} roles</span>
+            <span class="plus" aria-hidden="true" />
+          </summary>
+          <ol class="timeline" role="list" start={first.length + 1}>
+            {rest.map((r) => <Role r={r} />)}
+          </ol>
+        </details>
+      )
+    }
   </div>
 </section>
 
 <style>
   .experience { padding-block: var(--section); }
   .head { display: grid; gap: 1rem; }
-  .head .eyebrow { color: var(--rust); }
 
   .timeline { list-style: none; margin: 3rem 0 0; padding: 0; }
-  .item {
+  .more .timeline { margin-top: 0; }
+  .timeline :global(.item) {
     display: grid;
-    gap: 0.5rem 3rem;
+    gap: 0.5rem;
     padding-block: 2rem;
     border-top: 1px solid var(--line);
   }
-  .item:last-child { border-bottom: 1px solid var(--line); }
-  @media (min-width: 48rem) { .item { grid-template-columns: 12rem 1fr; } }
+  /* Dates sit as a small label above the title (no side column), so roles without dates leave no gap */
 
-  .dates { font-size: var(--step-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rust); padding-top: 0.35rem; }
-  .detail { display: grid; gap: 0.6rem; max-width: 46rem; }
-  .org { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; }
-  .org span { color: var(--text-muted); }
-  .detail ul { margin: 0.25rem 0 0; padding-left: 1.2rem; display: grid; gap: 0.35rem; color: var(--text-muted); }
+  .timeline :global(.dates) { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--wine); }
+  .timeline :global(.detail) { display: grid; gap: 0.6rem; max-width: 46rem; }
+  .timeline :global(.org) { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; }
+  .timeline :global(.org span) { color: var(--text-muted); }
+  .timeline :global(.detail ul) { margin: 0.25rem 0 0; padding-left: 1.2rem; display: grid; gap: 0.35rem; color: var(--text-muted); }
+
+  /* "See all roles" disclosure, same style as the case study details */
+  .more { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); }
+  .more summary {
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    min-height: 3.25rem; cursor: pointer; list-style: none;
+    font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink);
+  }
+  .more summary::-webkit-details-marker { display: none; }
+  .more summary:hover { color: var(--wine); }
+  .plus { position: relative; width: 0.9rem; height: 0.9rem; flex: none; }
+  .plus::before, .plus::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; background: currentColor; transition: transform 0.25s ease; }
+  .plus::after { transform: rotate(90deg); }
+  .more[open] .plus::after { transform: rotate(0deg); }
 </style>

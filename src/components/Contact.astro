@@ -9,11 +9,10 @@ const mailto = publicEmail ? `mailto:${publicEmail}?subject=${encodeURIComponent
 const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholder(s.url)) : [];
 ---
 
-<section id="contact" class="contact" aria-labelledby="contact-title">
+<section id="contact" class="contact band-dark" aria-labelledby="contact-title">
   <div class="wrap grid">
     <div class="left">
     <div class="intro">
-      <p class="eyebrow">Contact</p>
       <h2 id="contact-title">Let's work <em>together</em></h2>
       <p class="lede">
         If you're hiring for social media, content, or creative support, send me a message here or by email and tell
@@ -25,11 +24,13 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
       {
         publicEmail ? (
           <div class="email">
-            <a class="address" href={mailto}>{publicEmail}</a>
-            <div class="buttons">
-              <a class="btn btn-light" href={mailto}>Email me</a>
-              <button type="button" class="btn btn-outline" data-copy={publicEmail}>Copy email address</button>
-            </div>
+            <p class="email-row">
+              <a class="address" href={mailto}>{publicEmail}</a>
+              <button type="button" class="copy" data-copy={publicEmail}>
+                <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M8 8h12v12H8zM4 4h12v2M4 4v12h2" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+                Copy
+              </button>
+            </p>
             <p class="copied" role="status" aria-live="polite" data-copy-status></p>
           </div>
         ) : (
@@ -98,7 +99,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
         <textarea id="cf-message" name="message" rows="5" required></textarea>
       </div>
 
-      <button class="btn btn-light submit" type="submit">Send message</button>
+      <button class="btn btn-primary submit" type="submit">Send message</button>
       <p class="form-status" role="status" aria-live="polite" data-form-status></p>
     </form>
   </div>
@@ -106,85 +107,83 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
 
 
 <style>
-  .contact {
-    --bg: var(--espresso);
-    --text: var(--cream);          /* 13.6:1 */
-    --text-muted: var(--bisque);   /* 9.5:1 */
-    --heading: var(--cream);
-    --accent: var(--chambray);
-    --focus: var(--chambray);
-    --rule: var(--cream);
-    --line: rgb(239 229 211 / 0.22);
-    background: var(--bg);
-    color: var(--text);
-    padding-block: var(--section);
-  }
+  /* Colors come from .band-dark in global.css */
+  .contact { padding-block: var(--section); }
   .grid { display: grid; gap: 3.5rem; align-items: start; }
   @media (min-width: 64rem) { .grid { grid-template-columns: 1fr 1fr; gap: 5rem; } }
   .left { display: grid; gap: 2.5rem; align-content: start; }
+  /* Phones and tablets: the form comes right after the intro, email and links after it */
+  @media (max-width: 63.99rem) {
+    .left { display: contents; }
+    .actions { order: 2; }
+  }
+  .actions { gap: 1rem; }
 
   /* Contact form (Netlify Forms) */
   .form { display: grid; gap: 1.1rem; }
   .hp { position: absolute; left: -9999px; }
   .field { display: grid; gap: 0.4rem; }
-  .field label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--bisque); }
+  .field label { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper); }
   .opt { font-weight: 400; letter-spacing: 0; text-transform: none; }
   .field input, .field textarea {
     width: 100%; min-height: 3rem; padding: 0.75rem 0.9rem;
-    font: inherit; font-size: 1rem; color: var(--cream);
+    font: inherit; font-size: var(--fs-body); color: var(--paper);
     background: rgb(244 244 241 / 0.06);
-    border: 1px solid rgb(244 244 241 / 0.45); border-radius: 6px;
+    border: 1px solid rgb(244 244 241 / 0.5); border-radius: var(--radius-media);
   }
   .field textarea { resize: vertical; min-height: 8rem; }
-  .field input:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--chambray); outline-offset: 2px; border-color: var(--cream); }
-  .field input:user-invalid, .field textarea:user-invalid { border-color: var(--chambray); }
+  .field input:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--rose); outline-offset: 2px; border-color: var(--paper); }
+  .field input:user-invalid, .field textarea:user-invalid { border-color: var(--rose); }
   .submit { justify-self: start; cursor: pointer; }
   .submit[disabled] { opacity: 0.6; cursor: progress; }
   @media (max-width: 30rem) { .submit { justify-self: stretch; } }
-  .form-status { min-height: 1.5em; font-size: var(--step-small); color: var(--bisque); }
+  .form-status { min-height: 1.5em; font-size: var(--fs-small); color: var(--text-muted); }
 
   .intro { display: grid; gap: 1.25rem; }
-  .eyebrow { color: var(--bisque); }
-  h2 { font-size: var(--step-h1); line-height: 0.98; max-width: 12ch; }
+  h2 { font-size: var(--fs-h2); line-height: 0.98; max-width: 12ch; }
   .lede { color: var(--text-muted); max-width: 46ch; }
 
   .actions { display: grid; gap: 2rem; }
-  .email { display: grid; gap: 1.25rem; }
-  /* Sans, not serif: Instrument Serif's "1" looks like an "l", which matters in an email address */
+  .email { display: grid; gap: 0.75rem; }
+  .email-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; }
+  /* Sans, not serif: in a serif "1" and "l" look alike, which matters in an email address */
   .address {
     font-family: var(--font-sans);
     font-weight: 600;
-    font-size: clamp(1.125rem, 0.9rem + 1.2vw, 1.75rem);
+    font-size: var(--fs-lead);
     line-height: 1.2;
-    letter-spacing: -0.01em;
-    color: var(--cream);
+    letter-spacing: -0.02em;
+    color: var(--paper);
     overflow-wrap: anywhere;
+    display: inline-flex; align-items: center; min-height: 2.75rem;
   }
-  .buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-  .btn-light { background: var(--cream); border-color: var(--cream); color: var(--java); }
-  .btn-light:hover { background: var(--bisque); border-color: var(--bisque); }
-  .btn-outline { background: transparent; color: var(--cream); cursor: pointer; }
-  .btn-outline:hover { background: var(--cream); color: var(--java); }
-  @media (max-width: 30rem) { .buttons .btn { flex: 1 1 100%; } }
-  .copied { min-height: 1.5em; font-size: var(--step-small); color: var(--bisque); }
+  .copy {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    min-height: 2.75rem; padding: 0 0.9rem;
+    background: transparent; color: var(--paper);
+    border: 1px solid var(--line); border-radius: var(--radius-pill);
+    font: inherit; font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+  }
+  .copy:hover { border-color: var(--paper); }
+  .copied { min-height: 1.5em; font-size: var(--fs-small); color: var(--text-muted); }
 
   .links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; }
   .links a {
     display: inline-flex; gap: 0.35rem; align-items: center;
     min-height: 2.75rem;
-    color: var(--cream);
+    color: var(--paper);
     font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.12em; font-size: var(--step-label);
+    text-transform: uppercase; letter-spacing: 0.12em; font-size: var(--fs-label);
   }
 
   .resume {
     justify-self: start;
     display: inline-flex; align-items: center; gap: 0.5rem;
     min-height: 2.75rem;
-    color: var(--cream);
+    color: var(--paper);
     font-weight: 600;
   }
-  .resume .meta { font-weight: 400; color: var(--bisque); }
+  .resume .meta { font-weight: 400; color: var(--text-muted); }
 
 </style>
 

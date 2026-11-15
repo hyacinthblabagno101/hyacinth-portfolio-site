@@ -12,18 +12,16 @@ My personal portfolio for job applications. It's a static Astro site: every page
 | Tools | `src/data/tools.json` |
 | Work showcase (reels, ads, AI content, animations, statics, stories) | `src/data/showcase.json` |
 | Case studies, client feedback, certifications | `src/data/proof.json` |
-| Projects (one file each, optional detail pages) | `src/content/projects/` |
-| Hero photo | `src/assets/portrait-hero.jpg` |
-| About photo | `src/assets/portrait-about.jpg` |
+| Hero and About photo | `src/assets/portrait-about.jpg` |
+| Brand logos (white, trimmed WebP) | `public/logos/` and the list in `src/components/SelectedWork.astro` |
 | Share image (shown when the link is posted) | `public/og-image.png` (1200 x 630) |
 | Browser tab icon | `public/favicon.svg` and `public/apple-touch-icon.png` |
-| Colors and fonts | `src/styles/global.css` (top of the file) |
+| Colors, type sizes and corners (the only place to change them) | `src/styles/global.css` (top of the file) |
 
 ## Two safety rules built in
 
 1. **Placeholders never go live.** Any value written as `[PLACEHOLDER: ...]` is hidden on the live site. While previewing, it shows in a yellow box so I can spot it.
 2. **Nothing unconfirmed goes live.**
-   - A project only appears when its file has `draft: false` **and** `permissionConfirmed: true`.
    - The bio, each job, and the tool list each have `"confirmed": false`. Change that to `true` once it's correct.
    - While previewing, unconfirmed items still show, with a "needs your confirmation" tag.
 
@@ -78,42 +76,13 @@ The "Selected work" section is built from `src/data/showcase.json`. Each item is
 
 Case studies, client feedback and certifications are in `src/data/proof.json`. Feedback must be copied word for word from the client.
 
-## Add a project
-
-1. In `src/content/projects/`, copy `_template.md` and rename the copy, for example `rabble-flatlays.md`.
-   - The file name becomes the page address: `/work/rabble-flatlays/`.
-   - Use lowercase letters and dashes, with no spaces.
-   - Remove the `_` at the start. Files starting with `_` are ignored.
-2. Fill in every field. The template explains each one. The important ones:
-   - `category`: one of `Short-Form Video`, `Social Media & Design`, `UGC & Influencer`, `E-commerce`, `Digital Workflows`.
-   - `type`: one of `Client work`, `Team project`, `Concept`, `Personal project`.
-   - `role`: exactly what I did. For team projects, say which parts were mine.
-   - `outcomes`: only results I have verified. Leave as `[]` if none, and the Outcomes section won't show.
-3. Add the media (see "Add or swap images and videos" below).
-4. Preview it. When it's right and I have permission to show it, set `permissionConfirmed: true` and `draft: false`.
-
-**Reorder projects:** change `order` (lower numbers show first).
-**Hide a project from the home page without deleting it:** set `featured: false`, or `draft: true`.
-**Remove a project:** delete its file.
-
-The category filter buttons build themselves: a category's button only appears once a project uses that category.
-
 ## Add or swap images and videos
 
-Images and videos for projects live on Cloudinary (account `ktee3ije`, folder `hyacinth portfolio`). Cloudinary resizes and compresses them automatically for each screen.
+Images and videos for the showcase live on Cloudinary (account `ktee3ije`, folder `hyacinth portfolio`). Cloudinary resizes and compresses them automatically for each screen.
 
-1. Upload the file to Cloudinary, into a folder per project, for example `hyacinth portfolio/rabble/`.
-2. Copy its **public ID**, for example `hyacinth portfolio/rabble/flatlay-01`. That's the path without the file extension.
-3. Paste it into the project file:
-
-```yaml
-media:
-  - kind: "image"            # or "video"
-    id: "hyacinth portfolio/rabble/flatlay-01"
-    alt: "Flat lay of a kids' tee and shorts on a cream background"
-    caption: "Optional caption under the image"
-    aspect: "4:5"            # 9:16 for Reels/TikTok, 4:5 or 1:1 for feed posts, 16:9 or 3:2 for wide
-```
+1. Upload the file to Cloudinary (public IDs are flat, for example `rabble-flatlay-01`).
+2. Copy its **public ID** (the name without the file extension).
+3. Paste it as `media` on the item in `src/data/showcase.json`, with `kind` (`image` or `video`), `aspect` (`9:16`, `4:5` or `1:1`) and a plain description in `alt`.
 
 **About videos:**
 - Videos show a still frame with a play button, and only download when someone presses play.
@@ -124,7 +93,7 @@ media:
 **About `alt` text:** describe what's in the picture for someone who can't see it. One plain sentence is enough.
 
 **Swap a photo of me:**
-- Replace `src/assets/portrait-hero.jpg` or `portrait-about.jpg` with a new file of the same name, in portrait shape (about 4:5).
+- Replace `src/assets/portrait-about.jpg` with a new file of the same name, in portrait shape (about 4:5).
 - Then update `portraitAlt` in `site.json` or `about.json`.
 
 **Swap the share image:** replace `public/og-image.png` with a 1200 x 630 PNG.

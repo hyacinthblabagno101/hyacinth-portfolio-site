@@ -26,8 +26,6 @@ const siteSchema = z.object({
   resumeFile: z.string(),
   /** The resume download only appears on the live site once this is true. */
   resumeConfirmed: z.boolean(),
-  /** Color theme: "" (Fig, the default), "chambray", "butter" or "clay". */
-  theme: z.string().optional(),
   cloudName: z.string(),
   cloudFolder: z.string(),
   socials: z.array(z.object({ label: z.string(), url: z.string() })),

@@ -61,7 +61,7 @@ const rows = [...byBrand.entries()]
       role: roleFor(brand),
       thumb: tileMedia(cover, cover.kind === 'video' ? '9:16' : '1:1', [160, 320]),
       alt: cover.alt,
-      items: JSON.stringify(ordered.map(viewerEntry)),
+      items: ordered.map((i) => i.id).join(','), // ids; the viewer looks them up in one shared list
       first: viewerEntry(cover),
     };
   });
@@ -73,7 +73,7 @@ const rows = [...byBrand.entries()]
     <ul role="list" class="names">
       {strip.map((b, n) =>
         'src' in b ? (
-          <li class="logo" style={`--w: ${b.width}px`}><img src={b.src} alt={b.name} width={b.width} height={b.height} loading="lazy" decoding="async" /></li>
+          <li class="logo" style={`--w: ${b.width}px`}><img src={b.src} alt={b.name} width={b.width} height={b.height} decoding="async" /></li>
         ) : (
           <li class:list={{ alt: n % 2 === 1 }}>{b.name}</li>
         ),
@@ -112,50 +112,50 @@ const rows = [...byBrand.entries()]
 
 <style>
   /* Brands strip */
-  .strip { background: var(--beet); --line: rgb(244 244 241 / 0.18); padding-block: clamp(2.5rem, 2rem + 2vw, 3.75rem); }
+  .strip { background: var(--wine); --line: rgb(244 244 241 / 0.18); padding-block: clamp(2.5rem, 2rem + 2vw, 3.75rem); }
   .strip-title {
     max-width: none; text-align: center;
-    font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.18em; line-height: 1.4; text-transform: uppercase; color: var(--bisque);
+    font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; line-height: 1.4; text-transform: uppercase; color: var(--paper);
   }
   .names {
     list-style: none; margin: 1.25rem 0 0; padding: 0;
     display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.5rem clamp(1.75rem, 1rem + 2.5vw, 3.25rem);
   }
   .names li {
-    font-weight: 700; font-size: clamp(0.95rem, 0.88rem + 0.3vw, 1.1rem); letter-spacing: -0.03em; text-transform: uppercase; color: var(--cream);
+    font-weight: 700; font-size: var(--fs-body); letter-spacing: -0.02em; text-transform: uppercase; color: var(--paper);
   }
   .names .logo img { display: block; width: var(--w); max-width: none; height: auto; opacity: 0.88; transition: opacity 0.2s ease; }
   .names .logo:hover img { opacity: 1; }
   @media (max-width: 40rem) { .names .logo img { width: calc(var(--w) * 0.74); } .names { gap: 1.25rem 1.5rem; } }
-  .names li.alt { font-family: var(--font-serif); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: clamp(1.2rem, 1.05rem + 0.6vw, 1.55rem); color: var(--chambray); }
+  .names li.alt { font-family: var(--font-serif); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: var(--fs-lead); color: var(--rose); }
 
   /* Selected work */
   .selected { padding-block: var(--section) clamp(3rem, 2rem + 3vw, 4.5rem); }
   .top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: clamp(1.5rem, 1rem + 2vw, 2.5rem); }
   .all {
     display: inline-flex; gap: 0.4rem; align-items: center; min-height: 2.75rem;
-    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--java);
+    font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink);
   }
 
-  .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--java); }
+  .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
   .rows li { border-bottom: 1px solid var(--line); }
   .row {
     display: grid; align-items: center; gap: 0.25rem 1rem;
     grid-template-columns: 1fr 4rem;
     grid-template-areas: 'brand thumb' 'what thumb';
     padding: 1rem 0;
-    color: var(--java); text-decoration: none;
+    color: var(--ink); text-decoration: none;
     transition: background 0.3s ease, padding 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
   .no { display: none; }
-  .brand { grid-area: brand; font-weight: 800; font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem); letter-spacing: -0.04em; text-transform: uppercase; line-height: 1.05; }
+  .brand { grid-area: brand; font-weight: 700; font-size: var(--fs-h3); letter-spacing: -0.04em; text-transform: uppercase; line-height: 1.05; }
   .what { grid-area: what; display: grid; gap: 0.1rem; }
-  .types { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rust); }
-  .role { font-family: var(--font-serif); font-style: italic; font-size: 1.05rem; line-height: 1.3; color: var(--text-muted); }
-  .thumb { grid-area: thumb; display: block; width: 4rem; aspect-ratio: 1; overflow: hidden; border-radius: var(--media-radius); background: var(--beige); }
+  .types { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--wine); }
+  .role { font-family: var(--font-serif); font-style: italic; font-size: var(--fs-body); line-height: 1.3; color: var(--text-muted); }
+  .thumb { grid-area: thumb; display: block; width: 4rem; aspect-ratio: 1; overflow: hidden; border-radius: var(--radius-media); background: var(--greige); }
   .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1); }
   .row:hover .thumb img, .row:focus-visible .thumb img { transform: scale(1.08); }
-  .row:hover .brand { color: var(--rust); }
+  .row:hover .brand { color: var(--wine); }
   .row:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
   @media (min-width: 48rem) {
@@ -164,10 +164,10 @@ const rows = [...byBrand.entries()]
       grid-template-areas: 'no brand what thumb';
       gap: 1.5rem; padding: 1.1rem 0;
     }
-    .no { display: block; grid-area: no; font-size: 0.75rem; color: var(--text-muted); }
+    .no { display: block; grid-area: no; font-size: var(--fs-label); color: var(--text-muted); }
     .thumb { width: 5rem; }
   }
   @media (hover: hover) and (min-width: 48rem) {
-    .row:hover { padding-inline: 0.75rem; background: var(--pink-soft); }
+    .row:hover { padding-inline: 0.75rem; background: var(--greige-soft); }
   }
 </style>

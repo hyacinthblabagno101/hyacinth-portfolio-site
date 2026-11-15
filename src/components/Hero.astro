@@ -25,8 +25,8 @@ const brands = new Set(items.map((i) => i.brand).filter(Boolean));
 // Facts: every number is counted from the data files, never typed in by hand
 const facts = [
   { value: brands.size, label: 'brands featured', href: '#selected' },
-  { value: proof.caseStudies.length, label: 'case studies', href: '#case-studies' },
-  { value: proof.certifications.length, label: 'certificates', href: '#certifications' },
+  { value: showcase.length, label: 'content formats', href: '#work' },
+  { value: proof.testimonials.length, label: 'client reviews', href: '#feedback' },
 ];
 
 // Two polaroids of real work beside my photo
@@ -39,7 +39,7 @@ const polaroids = [pick('board-properecom'), pick('reel-ss-top-trends') ?? items
 <section class="hero" aria-labelledby="hero-title">
   <div class="wrap">
     <p class="meta rise">
-      <span>{shortRole}</span>
+      <span class="who"><strong>{site.name}</strong> <span aria-hidden="true">/</span> {shortRole}</span>
       <span class="right">
         <span class="loc">Based in the {location}</span>
         {availability ? <span class="status"><i aria-hidden="true" />{availability}</span> : showUnconfirmed && <span class="placeholder">{site.availability}</span>}
@@ -128,21 +128,21 @@ const polaroids = [pick('board-properecom'), pick('reel-ss-top-trends') ?? items
 
   .meta {
     display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1.5rem;
-    font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted);
+    font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);
   }
-  .meta .right { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; }
-  .meta .right { align-items: center; }
-  .status { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.2rem 0.65rem; border: 1px solid var(--line); border-radius: 999px; color: var(--java); }
-  .status i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #2b8a3e; box-shadow: 0 0 0 3px var(--pink-soft); }
+  .meta .who strong { color: var(--ink); font-weight: 700; }
+  .meta .right { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 1.5rem; }
+  .status { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.2rem 0.65rem; border: 1px solid var(--line); border-radius: var(--radius-pill); color: var(--ink); }
+  .status i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #2b8a3e; box-shadow: 0 0 0 3px var(--greige-soft); }
 
   /* Big type */
   .title { position: relative; margin-top: clamp(1.25rem, 0.8rem + 2vw, 2.5rem); }
   .mast {
-    font-family: var(--display-font);
-    font-size: var(--step-display);
-    font-weight: var(--display-weight);
-    text-transform: var(--display-transform);
-    letter-spacing: var(--display-tracking);
+    font-family: var(--font-sans);
+    font-size: var(--fs-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.06em;
     line-height: 0.86;
   }
   .mast > span:not(.visually-hidden) { display: block; }
@@ -159,17 +159,17 @@ const polaroids = [pick('board-properecom'), pick('reel-ss-top-trends') ?? items
   }
   .below > * { min-width: 0; }
 
-  .hi { font-family: var(--font-serif); font-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.4rem); line-height: 1.05; color: var(--java); }
-  .hi em { color: var(--rust); }
+  .hi { font-family: var(--font-serif); font-size: var(--fs-stat); line-height: 1.1; color: var(--ink); }
+  .hi em { color: var(--wine); }
   .intro { margin-top: 0.9rem; color: var(--text-muted); max-width: 44ch; }
   .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.5rem; }
   @media (max-width: 30rem) { .actions .btn { flex: 1 1 100%; } }
   .links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; margin-top: 1.1rem; }
   .links a {
     display: inline-flex; align-items: center; gap: 0.25rem; min-height: 2.75rem;
-    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--java);
+    font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink);
   }
-  .links a:hover { color: var(--rust); }
+  .links a:hover { color: var(--wine); }
 
   /* Polaroids */
   .polaroids { position: relative; height: clamp(21rem, 15rem + 18vw, 27rem); }
@@ -179,14 +179,14 @@ const polaroids = [pick('board-properecom'), pick('reel-ss-top-trends') ?? items
     width: clamp(8.5rem, 5rem + 10vw, 12rem);
     padding: 0.55rem 0.55rem 0;
     background: #fff;
-    box-shadow: 0 1px 2px rgb(29 21 19 / 0.08), 0 14px 30px -12px rgb(29 21 19 / 0.35);
+    box-shadow: 0 1px 2px rgb(34 21 22 / 0.06), 0 12px 28px -14px rgb(34 21 22 / 0.3);
     transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .card :global(img), .frame img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: var(--beige); }
+  .card :global(img), .frame img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: var(--greige); }
   .me :global(img) { object-position: 50% 20%; }
   .card figcaption, .cap {
     display: block; padding: 0.45rem 0 0.55rem; text-align: center;
-    font-family: var(--font-serif); font-style: italic; font-size: 1.05rem; line-height: 1.2; color: var(--java);
+    font-family: var(--font-serif); font-style: italic; font-size: var(--fs-body); line-height: 1.2; color: var(--ink);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .me { left: 0; top: 8%; transform: rotate(-5deg); z-index: 2; }
@@ -198,24 +198,24 @@ const polaroids = [pick('board-properecom'), pick('reel-ss-top-trends') ?? items
   .play {
     position: absolute; top: 0.5rem; left: 0.5rem;
     display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%;
-    background: var(--cream); color: var(--java);
+    background: var(--paper); color: var(--ink);
   }
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
     .card:hover { transform: rotate(0deg) translateY(-6px); z-index: 4; }
   }
 
   /* Facts: number left, italic label right, hairlines between */
-  .facts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--java); }
+  .facts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
   .facts a {
     display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
     padding: 0.8rem 0; border-bottom: 1px solid var(--line);
-    color: var(--java); text-decoration: none;
+    color: var(--ink); text-decoration: none;
     transition: padding 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
   .facts a:hover { padding-left: 0.4rem; }
-  .facts strong { font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
-  .facts span { font-family: var(--font-serif); font-style: italic; font-size: 1.05rem; color: var(--text-muted); }
-  .facts a:hover span { color: var(--rust); }
+  .facts strong { font-size: var(--fs-stat); font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+  .facts span { font-family: var(--font-serif); font-style: italic; font-size: var(--fs-body); color: var(--text-muted); }
+  .facts a:hover span { color: var(--wine); }
 
   /* Phones and tablets: intro, then polaroids, then facts */
   @media (max-width: 63.99rem) {

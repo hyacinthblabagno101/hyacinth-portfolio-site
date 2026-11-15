@@ -6,11 +6,11 @@
 import { site, resumeFile, showAbout, showExperience } from '../lib/data';
 
 const links = [
-  { label: 'Work', href: '/#work' },
+  { label: 'Work', href: '/#selected' },
+  { label: 'Feedback', href: '/#feedback' },
   { label: 'Case studies', href: '/#case-studies' },
   showAbout && { label: 'About', href: '/#about' },
   showExperience && { label: 'Experience', href: '/#experience' },
-  { label: 'Feedback', href: '/#feedback' },
   { label: 'Contact', href: '/#contact' },
 ].filter((l): l is { label: string; href: string } => Boolean(l));
 ---
@@ -38,7 +38,7 @@ const links = [
     position: sticky;
     top: 0;
     z-index: 50;
-    background: color-mix(in srgb, var(--cream) 94%, transparent);
+    background: color-mix(in srgb, var(--paper) 94%, transparent);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--line);
   }
@@ -50,20 +50,21 @@ const links = [
     min-height: 4rem;
   }
   .brand {
-    font-size: var(--step-label);
+    font-size: var(--fs-label);
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     line-height: 1;
-    color: var(--java);
+    color: var(--ink);
     text-decoration: none;
     white-space: nowrap;
+    display: inline-flex; align-items: center; min-height: 2.75rem;
   }
   .brand [aria-hidden] { display: none; }
   .brand .tag {
     margin-left: 0.35rem;
-    font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: 0.95rem; letter-spacing: 0; text-transform: none;
-    color: var(--rust);
+    font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: var(--fs-small); letter-spacing: 0; text-transform: none;
+    color: var(--wine);
   }
   @media (max-width: 22rem) { .brand .tag { display: none; } }
 
@@ -75,8 +76,8 @@ const links = [
     padding: 0 0.25rem;
     background: none;
     border: 0;
-    color: var(--java);
-    font: 600 var(--step-label) / 1 var(--font-sans);
+    color: var(--ink);
+    font: 600 var(--fs-label) / 1 var(--font-sans);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     cursor: pointer;
@@ -100,27 +101,27 @@ const links = [
     padding: 0;
   }
   .menu a {
-    color: var(--java);
+    color: var(--ink);
     text-decoration: none;
     font-weight: 600;
   }
-  .menu a:hover { color: var(--rust); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.35em; }
+  .menu a:hover { color: var(--wine); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.35em; }
 
   /* Mobile: drop-down panel */
   @media (max-width: 74.99rem) {
     .menu {
       position: absolute;
       inset: 100% 0 auto 0;
-      background: var(--cream);
-      border-bottom: 2px solid var(--java);
+      background: var(--paper);
+      border-bottom: 2px solid var(--ink);
       padding: 0.5rem var(--gutter) 1.5rem;
     }
     .menu[data-open='false'] { display: none; }
     .menu a {
       display: block;
       padding: 0.75rem 0;
-      font-size: 2rem;
-      font-weight: 800;
+      font-size: var(--fs-h3);
+      font-weight: 700;
       letter-spacing: -0.04em;
       text-transform: uppercase;
       line-height: 1;
@@ -134,18 +135,18 @@ const links = [
     .menu ul { display: flex; gap: 1.75rem; }
     .menu a { white-space: nowrap; }
     .menu a {
-      font-size: var(--step-label);
+      font-size: var(--fs-label);
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
     }
     .menu ul { align-items: center; }
-    .menu .resume { color: var(--rust); }
+    .menu .resume { color: var(--wine); }
     .menu .cta {
       display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0 1.1rem;
-      border-radius: var(--btn-radius); background: var(--java); color: var(--cream);
+      border-radius: var(--radius-pill); background: var(--ink); color: var(--paper);
     }
-    .menu .cta:hover { background: var(--rust); color: var(--cream); text-decoration: none; }
+    .menu .cta:hover { background: var(--wine); color: var(--paper); text-decoration: none; }
   }
 </style>
 

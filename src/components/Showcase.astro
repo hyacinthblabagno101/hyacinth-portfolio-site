@@ -5,18 +5,21 @@
  * - Statics and stories (the "grouped" tabs) show one cover per brand that opens the whole collection.
  * - Hover (mouse only): images lift, videos play a short silent preview.
  * - Click: opens the viewer with the full video (with sound) or full image, plus my role for that brand.
- * - Other tabs show the first 10 items, with a button to show the rest.
+ * - Other tabs show the first 6 items, with a button to show the rest.
  * Without JavaScript, every tile is a plain link to the full media file.
  * The viewer also opens from any .tile-link elsewhere on the page (e.g. the preview strip in the hero).
  */
 import { showcase, groupedTabs, roleFor } from '../lib/data';
 import { viewerEntry, tileMedia } from '../lib/showcaseMedia';
 
-const INITIAL = 10;
+const INITIAL = 6;
+
+/** One shared list of viewer entries by id, so collections only need to list ids in the page. */
+const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => [i.id, viewerEntry(i)]));
 
 /** Tile shape per tab, so each grid stays even. */
 const tileAspect = (key: string) => (key === 'statics' ? '4:5' : '9:16');
-const sizes = '(min-width: 80rem) 15rem, (min-width: 64rem) 22vw, (min-width: 40rem) 30vw, 46vw';
+const sizes = '(min-width: 80rem) 13rem, (min-width: 64rem) 16vw, (min-width: 40rem) 30vw, 46vw';
 
 type Tile = {
   key: string;
@@ -51,7 +54,7 @@ const tabs = showcase.map((c) => {
           alt: cover.alt,
           kind: 'image',
           entry: viewerEntry(cover),
-          items: JSON.stringify(ordered.map(viewerEntry)),
+          items: ordered.map((i) => i.id).join(','), // ids; the viewer looks them up in one shared list
           count: items.length > 1 ? items.length : undefined,
         };
       });
@@ -108,14 +111,8 @@ const tabs = showcase.map((c) => {
                 <a
                   class:list={['tile-link', { collection: !!i.items }]}
                   href={i.entry.full}
-                  data-kind={i.entry.kind}
-                  data-full={i.entry.full}
-                  data-poster={i.entry.poster}
+                  data-id={i.items ? undefined : i.key}
                   data-preview={i.media.preview}
-                  data-title={i.entry.title}
-                  data-brand={i.entry.brand}
-                  data-alt={i.entry.alt}
-                  data-role={i.entry.role}
                   data-items={i.items}
                 >
                   <span class="frame" style={`aspect-ratio: ${t.aspect.replace(':', ' / ')}`}>
@@ -163,7 +160,7 @@ const tabs = showcase.map((c) => {
             ))}
           </ul>
           {!t.grouped && t.tiles.length > INITIAL && (
-            <button type="button" class="more" aria-expanded="false" data-more>
+            <button type="button" class="btn btn-ghost more" aria-expanded="false" data-more>
               Show all <span class="visually-hidden">{t.label}</span>
               <span aria-hidden="true">&darr;</span>
             </button>
@@ -172,6 +169,9 @@ const tabs = showcase.map((c) => {
       ))
     }
   </div>
+
+  {/* Every piece of work once, by id, for collections (brand covers and the Selected work rows) */}
+  <script type="application/json" id="viewer-entries" set:html={JSON.stringify(registry)} />
 
   <dialog class="viewer" aria-labelledby="viewer-title" data-viewer>
     <div class="viewer-inner">
@@ -211,6 +211,11 @@ const tabs = showcase.map((c) => {
       margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter);
     }
     .tabs::-webkit-scrollbar { display: none; }
+    /* A soft fade on the right says there are more tabs to swipe to; it goes away at the end */
+    .tabs:not([data-at-end]) {
+      -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 3.5rem), transparent);
+      mask-image: linear-gradient(to right, #000 calc(100% - 3.5rem), transparent);
+    }
     .tabs button { flex-shrink: 0; white-space: nowrap; }
   }
   .tabs button {
@@ -219,20 +224,20 @@ const tabs = showcase.map((c) => {
     min-height: 2.75rem;
     padding: 0.5rem 0;
     background: none; border: 0; cursor: pointer;
-    font: inherit; font-weight: 600; font-size: var(--step-small);
-    letter-spacing: 0.08em; text-transform: uppercase;
+    font: inherit; font-weight: 600; font-size: var(--fs-small);
+    letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--text-muted);
     transition: color 0.25s ease;
   }
   .tabs button::after {
     content: '';
     position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
-    background: var(--burgundy);
+    background: var(--wine);
     transform: scaleX(0); transform-origin: left;
     transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .tabs button:hover { color: var(--burgundy); }
-  .tabs button[aria-selected='true'] { color: var(--burgundy); }
+  .tabs button:hover { color: var(--wine); }
+  .tabs button[aria-selected='true'] { color: var(--wine); }
   .tabs button[aria-selected='true']::after { transform: scaleX(1); }
 
   .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
@@ -244,18 +249,18 @@ const tabs = showcase.map((c) => {
     .grid-feed { grid-template-columns: repeat(3, 1fr); }
   }
   @media (min-width: 64rem) {
-    .grid-tall { grid-template-columns: repeat(5, 1fr); }
+    .grid-tall { grid-template-columns: repeat(6, 1fr); }
     .grid-feed { grid-template-columns: repeat(4, 1fr); }
   }
 
   .tile.extra { display: none; }
   .panel[data-expanded] .tile.extra { display: block; }
 
-  .tile-link { display: block; color: inherit; text-decoration: none; border-radius: var(--media-radius); }
+  .tile-link { display: block; color: inherit; text-decoration: none; border-radius: var(--radius-media); }
   .frame {
     position: relative; display: block; overflow: hidden;
-    border-radius: var(--media-radius);
-    background: var(--beige);
+    border-radius: var(--radius-media);
+    background: var(--greige);
   }
   .frame img, .frame :global(video) {
     position: absolute; inset: 0;
@@ -269,29 +274,29 @@ const tabs = showcase.map((c) => {
     position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
     display: grid; place-items: center;
     width: 1.9rem; height: 1.9rem; border-radius: 50%;
-    background: rgb(35 24 21 / 0.55); color: var(--cream);
+    background: rgb(34 21 22 / 0.55); color: var(--paper);
     backdrop-filter: blur(4px);
     transition: opacity 0.3s ease;
   }
   .stack {
     position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
     display: inline-flex; align-items: center; gap: 0.3rem;
-    padding: 0.25rem 0.55rem; border-radius: 999px;
-    background: rgb(35 24 21 / 0.6); color: var(--cream);
-    font-size: 0.75rem; font-weight: 600;
+    padding: 0.25rem 0.55rem; border-radius: var(--radius-pill);
+    background: rgb(34 21 22 / 0.6); color: var(--paper);
+    font-size: var(--fs-label); font-weight: 600;
     backdrop-filter: blur(4px);
   }
   .overlay {
     position: absolute; inset: auto 0 0 0; z-index: 2;
     display: grid; gap: 0.15rem;
     padding: 2.5rem 0.85rem 0.85rem;
-    background: linear-gradient(to top, rgb(35 24 21 / 0.82), rgb(35 24 21 / 0));
-    color: var(--cream);
+    background: linear-gradient(to top, rgb(34 21 22 / 0.82), rgb(34 21 22 / 0));
+    color: var(--paper);
     opacity: 0; transform: translateY(6px);
     transition: opacity 0.35s ease, transform 0.35s ease;
   }
-  .brand { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bisque); }
-  .title { font-family: var(--font-serif); font-size: 1.125rem; line-height: 1.15; }
+  .brand { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper); }
+  .title { font-family: var(--font-serif); font-size: var(--fs-body); line-height: 1.15; }
 
   /* Hover and keyboard focus show the same details */
   .tile-link:hover .frame img, .tile-link:focus-visible .frame img { transform: scale(1.04); }
@@ -300,18 +305,12 @@ const tabs = showcase.map((c) => {
   /* Touch screens can't hover, so the title is always shown there */
   /* Brand collections always show their name, since the cover alone doesn't say whose work it is */
   .collection .overlay { opacity: 1; transform: none; }
-  @media (hover: none) { .overlay { opacity: 1; transform: none; padding-top: 2rem; } .title { font-size: 1rem; } }
-
-  .more {
-    display: flex; align-items: center; gap: 0.5rem;
-    margin: 2rem auto 0;
-    min-height: 2.75rem; padding: 0.6rem 1.4rem;
-    background: transparent; color: var(--java);
-    border: 1px solid var(--java); border-radius: var(--btn-radius);
-    font: inherit; font-weight: 500; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
-    transition: background 0.25s ease, color 0.25s ease;
+  @media (hover: none) {
+    .overlay { opacity: 1; transform: none; padding-top: 1.75rem; }
+    .tile-link:not(.collection) .overlay .title { display: none; }
   }
-  .more:hover { background: var(--java); color: var(--cream); }
+
+  .more { display: flex; width: fit-content; margin: 2rem auto 0; }
   .panel[data-expanded] .more { display: none; }
 
   /* Staggered fade-in when a tab opens or more items are shown */
@@ -323,10 +322,10 @@ const tabs = showcase.map((c) => {
   /* Viewer */
   .viewer {
     width: min(100vw - 2rem, 64rem); max-height: calc(100vh - 2rem);
-    padding: 0; border: 0; border-radius: var(--media-radius); overflow: hidden;
-    background: var(--java); color: var(--cream);
+    padding: 0; border: 0; border-radius: var(--radius-media); overflow: hidden;
+    background: var(--ink); color: var(--paper);
   }
-  .viewer::backdrop { background: rgb(35 24 21 / 0.86); backdrop-filter: blur(3px); }
+  .viewer::backdrop { background: rgb(34 21 22 / 0.86); backdrop-filter: blur(3px); }
   .viewer[open] { animation: viewer-in 0.3s ease; }
   @keyframes viewer-in { from { opacity: 0; transform: scale(0.98); } }
   .viewer-inner { display: grid; grid-template-rows: 1fr auto; max-height: calc(100vh - 2rem); }
@@ -337,25 +336,33 @@ const tabs = showcase.map((c) => {
   .viewer-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem 1rem; }
   .viewer-text { margin: 0; display: grid; gap: 0.1rem; min-width: 0; }
   .viewer-text p { margin: 0; }
-  .viewer-pos { margin-left: 0.5rem; color: var(--beige); font-weight: 400; letter-spacing: 0.04em; }
-  .viewer-role { font-size: var(--step-small); color: var(--beige); max-width: 60ch; }
-  .viewer-brand { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bisque); }
-  .viewer-title { font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.2; }
+  .viewer-pos { margin-left: 0.5rem; color: var(--greige); font-weight: 400; letter-spacing: 0.04em; }
+  .viewer-role { font-size: var(--fs-small); color: var(--greige); max-width: 60ch; }
+  .viewer-brand { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper); }
+  .viewer-title { font-family: var(--font-serif); font-size: var(--fs-lead); line-height: 1.2; }
   .viewer-nav { display: flex; gap: 0.4rem; flex-shrink: 0; }
   .viewer-nav button[hidden] { display: none; }
   .viewer-nav button {
     width: 2.75rem; height: 2.75rem; border-radius: 50%;
-    background: rgb(248 241 231 / 0.1); color: var(--cream);
-    border: 1px solid rgb(248 241 231 / 0.25);
-    font-size: 1.15rem; cursor: pointer;
+    background: rgb(244 244 241 / 0.1); color: var(--paper);
+    border: 1px solid rgb(244 244 241 / 0.25);
+    font-size: var(--fs-body); cursor: pointer;
     transition: background 0.2s ease;
   }
-  .viewer-nav button:hover { background: rgb(248 241 231 / 0.22); }
-  .viewer-nav button:focus-visible { outline: 2px solid var(--chambray); outline-offset: 2px; }
+  .viewer-nav button:hover { background: rgb(244 244 241 / 0.22); }
+  .viewer-nav button:focus-visible { outline: 2px solid var(--rose); outline-offset: 2px; }
 </style>
 
 <script>
   const tablist = document.querySelector<HTMLElement>('[data-tabs]');
+  // Tabs fade at the right edge while there are more to swipe to (phones)
+  const markEnd = () => {
+    if (!tablist) return;
+    tablist.toggleAttribute('data-at-end', tablist.scrollLeft + tablist.clientWidth >= tablist.scrollWidth - 4);
+  };
+  tablist?.addEventListener('scroll', markEnd, { passive: true });
+  window.addEventListener('resize', markEnd);
+  markEnd();
   const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-tab]')];
   const panels = [...document.querySelectorAll<HTMLElement>('[data-panel]')];
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -453,7 +460,9 @@ const tabs = showcase.map((c) => {
   let index = 0;
   let opener: HTMLElement | null = null;
 
-  const entryOf = (a: HTMLElement): Entry => ({ ...(a.dataset as unknown as Entry) });
+  const registry: Record<string, Entry> = JSON.parse(document.getElementById('viewer-entries')?.textContent || '{}');
+  // Showcase tiles carry only an id; tiles elsewhere (the hero polaroids) carry their details as data attributes
+  const entryOf = (a: HTMLElement): Entry => (a.dataset.id && registry[a.dataset.id]) || ({ ...(a.dataset as unknown as Entry) });
 
   function show(i: number) {
     if (!media || !titleEl || !brandEl || !roleEl || !posEl) return;
@@ -494,7 +503,9 @@ const tabs = showcase.map((c) => {
     if (!link || !viewer || e.metaKey || e.ctrlKey || e.shiftKey) return;
     e.preventDefault();
     if (link.dataset.items) {
-      list = JSON.parse(link.dataset.items);
+      // Either a list of ids (looked up in the shared list) or, for case study videos, the entries themselves
+      const raw = link.dataset.items;
+      list = raw.startsWith('[') ? JSON.parse(raw) : raw.split(',').map((id) => registry[id]).filter(Boolean);
       index = 0;
     } else {
       const scope = link.closest<HTMLElement>('[data-viewer-list]');
