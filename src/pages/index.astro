@@ -5,11 +5,9 @@ import SelectedWork from '../components/SelectedWork.astro';
 import Showcase from '../components/Showcase.astro';
 import CaseStudies from '../components/CaseStudies.astro';
 import Testimonials from '../components/Testimonials.astro';
-import Certifications from '../components/Certifications.astro';
 import Skills from '../components/Skills.astro';
 import About from '../components/About.astro';
 import Experience from '../components/Experience.astro';
-import Tools from '../components/Tools.astro';
 import Contact from '../components/Contact.astro';
 import { showAbout, showExperience } from '../lib/data';
 ---
@@ -23,7 +21,5 @@ import { showAbout, showExperience } from '../lib/data';
   <Skills />
   <CaseStudies />
   {showExperience && <Experience />}
-  <Certifications />
-  <Tools />
   <Contact />
 </Base>
