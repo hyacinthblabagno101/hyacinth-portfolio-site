@@ -1,86 +1,123 @@
 ---
 /**
  * Client feedback, word for word. Text lives in "testimonials" in src/data/proof.json.
- * The first quote is shown large; the rest sit in a grid below it.
+ * Shows the first 3 quotes (reorder proof.json to change which) as cards side by side.
+ * - Hover lifts a card. Long quotes show their first lines with "Read more" to open the rest.
+ * - No ratings or badges: only what clients actually wrote.
  */
 import { proof } from '../lib/data';
 
-const [lead, ...rest] = proof.testimonials;
+const SHOWN = 3;
+const LONG = 220; // characters; longer quotes start folded
+
+const quotes = proof.testimonials.slice(0, SHOWN).map((t, i) => ({ ...t, id: `quote-${i + 1}`, long: t.quote.length > LONG }));
 ---
 
 <section id="feedback" class="feedback" aria-labelledby="feedback-title">
   <div class="wrap">
-    <header class="head reveal">
+    <header class="top reveal">
       <h2 id="feedback-title">Client <em>feedback</em></h2>
+      <p class="lede">A few words from brands I've worked with directly.</p>
     </header>
 
-    {
-      lead && (
-        <figure class="lead reveal">
-          <blockquote>
-            <p>{lead.quote}</p>
-          </blockquote>
-          <figcaption>
-            <strong>{lead.name}</strong>
-            <span>{lead.role}</span>
-          </figcaption>
-        </figure>
-      )
-    }
-
-    <ul class="grid" role="list">
-      {
-        rest.map((t, i) => (
-          <li class="reveal" style={`--delay: ${i * 80}ms`}>
-            <figure class="card">
-              <blockquote>
-                <p>{t.quote}</p>
-              </blockquote>
-              <figcaption>
-                <strong>{t.name}</strong>
-                <span>
-                  {t.url ? (
-                    <a href={t.url} target="_blank" rel="noopener">
-                      {t.role}, on Upwork <span class="visually-hidden">(opens in a new tab)</span>
-                    </a>
-                  ) : (
-                    t.role
-                  )}
-                </span>
-              </figcaption>
-            </figure>
-          </li>
-        ))
-      }
+    <ul class="cards" role="list">
+      {quotes.map((t, i) => (
+        <li class="reveal" style={`--delay: ${i * 80}ms`}>
+          <figure class="card">
+            <span class="mark" aria-hidden="true">&ldquo;</span>
+            <blockquote id={t.id} class:list={['quote', { folded: t.long }]}>
+              <p>{t.quote}</p>
+            </blockquote>
+            {t.long && (
+              <button type="button" class="more" aria-expanded="false" aria-controls={t.id} data-more-quote>
+                Read more
+              </button>
+            )}
+            <figcaption>
+              <strong>{t.name}</strong>
+              <span>
+                {t.url ? (
+                  <a href={t.url} target="_blank" rel="noopener">
+                    {t.role}, on Upwork <span class="visually-hidden">(opens in a new tab)</span>
+                  </a>
+                ) : (
+                  t.role
+                )}
+              </span>
+            </figcaption>
+          </figure>
+        </li>
+      ))}
     </ul>
   </div>
 </section>
 
 <style>
-  .feedback { padding-block: var(--section); }
-  .head { display: grid; gap: 1rem; margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem); }
+  .feedback { padding-block: var(--section); background: var(--greige); }
+  .top {
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1rem 2rem;
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+  .lede { color: var(--text-muted); max-width: 34ch; }
+
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; align-items: start; }
+  @media (min-width: 48rem) { .cards { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .cards { grid-template-columns: repeat(3, 1fr); } }
+
+  figure { margin: 0; }
+  .card {
+    display: grid; gap: 1rem;
+    padding: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+    border-radius: var(--radius-media); background: var(--paper);
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s ease;
+  }
+  @media (hover: hover) {
+    .card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -24px rgb(34 21 22 / 0.45); }
+    .card:hover .mark { transform: translateY(-3px) rotate(-6deg); }
+  }
+  .mark {
+    font-family: var(--font-serif); font-size: 3.5rem; line-height: 0.6; height: 1.5rem;
+    color: var(--wine); transition: transform 0.35s ease; transform-origin: left bottom;
+  }
 
   blockquote { margin: 0; }
-  figure { margin: 0; }
-  figcaption { display: grid; gap: 0.1rem; font-size: var(--fs-small); }
-  figcaption strong { font-weight: 600; }
+  .quote p { margin: 0; color: var(--ink); line-height: 1.6; }
+  /* Long quotes start at 6 lines and fade out; "Read more" opens the rest */
+  .quote.folded {
+    max-height: calc(1.6em * 6); overflow: hidden; position: relative;
+    transition: max-height 0.5s ease;
+  }
+  .quote.folded::after {
+    content: ''; position: absolute; inset: auto 0 0 0; height: 2.5em;
+    background: linear-gradient(to bottom, rgb(244 244 241 / 0), var(--paper));
+    transition: opacity 0.3s ease;
+  }
+  .quote.folded.open { max-height: 40em; }
+  .quote.folded.open::after { opacity: 0; }
+  .more {
+    justify-self: start; min-height: 2.75rem; padding: 0;
+    background: none; border: 0; cursor: pointer;
+    font: inherit; font-size: var(--fs-small); font-weight: 600; color: var(--wine);
+    text-decoration: underline; text-underline-offset: 0.2em;
+  }
+
+  figcaption {
+    display: grid; gap: 0.15rem; margin-top: 0.5rem; padding-top: 1rem;
+    border-top: 1px solid var(--line); font-size: var(--fs-small);
+  }
+  figcaption strong { font-weight: 700; color: var(--ink); }
   figcaption span { color: var(--text-muted); }
   figcaption a { color: var(--wine); }
-
-  .lead { display: grid; gap: 1.5rem; padding-bottom: clamp(2rem, 1.5rem + 2vw, 3rem); }
-  /* Pull quote: large enough to lead, short enough lines to read (about 60 characters) */
-  .lead p {
-    margin: 0; max-width: 60ch;
-    font-family: var(--font-serif);
-    font-size: var(--fs-lead);
-    line-height: 1.55; color: var(--ink);
-  }
-  .lead p::before { content: '\201C'; color: var(--wine); }
-  .lead p::after { content: '\201D'; color: var(--wine); }
-
-  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 0 3rem; border-top: 1px solid var(--line); }
-  @media (min-width: 48rem) { .grid { grid-template-columns: 1fr 1fr; } }
-  .grid li { display: flex; border-bottom: 1px solid var(--line); }
-  .card { flex: 1; display: grid; gap: 1rem; align-content: space-between; padding: 1.5rem 0; }
-  .card p { margin: 0; color: var(--ink); }
 </style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-more-quote]').forEach((btn) => {
+    const quote = document.getElementById(btn.getAttribute('aria-controls')!);
+    btn.addEventListener('click', () => {
+      const open = btn.getAttribute('aria-expanded') !== 'true';
+      btn.setAttribute('aria-expanded', String(open));
+      btn.textContent = open ? 'Show less' : 'Read more';
+      quote?.classList.toggle('open', open);
+    });
+  });
+</script>

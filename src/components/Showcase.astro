@@ -5,21 +5,21 @@
  * - Statics and stories (the "grouped" tabs) show one cover per brand that opens the whole collection.
  * - Hover (mouse only): images lift, videos play a short silent preview.
  * - Click: opens the viewer with the full video (with sound) or full image, plus my role for that brand.
- * - Other tabs show the first 6 items, with a button to show the rest.
+ * - Other tabs show the first 8 items (two rows of 4), with a button to show the rest.
  * Without JavaScript, every tile is a plain link to the full media file.
  * The viewer also opens from any .tile-link elsewhere on the page (e.g. the preview strip in the hero).
  */
 import { showcase, groupedTabs, roleFor, groupOf } from '../lib/data';
 import { viewerEntry, tileMedia } from '../lib/showcaseMedia';
 
-const INITIAL = 6;
+const INITIAL = 8; // two rows of 4
 
 /** One shared list of viewer entries by id, so collections only need to list ids in the page. */
 const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => [i.id, viewerEntry(i)]));
 
 /** Tile shape per tab, so each grid stays even. */
 const tileAspect = (key: string) => (key === 'statics' ? '4:5' : '9:16');
-const sizes = '(min-width: 80rem) 13rem, (min-width: 64rem) 16vw, (min-width: 40rem) 30vw, 46vw';
+const sizes = '(min-width: 80rem) 19rem, (min-width: 40rem) 24vw, 46vw';
 
 type Tile = {
   key: string;
@@ -247,13 +247,9 @@ const tabs = showcase.map((c) => {
   .grid-feed { grid-template-columns: repeat(2, 1fr); }
   @media (min-width: 40rem) {
     .grid { gap: 1rem; }
-    .grid-tall { grid-template-columns: repeat(3, 1fr); }
-    .grid-feed { grid-template-columns: repeat(3, 1fr); }
+    .grid-tall, .grid-feed { grid-template-columns: repeat(4, 1fr); }
   }
-  @media (min-width: 64rem) {
-    .grid-tall { grid-template-columns: repeat(6, 1fr); }
-    .grid-feed { grid-template-columns: repeat(4, 1fr); }
-  }
+  @media (min-width: 64rem) { .grid { gap: 1.25rem; } }
 
   .tile.extra { display: none; }
   .panel[data-expanded] .tile.extra { display: block; }
