@@ -44,7 +44,7 @@ const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => 
     padding: 0; border: 0; border-radius: var(--radius-media); overflow: hidden;
     background: var(--ink); color: var(--paper);
   }
-  .viewer::backdrop { background: rgb(46 21 16 / 0.86); backdrop-filter: blur(3px); }
+  .viewer::backdrop { background: rgb(53 30 40 / 0.86); backdrop-filter: blur(3px); }
   .viewer[open] { animation: viewer-in 0.3s ease; }
   @keyframes viewer-in { from { opacity: 0; transform: scale(0.98); } }
   .viewer-inner { display: grid; grid-template-rows: 1fr auto; max-height: calc(100vh - 2rem); }
@@ -64,12 +64,12 @@ const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => 
   .viewer-nav button[hidden] { display: none; }
   .viewer-nav button {
     width: 2.75rem; height: 2.75rem; border-radius: 50%;
-    background: rgb(250 246 240 / 0.1); color: var(--paper);
-    border: 1px solid rgb(250 246 240 / 0.25);
+    background: rgb(250 249 246 / 0.1); color: var(--paper);
+    border: 1px solid rgb(250 249 246 / 0.25);
     font-size: var(--fs-body); cursor: pointer;
     transition: background 0.2s ease;
   }
-  .viewer-nav button:hover { background: rgb(250 246 240 / 0.22); }
+  .viewer-nav button:hover { background: rgb(250 249 246 / 0.22); }
   .viewer-nav button:focus-visible { outline: 2px solid var(--rose); outline-offset: 2px; }
   /* Phones: the text and buttons get their own rows, and the video leaves room for them */
   @media (max-width: 40rem) {

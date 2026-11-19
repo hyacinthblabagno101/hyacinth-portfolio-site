@@ -2,8 +2,8 @@
 /**
  * Contact. Email, profile links and resume all come from src/data/site.json.
  * Anything still a [PLACEHOLDER] is left off the live site, so a fake address is never published.
- * Layout: on the left, the title, email, Book a call, links and a small Calendly booking embed; on the right,
- * the form. On phones: title and details, the form, then the Calendly embed.
+ * Layout: on the left, the title, email and links, then the form; on the right, the Calendly booking calendar
+ * (it stays in view while you scroll). On phones: title, form, then the calendar.
  */
 import { bookingUrl, site, publicEmail, publishedSocials, resumeFile, isPlaceholder, showUnconfirmed } from '../lib/data';
 
@@ -11,7 +11,7 @@ const mailto = publicEmail ? `mailto:${publicEmail}?subject=${encodeURIComponent
 const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholder(s.url)) : [];
 ---
 
-<section id="contact" class="contact" aria-labelledby="contact-title">
+<section id="contact" class="contact band-blue" aria-labelledby="contact-title">
   <div class="wrap grid">
     <div class="left">
     <div class="intro">
@@ -33,11 +33,6 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
               </button>
             </p>
             <p class="copied" role="status" aria-live="polite" data-copy-status></p>
-            {bookingUrl && (
-              <a class="btn btn-book book" href={bookingUrl} target="_blank" rel="noopener">
-                Book a 30-minute call <span class="visually-hidden">(opens Calendly in a new tab)</span>
-              </a>
-            )}
           </div>
         ) : (
           showUnconfirmed && <p><span class="placeholder">{site.email}</span></p>
@@ -72,21 +67,6 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
         )
       }
     </div>
-    {bookingUrl && (
-      <div class="cal">
-        <p class="cal-title">Pick a time for a 30-minute call</p>
-        <iframe
-          title="Book a 30-minute call with Hyacinth on Calendly"
-          src={`${bookingUrl}?embed_type=Inline&hide_gdpr_banner=1&hide_landing_page_details=1&hide_event_type_details=1&background_color=f7f2ed&text_color=2e1510&primary_color=a3360f`}
-          loading="lazy"
-          width="100%"
-          height="620"
-        ></iframe>
-        <a class="cal-open" href={bookingUrl} target="_blank" rel="noopener">Open Calendly in a new tab</a>
-      </div>
-    )}
-    </div>
-
     <form
       class="form"
       name="contact"
@@ -134,23 +114,33 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
       <button class="btn btn-primary submit" type="submit">Send message</button>
       <p class="form-status" role="status" aria-live="polite" data-form-status></p>
     </form>
+    </div>
+
+    {bookingUrl && (
+      <aside class="cal" aria-label="Book a call">
+        <p class="cal-title">Pick a time for a 30-minute call</p>
+        <iframe
+          title="Book a 30-minute call with Hyacinth on Calendly"
+          src={`${bookingUrl}?embed_type=Inline&hide_gdpr_banner=1&hide_landing_page_details=1&hide_event_type_details=1&background_color=faf9f6&text_color=351e28&primary_color=ff5c34`}
+          loading="lazy"
+          width="100%"
+          height="620"
+        ></iframe>
+        <a class="cal-open" href={bookingUrl} target="_blank" rel="noopener">Open Calendly in a new tab</a>
+      </aside>
+    )}
+
   </div>
 </section>
 
 
 <style>
   /* A light Ivory section, with a hairline between it and Experience */
-  .contact { padding-block: var(--section); background: var(--clay); }
-  .contact .btn-book { background: var(--paper); }
+  .contact { padding-block: var(--section); }
   .grid { display: grid; gap: 3rem; align-items: start; }
-  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(3rem, 2rem + 3vw, 5rem); } }
+  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(3rem, 2rem + 3vw, 5rem); } .cal { position: sticky; top: 6rem; } }
   .left { display: grid; gap: 2rem; align-content: start; }
-  @media (min-width: 64rem) { .form { position: sticky; top: 6rem; } }
-  /* Phones and tablets: title and details, the form, then the booking embed */
-  @media (max-width: 63.99rem) {
-    .left { display: contents; }
-    .intro { order: 0; } .actions { order: 1; } .form { order: 2; } .cal { order: 3; }
-  }
+  .form { padding-top: 2rem; border-top: 1px solid var(--line); }
   /* Small Calendly embed */
   .cal { display: grid; gap: 0.6rem; }
   .cal-title { font-weight: 700; padding: 0.25rem 0.25rem 0; }
@@ -174,14 +164,14 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
     width: 100%; min-height: 3rem; padding: 0.75rem 0.9rem;
     font: inherit; font-size: var(--fs-body); color: var(--ink);
     background: rgb(255 255 255 / 0.65);
-    border: 1px solid rgb(107 31 18 / 0.28); border-radius: var(--radius-media);
+    border: 1px solid rgb(53 30 40 / 0.28); border-radius: var(--radius-media);
   }
   .field textarea { resize: vertical; min-height: 8rem; }
   .field select {
     width: 100%; min-height: 3rem; padding: 0.75rem 2.5rem 0.75rem 0.9rem;
     font: inherit; font-size: var(--fs-body); color: var(--ink);
     background: rgb(255 255 255 / 0.65) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23381a17' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 1rem center;
-    border: 1px solid rgb(107 31 18 / 0.28); border-radius: var(--radius-media);
+    border: 1px solid rgb(53 30 40 / 0.28); border-radius: var(--radius-media);
     appearance: none;
   }
   .field select option { color: var(--ink); background: var(--paper); }
