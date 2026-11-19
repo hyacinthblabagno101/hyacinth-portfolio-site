@@ -37,7 +37,7 @@ const skills = about.skills.map((s, i) => {
 });
 ---
 
-<section id="skills" class="skills band-dark" aria-labelledby="skills-title">
+<section id="skills" class="skills" aria-labelledby="skills-title">
   <div class="wrap">
     <header class="section-head">
       <h2 id="skills-title">What I <em>do</em></h2>
@@ -50,6 +50,11 @@ const skills = about.skills.map((s, i) => {
           <span class="num" aria-hidden="true">{s.num}</span>
           <h3>{s.title}</h3>
           <p class="help">{s.help ?? s.text}</p>
+          {s.category === 'UGC & Influencer' && (
+            <button type="button" class="cases-cta" data-open-cases aria-haspopup="dialog">
+              <span>See the case studies and creator videos</span> <span aria-hidden="true">&rarr;</span>
+            </button>
+          )}
           <div class="buttons">
             <button type="button" class="btn btn-ghost small" data-open={s.id} aria-haspopup="dialog">
               See details <span class="visually-hidden">about {s.title}</span>
@@ -93,21 +98,30 @@ const skills = about.skills.map((s, i) => {
 </section>
 
 <style>
-  .skills { padding-block: var(--section); }
+  .skills { padding-block: var(--section); background: var(--greige); }
 
   .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
   @media (min-width: 40rem) { .cards { grid-template-columns: repeat(2, 1fr); } }
   @media (min-width: 64rem) { .cards { grid-template-columns: repeat(3, 1fr); } }
 
   .card {
-    display: grid; grid-template-rows: auto auto 1fr auto; gap: 0.9rem;
+    display: grid; grid-template-rows: auto auto 1fr auto auto; gap: 0.9rem;
     padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
-    border: 1px solid var(--line); border-radius: var(--radius-media);
-    background: rgb(247 244 234 / 0.03);
-    transition: border-color 0.3s ease, background 0.3s ease;
+    border: 1px solid var(--line); border-radius: calc(var(--radius-media) * 1.5);
+    background: var(--paper);
+    transition: border-color 0.3s ease, transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .card:hover { border-color: rgb(247 244 234 / 0.4); background: rgb(247 244 234 / 0.06); }
-  .num { font-family: var(--font-serif); font-style: italic; color: var(--rose); }
+  .card:hover { border-color: var(--wine); transform: translateY(-3px); }
+  .num { font-family: var(--font-serif); font-style: italic; color: var(--wine); }
+  /* UGC & Influencer: the way into the case studies pop-up */
+  .cases-cta {
+    display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; width: 100%;
+    padding: 0.8rem 1rem; border: 0; border-radius: var(--radius-media);
+    background: var(--wine); color: var(--paper); font: inherit; font-size: var(--fs-small); font-weight: 700; text-align: left; cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .cases-cta:hover { background: var(--ink); }
+  .cases-cta:focus-visible { outline: 3px solid var(--wine); outline-offset: 3px; }
   .help { color: var(--text-muted); }
   .buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .btn.small { min-height: 2.75rem; padding: 0.5rem 1.1rem; }

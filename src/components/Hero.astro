@@ -114,27 +114,34 @@ const book = bookingUrl ?? hero.secondaryCta.href;
 </style>
 
 <script>
-  // Count the numbers up from zero once the bar is on screen (skipped with reduced motion)
-  const counters = document.querySelectorAll<HTMLElement>('[data-count]');
+  // Count the numbers up from zero whenever the bar comes into view (skipped with reduced motion).
+  // It waits for the page to finish loading, so a bar that is already on screen doesn't finish counting unseen.
+  const bar = document.querySelector<HTMLElement>('.stats');
+  const counters = [...document.querySelectorAll<HTMLElement>('[data-count]')];
   const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (counters.length && !calm) {
-    const run = (el: HTMLElement) => {
-      const end = Number(el.dataset.count);
-      const start = performance.now();
+  if (bar && counters.length && !calm) {
+    let frame = 0;
+    const set = (p: number) => counters.forEach((el) => (el.textContent = Math.round(Number(el.dataset.count) * p).toLocaleString('en-US')));
+    const run = () => {
+      cancelAnimationFrame(frame);
+      const start = performance.now() + 250;
       const step = (now: number) => {
-        const t = Math.min(1, (now - start) / 1400);
-        const eased = 1 - Math.pow(1 - t, 3);
-        el.textContent = Math.round(end * eased).toLocaleString('en-US');
-        if (t < 1) requestAnimationFrame(step);
+        const t = Math.max(0, Math.min(1, (now - start) / 2200));
+        set(1 - Math.pow(1 - t, 4));
+        if (t < 1) frame = requestAnimationFrame(step);
       };
-      requestAnimationFrame(step);
+      frame = requestAnimationFrame(step);
     };
-    counters.forEach((el) => (el.textContent = '0'));
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) { run(e.target as HTMLElement); io.unobserve(e.target); }
-      });
-    }, { threshold: 0.4 });
-    counters.forEach((el) => io.observe(el));
+    set(0);
+    const watch = () => {
+      new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) run();
+          else { cancelAnimationFrame(frame); set(0); }
+        });
+      }, { threshold: 0.6 }).observe(bar);
+    };
+    if (document.readyState === 'complete') watch();
+    else window.addEventListener('load', watch, { once: true });
   }
 </script>

@@ -1,6 +1,7 @@
 ---
 /**
- * About me: photo (Cloudinary "profile-about"), bio, "Open to work", and the main actions
+ * About me: my photo with its background removed (src/assets/portrait-about-cutout.png, cut from the Cloudinary
+ * "profile-about" photo), standing on the bottom edge of the section with no frame. Then bio, "Open to work", and the main actions
  * (Download CV once confirmed, Let's talk, See my work, My experience, Book a call).
  * Two cards open pop-ups:
  * - Certifications: one certificate at a time with previous/next, and a button over to Tools.
@@ -10,12 +11,13 @@
  * logos: src/data/tool-logos.json (files in public/tools).
  */
 import { about, site, proof, tools, filled, resumeFile, bookingUrl, showUnconfirmed } from '../lib/data';
+import { Picture } from 'astro:assets';
 import { jpgUrl } from '../lib/cloudinary';
+import cutout from '../assets/portrait-about-cutout.png';
 import toolLogos from '../data/tool-logos.json';
 
 const logos = toolLogos as Record<string, string>;
 const availability = filled(site.availability);
-const photo = (w: number) => `https://res.cloudinary.com/${site.cloudName}/image/upload/f_auto,q_auto,w_${w}/profile-about`;
 
 const allTools = tools.groups.flatMap((g) => g.tools.map((t) => (typeof t === 'string' ? t : t.name))).filter((n) => logos[n]);
 // Three rows for the tools pop-up, drifting in alternating directions
@@ -26,13 +28,13 @@ const certs = proof.certifications;
 <section id="about" class="about" aria-labelledby="about-title">
   <div class="wrap grid">
     <figure class="photo reveal">
-      <img
-        src={photo(800)}
-        srcset={`${photo(480)} 480w, ${photo(800)} 800w, ${photo(1200)} 1200w`}
-        sizes="(min-width: 64rem) 40vw, 92vw"
-        width="800" height="1000"
+      <Picture
+        src={cutout}
         alt={about.portraitAlt}
-        loading="lazy" decoding="async"
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 64rem) 40vw, 92vw"
+        formats={['avif', 'webp']}
+        loading="lazy"
       />
     </figure>
 
@@ -62,13 +64,13 @@ const certs = proof.certifications;
           <span class="fan" aria-hidden="true">
             {certs.slice(0, 3).map((c, i) => <img src={jpgUrl(c.image, 240)} alt="" width="120" height="90" loading="lazy" style={`--i: ${i}`} />)}
           </span>
-          <span class="pop-text"><strong>Certifications</strong><span>{certs.length} courses &middot; view one by one</span></span>
+          <span class="pop-text"><strong>Certifications</strong><span>{certs.length} courses completed</span></span>
         </button>
         <button type="button" class="pop-card" data-pop="tools" aria-haspopup="dialog">
           <span class="fan tools-fan" aria-hidden="true">
             {allTools.slice(0, 5).map((n, i) => <img src={logos[n]} alt="" width="40" height="40" loading="lazy" style={`--i: ${i}`} />)}
           </span>
-          <span class="pop-text"><strong>Tools I use</strong><span>{allTools.length} tools &middot; with real logos</span></span>
+          <span class="pop-text"><strong>Tools I use</strong><span>{allTools.length} tools I work with</span></span>
         </button>
       </div>
     </div>
@@ -130,13 +132,23 @@ const certs = proof.certifications;
 </section>
 
 <style>
-  .about { padding-block: var(--section); }
-  .grid { display: grid; gap: clamp(2.5rem, 2rem + 3vw, 5rem); align-items: center; }
-  @media (min-width: 64rem) { .grid { grid-template-columns: 0.9fr 1.1fr; } }
+  /* No bottom padding: the photo stands on the section's bottom edge */
+  .about { padding-top: var(--section); overflow: hidden; }
+  .grid { display: grid; gap: clamp(2rem, 1.5rem + 2vw, 4rem); }
+  @media (min-width: 64rem) { .grid { grid-template-columns: 0.95fr 1.05fr; align-items: end; } }
   .grid > * { min-width: 0; }
 
-  .photo { margin: 0; justify-self: center; width: min(100%, 30rem); }
-  .photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 20%; border-radius: calc(var(--radius-media) * 2); background: #fff; }
+  /* Phones: text first, photo last so it sits on the bottom edge */
+  .photo { order: 2; margin: 0; justify-self: center; align-self: end; width: min(100%, 28rem); }
+  @media (min-width: 64rem) { .photo { order: 0; width: min(100%, 34rem); } }
+  .photo :global(img) {
+    display: block; width: 100%; height: auto;
+    /* Softens the bottom edge where the photo is cropped */
+    -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent);
+    mask-image: linear-gradient(to bottom, #000 88%, transparent);
+  }
+  .copy { align-self: center; padding-bottom: var(--section); }
+  @media (max-width: 63.99rem) { .copy { padding-bottom: 0; } }
 
   .copy { display: grid; gap: 1.25rem; justify-items: start; }
   h2 { font-size: clamp(2.75rem, 1.6rem + 4vw, 4.75rem); font-weight: 800; letter-spacing: -0.055em; text-transform: uppercase; line-height: 0.95; }

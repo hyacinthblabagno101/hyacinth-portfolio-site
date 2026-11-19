@@ -3,7 +3,7 @@
  * Experience, in three parts. All text: src/data/experience.json (from my Nov 2026 experience files).
  * 1. Professional experience: a list of roles on the left; hovering, focusing, or tapping one shows its history
  *    (overview, what I did, brands) in the panel on the right. On phones each role opens in place.
- * 2. Additional experience & projects: compact cards, no dates.
+ * 2. Additional experience & projects: compact cards, no dates, hidden behind a button until opened.
  * 3. Business background: the six businesses I built and ran, with the skills that carry over.
  */
 import { experience } from '../lib/data';
@@ -41,7 +41,14 @@ const { professional, additional, businesses } = experience;
       <div class="panel" aria-live="polite" data-panel></div>
     </div>
 
-    <h3 class="group-title">Additional experience &amp; projects</h3>
+    <details class="more-exp">
+      <summary>
+        <span class="more-label">
+          <strong>Additional experience &amp; projects</strong>
+          <span>{additional.length} more brands and projects I've supported</span>
+        </span>
+        <span class="more-btn"><span class="when-closed">View all</span><span class="when-open">Hide</span> <span class="chev" aria-hidden="true">+</span></span>
+      </summary>
     <ul class="extra" role="list">
       {additional.map((a) => (
         <li>
@@ -51,6 +58,7 @@ const { professional, additional, businesses } = experience;
         </li>
       ))}
     </ul>
+    </details>
 
     <h3 class="group-title">Business background</h3>
     <div class="biz">
@@ -122,13 +130,40 @@ const { professional, additional, businesses } = experience;
     .panel :global(.points) { color: var(--rose); }
   }
 
-  /* Additional */
+  /* Additional: a bar that opens the cards */
+  .more-exp { margin-top: clamp(2rem, 1.5rem + 2vw, 3rem); border: 1px solid var(--line); border-radius: calc(var(--radius-media) * 1.5); background: var(--greige-soft); }
+  .more-exp summary {
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+    padding: 1.25rem clamp(1.1rem, 1rem + 1vw, 1.75rem); cursor: pointer; list-style: none; border-radius: inherit;
+  }
+  .more-exp summary::-webkit-details-marker { display: none; }
+  .more-label { display: grid; gap: 0.15rem; }
+  .more-label strong { font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
+  .more-label span { font-size: var(--fs-small); color: var(--text-muted); }
+  .more-btn {
+    display: inline-flex; align-items: center; gap: 0.6rem; min-height: 2.875rem; padding: 0.6rem 1.25rem;
+    border-radius: var(--radius-pill); background: var(--wine); color: var(--paper);
+    font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    transition: background 0.2s ease;
+  }
+  .more-exp summary:hover .more-btn { background: var(--ink); }
+  .chev { font-size: 1.1rem; line-height: 1; transition: transform 0.3s ease; }
+  .more-exp[open] .chev { transform: rotate(45deg); }
+  .when-open, .more-exp[open] .when-closed { display: none; }
+  .more-exp[open] .when-open { display: inline; }
+  .more-exp .extra { padding: 0 clamp(1.1rem, 1rem + 1vw, 1.75rem) clamp(1.1rem, 1rem + 1vw, 1.75rem); }
+  @media (prefers-reduced-motion: no-preference) {
+    .more-exp[open] .extra li { animation: exp-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+    .more-exp[open] .extra li:nth-child(3n + 2) { animation-delay: 60ms; }
+    .more-exp[open] .extra li:nth-child(3n) { animation-delay: 120ms; }
+    @keyframes exp-in { from { opacity: 0; transform: translateY(12px); } }
+  }
   .extra { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
   @media (min-width: 40rem) { .extra { grid-template-columns: repeat(2, 1fr); } }
   @media (min-width: 64rem) { .extra { grid-template-columns: repeat(3, 1fr); } }
   .extra li {
     display: grid; gap: 0.2rem; align-content: start; padding: 1rem 1.1rem;
-    border: 1px solid var(--line); border-radius: var(--radius-media); background: #fff;
+    border: 1px solid var(--line); border-radius: var(--radius-media); background: var(--paper);
     transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.25s ease;
   }
   .extra li:hover { transform: translateY(-3px); border-color: var(--wine); }

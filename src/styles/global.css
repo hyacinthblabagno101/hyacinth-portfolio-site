@@ -1,6 +1,6 @@
 /*
  * Design tokens. Every color, type size and corner radius on the site comes from here.
- * Palette: Soft White, Greige, Wine, Espresso Black, plus a soft rose for accent words on dark sections.
+ * Palette: Porcelain, deeper porcelain, Dark Cherry, near-black cherry, plus a pale cherry for accents on dark sections.
  * Contrast ratios are WCAG (AA body text needs 4.5:1).
  */
 :root {
@@ -44,15 +44,20 @@
 
   /* Space, layout, corners */
   --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
-  --section: clamp(4.5rem, 3rem + 6vw, 8rem);
+  --section: clamp(3.5rem, 2.25rem + 4vw, 6rem);
   --max: 82rem;
   --radius-media: 8px;     /* photos, tiles, inputs */
   --radius-pill: 999px;    /* buttons, badges */
 }
 
-/* Dark band: put class="band-dark" on any section */
+/*
+ * Section color rhythm, top to bottom (one dark color, two light ones, alternating):
+ * Hero porcelain, numbers Dark Cherry, About porcelain, brands Dark Cherry, What I do deeper porcelain,
+ * Selected work porcelain, Feedback deeper porcelain, Experience porcelain, Contact Dark Cherry, footer near-black.
+ * Dark band: put class="band-dark" on any section.
+ */
 .band-dark {
-  --bg: var(--ink);
+  --bg: var(--wine);
   --text: var(--paper);              /* 16:1 */
   --text-muted: var(--greige);       /* 12:1 */
   --heading: var(--paper);

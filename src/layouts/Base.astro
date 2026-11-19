@@ -76,9 +76,8 @@ const ogUrl = new URL(ogImage, Astro.site);
           { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
         );
         items.forEach((el) => io.observe(el));
-        // Safety net: never leave content hidden (e.g. when printing or jumping straight to a section)
+        // Safety net: never leave content hidden when printing
         window.addEventListener('beforeprint', showAll);
-        window.addEventListener('hashchange', showAll, { once: true });
       }
     </script>
   </body>
