@@ -28,6 +28,8 @@ const siteSchema = z.object({
   resumeConfirmed: z.boolean(),
   /** Calendly (or other booking) link for "Schedule a call" and "Talk about a role". While it's a [PLACEHOLDER], the buttons go to the contact form. */
   bookingUrl: z.string().optional(),
+  /** The numbers bar under the hero. */
+  stats: z.array(z.object({ value: z.number(), suffix: z.string(), label: z.string() })),
   cloudName: z.string(),
   cloudFolder: z.string(),
   socials: z.array(z.object({ label: z.string(), url: z.string() })),
@@ -82,23 +84,25 @@ export const about = parse(
   'about.json',
 );
 
-const experience = parse(
+export const experience = parse(
   z.object({
-    roles: z.array(
+    professional: z.array(
       z.object({
-        confirmed: z.boolean(),
-        role: z.string(),
-        company: z.string(),
-        type: z.string().optional(),
-        dates: z.string(),
-        points: z.array(z.string()),
+        company: z.string(), role: z.string(), dates: z.string(), type: z.string(), industry: z.string(),
+        summary: z.string(), points: z.array(z.string()), brands: z.array(z.string()),
       }),
     ),
+    additional: z.array(z.object({ company: z.string(), role: z.string(), note: z.string() })),
+    businesses: z.object({
+      intro: z.string(),
+      skills: z.array(z.string()),
+      list: z.array(z.object({ name: z.string(), industry: z.string(), dates: z.string(), highlight: z.string() })),
+    }),
   }),
   experienceJson,
   'experience.json',
 );
-export const roles = experience.roles.filter((r) => r.confirmed || showUnconfirmed);
+export const roles = experience.professional;
 
 /** Sections with nothing confirmed yet are left off the live site, along with their menu links. */
 export const showAbout = about.confirmed || showUnconfirmed;
@@ -172,7 +176,7 @@ export const proof = parse(
         eyebrow: z.string(),
         title: z.string(),
         intro: z.string(),
-        rows: z.array(z.object({ brand: z.string(), creator: z.string(), audience: z.string(), deal: z.string(), detail: z.string() })).optional(),
+        rows: z.array(z.object({ brand: z.string(), creator: z.string(), audience: z.string(), deal: z.string(), detail: z.string(), video: z.string().optional() })).optional(),
         points: z.array(z.string()).optional(),
         /** UGC and creator videos (Cloudinary public IDs). Shown only when someone selects "Watch the videos". */
         videos: z
@@ -189,6 +193,8 @@ export const proof = parse(
           .optional(),
       }),
     ),
+    /** Influencer platforms: ones I've used, and similar ones I can work in. */
+    platforms: z.object({ used: z.array(z.string()), similar: z.array(z.string()) }),
     testimonials: z.array(z.object({ quote: z.string(), name: z.string(), role: z.string(), url: z.string().optional() })),
     certifications: z.array(z.object({ title: z.string(), issuer: z.string(), date: z.string(), image: z.string() })),
   }),

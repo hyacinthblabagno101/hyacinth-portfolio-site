@@ -1,74 +1,181 @@
 ---
 /**
- * Experience timeline from src/data/experience.json, in the order listed there.
- * Roles with confirmed: false only show while previewing. The first 3 are open; the rest fold away.
+ * Experience, in three parts. All text: src/data/experience.json (from my Nov 2026 experience files).
+ * 1. Professional experience: a list of roles on the left; hovering, focusing, or tapping one shows its history
+ *    (overview, what I did, brands) in the panel on the right. On phones each role opens in place.
+ * 2. Additional experience & projects: compact cards, no dates.
+ * 3. Business background: the six businesses I built and ran, with the skills that carry over.
  */
-import { roles } from '../lib/data';
-import Role from './ExperienceRole.astro';
+import { experience } from '../lib/data';
 
-/** The most recent roles stay open; the rest fold behind "See all roles". */
-const OPEN = 3;
-const first = roles.slice(0, OPEN);
-const rest = roles.slice(OPEN);
+const { professional, additional, businesses } = experience;
 ---
 
 <section id="experience" class="experience" aria-labelledby="experience-title">
   <div class="wrap">
     <header class="section-head">
-      <h2 id="experience-title">Where I've <em>worked</em></h2>
-      <p class="lede">Roles I've held, most recent first.</p>
+      <h2 id="experience-title">Experience</h2>
+      <p class="lede">Hover or tap a role to see what I did there.</p>
     </header>
 
-    <ol class="timeline" role="list">
-      {first.map((r) => <Role r={r} />)}
-    </ol>
+    <h3 class="group-title">Professional experience</h3>
+    <div class="pro" data-pro>
+      <ol class="roles" role="list">
+        {professional.map((r, i) => (
+          <li>
+            <button type="button" class:list={['role', { active: i === 0 }]} data-role={i} aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`role-${i}`}>
+              <span class="dates">{r.dates}</span>
+              <span class="name">{r.company}</span>
+              <span class="title">{r.role}</span>
+              <span class="arrow" aria-hidden="true">&rarr;</span>
+            </button>
+            <div class="detail" id={`role-${i}`} data-detail={i} hidden={i !== 0}>
+              <p class="meta">{r.type} &middot; {r.industry}</p>
+              <p class="summary">{r.summary}</p>
+              <ul class="points">{r.points.map((p) => <li>{p}</li>)}</ul>
+              <p class="brands"><span>Brands</span> {r.brands.join(' · ')}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <div class="panel" aria-live="polite" data-panel></div>
+    </div>
 
-    {
-      rest.length > 0 && (
-        <details class="more">
-          <summary>
-            <span>See all {roles.length} roles</span>
-            <span class="plus" aria-hidden="true" />
-          </summary>
-          <ol class="timeline" role="list" start={first.length + 1}>
-            {rest.map((r) => <Role r={r} />)}
-          </ol>
-        </details>
-      )
-    }
+    <h3 class="group-title">Additional experience &amp; projects</h3>
+    <ul class="extra" role="list">
+      {additional.map((a) => (
+        <li>
+          <strong>{a.company}</strong>
+          <span class="extra-role">{a.role}</span>
+          <span class="extra-note">{a.note}</span>
+        </li>
+      ))}
+    </ul>
+
+    <h3 class="group-title">Business background</h3>
+    <div class="biz">
+      <div class="biz-intro">
+        <p>{businesses.intro}</p>
+        <ul class="skills" role="list" aria-label="Skills that carry over">
+          {businesses.skills.map((s) => <li>{s}</li>)}
+        </ul>
+      </div>
+      <ul class="biz-list" role="list">
+        {businesses.list.map((b) => (
+          <li>
+            <p class="biz-top"><strong>{b.name}</strong><span>{b.dates}</span></p>
+            <p class="biz-industry">{b.industry}</p>
+            <p class="biz-hl">{b.highlight}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
 </section>
 
 <style>
   .experience { padding-block: var(--section); }
-
-  .timeline { list-style: none; margin: 0; padding: 0; }
-  .more .timeline { margin-top: 0; }
-  .timeline :global(.item) {
-    display: grid;
-    gap: 0.5rem;
-    padding-block: 2rem;
-    border-top: 1px solid var(--line);
+  .group-title {
+    margin: clamp(2.5rem, 2rem + 2vw, 3.5rem) 0 1rem;
+    font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--wine);
   }
-  /* Dates sit as a small label above the title (no side column), so roles without dates leave no gap */
+  .group-title:first-of-type { margin-top: 0; }
 
-  .timeline :global(.dates) { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--wine); }
-  .timeline :global(.detail) { display: grid; gap: 0.6rem; max-width: 46rem; }
-  .timeline :global(.org) { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; }
-  .timeline :global(.org span) { color: var(--text-muted); }
-  .timeline :global(.detail ul) { margin: 0.25rem 0 0; padding-left: 1.2rem; display: grid; gap: 0.35rem; color: var(--text-muted); }
-
-  /* "See all roles" disclosure, same style as the case study details */
-  .more { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); }
-  .more summary {
-    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
-    min-height: 3.25rem; cursor: pointer; list-style: none;
-    font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink);
+  /* Professional: list + history panel */
+  .pro { display: grid; gap: 1.5rem; }
+  @media (min-width: 64rem) { .pro { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); align-items: start; } }
+  .roles { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .roles > li { border-bottom: 1px solid var(--line); }
+  .role {
+    width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.2rem 1rem; align-items: center;
+    padding: 1.1rem 0.75rem; background: none; border: 0; border-radius: var(--radius-media);
+    font: inherit; color: var(--ink); text-align: left; cursor: pointer;
+    transition: background 0.25s ease, padding 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .more summary::-webkit-details-marker { display: none; }
-  .more summary:hover { color: var(--wine); }
-  .plus { position: relative; width: 0.9rem; height: 0.9rem; flex: none; }
-  .plus::before, .plus::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; background: currentColor; transition: transform 0.25s ease; }
-  .plus::after { transform: rotate(90deg); }
-  .more[open] .plus::after { transform: rotate(0deg); }
+  .role:hover, .role.active { background: var(--greige-soft); padding-left: 1.1rem; }
+  .role .dates { grid-column: 1; font-size: var(--fs-small); color: var(--text-muted); }
+  .role .name { grid-column: 1; font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
+  .role .title { grid-column: 1; font-size: var(--fs-small); font-weight: 600; color: var(--wine); }
+  .role .arrow { grid-column: 2; grid-row: 1 / span 3; font-size: 1.25rem; color: var(--wine); opacity: 0; transform: translateX(-6px); transition: opacity 0.25s ease, transform 0.25s ease; }
+  .role:hover .arrow, .role.active .arrow { opacity: 1; transform: none; }
+
+  .detail { display: grid; gap: 0.75rem; padding: 0.25rem 0.75rem 1.5rem; }
+  .detail[hidden] { display: none; }
+  .meta { font-size: var(--fs-small); color: var(--text-muted); }
+  .summary { font-size: var(--fs-lead); line-height: 1.45; }
+  .points { margin: 0; padding-left: 1.15rem; display: grid; gap: 0.45rem; color: var(--text-muted); }
+  .brands { font-size: var(--fs-small); color: var(--text-muted); }
+  .brands span { font-weight: 700; color: var(--ink); margin-right: 0.35rem; }
+
+  /* Wide screens: details show in the panel on the right instead of under each row */
+  .panel { display: none; }
+  @media (min-width: 64rem) {
+    .roles .detail { display: none; }
+    .panel {
+      display: block; position: sticky; top: 6rem;
+      padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem); border-radius: calc(var(--radius-media) * 2);
+      background: var(--wine); color: var(--paper);
+      --text-muted: var(--rose); --ink: var(--paper);
+    }
+    .panel :global(.detail) { display: grid !important; padding: 0; animation: swap 0.35s ease; }
+    @keyframes swap { from { opacity: 0; transform: translateY(8px); } }
+    .panel :global(.points) { color: var(--rose); }
+  }
+
+  /* Additional */
+  .extra { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+  @media (min-width: 40rem) { .extra { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .extra { grid-template-columns: repeat(3, 1fr); } }
+  .extra li {
+    display: grid; gap: 0.2rem; align-content: start; padding: 1rem 1.1rem;
+    border: 1px solid var(--line); border-radius: var(--radius-media); background: #fff;
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.25s ease;
+  }
+  .extra li:hover { transform: translateY(-3px); border-color: var(--wine); }
+  .extra strong { font-weight: 700; }
+  .extra-role { font-size: var(--fs-small); font-weight: 600; color: var(--wine); }
+  .extra-note { font-size: var(--fs-small); color: var(--text-muted); }
+
+  /* Business background */
+  .biz { display: grid; gap: 1.5rem; padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); border-radius: calc(var(--radius-media) * 2); background: var(--greige); }
+  @media (min-width: 64rem) { .biz { grid-template-columns: 0.8fr 1.2fr; gap: 2.5rem; } }
+  .biz-intro { display: grid; gap: 1rem; align-content: start; }
+  .biz-intro p { font-size: var(--fs-lead); line-height: 1.45; }
+  .skills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .skills li { padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); background: var(--paper); font-size: var(--fs-small); font-weight: 600; }
+  .biz-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
+  @media (min-width: 40rem) { .biz-list { grid-template-columns: 1fr 1fr; } }
+  .biz-list li { display: grid; gap: 0.2rem; padding: 0.9rem 1rem; border-radius: var(--radius-media); background: var(--paper); }
+  .biz-top { display: flex; justify-content: space-between; gap: 0.75rem; }
+  .biz-top strong { font-weight: 700; }
+  .biz-top span { font-size: var(--fs-small); color: var(--text-muted); white-space: nowrap; }
+  .biz-industry { font-size: var(--fs-small); font-weight: 600; color: var(--wine); }
+  .biz-hl { font-size: var(--fs-small); color: var(--text-muted); }
 </style>
+
+<script>
+  // Professional roles: hover or focus (wide screens) or tap (any screen) shows that role's history
+  const pro = document.querySelector<HTMLElement>('[data-pro]');
+  if (pro) {
+    const buttons = [...pro.querySelectorAll<HTMLButtonElement>('[data-role]')];
+    const details = [...pro.querySelectorAll<HTMLElement>('[data-detail]')];
+    const panel = pro.querySelector<HTMLElement>('[data-panel]');
+    const wide = window.matchMedia('(min-width: 64rem)');
+    const show = (i: number) => {
+      buttons.forEach((b, k) => { b.classList.toggle('active', k === i); b.setAttribute('aria-expanded', String(k === i)); });
+      details.forEach((d, k) => (d.hidden = k !== i));
+      if (panel) {
+        const copy = details[i].cloneNode(true) as HTMLElement;
+        copy.removeAttribute('id');
+        copy.hidden = false;
+        panel.replaceChildren(copy);
+      }
+    };
+    buttons.forEach((b, i) => {
+      b.addEventListener('click', () => show(i));
+      b.addEventListener('mouseenter', () => wide.matches && show(i));
+      b.addEventListener('focus', () => wide.matches && show(i));
+    });
+    show(0);
+  }
+</script>

@@ -1,0 +1,178 @@
+---
+/**
+ * The viewer: a dialog that shows one piece of work at a time (full video with sound, or the full image),
+ * with the brand, title, my role and previous/next. It's on every page (Base.astro) and opens from any
+ * a.tile-link: with data-items (a list of ids from the shared list below), or from the closest
+ * [data-viewer-list] (its tiles in order), or from the link's own data attributes.
+ * Without JavaScript, every tile is a plain link to the full media file.
+ */
+import { showcase } from '../lib/data';
+import { viewerEntry } from '../lib/showcaseMedia';
+
+/** One shared list of viewer entries by id, so collections only need to list ids in the page. */
+const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => [i.id, viewerEntry(i)]));
+---
+
+{/* Every piece of work once, by id, for collections (brand covers and the Selected work rows) */}
+<script type="application/json" id="viewer-entries" set:html={JSON.stringify(registry)} />
+
+<dialog class="viewer" aria-labelledby="viewer-title" data-viewer>
+  <div class="viewer-inner">
+    <div class="viewer-media" data-viewer-media></div>
+    <div class="viewer-bar">
+      <div class="viewer-text">
+        <p class="viewer-brand"><span data-viewer-brand></span> <span class="viewer-pos" data-viewer-pos></span></p>
+        <p id="viewer-title" class="viewer-title" data-viewer-title></p>
+        <p class="viewer-role" data-viewer-role></p>
+      </div>
+      <div class="viewer-nav">
+        <button type="button" data-viewer-prev aria-label="Previous">&larr;</button>
+        <button type="button" data-viewer-next aria-label="Next">&rarr;</button>
+        <button type="button" class="close" data-viewer-close aria-label="Close">&times;</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* Viewer */
+  /* The dialog takes the piece's shape: as tall as the screen allows, and as wide as that shape needs */
+  .viewer {
+    width: min(100vw - 2rem, 64rem, calc((100vh - 9rem) * var(--ar, 1.7778)));
+    min-width: min(100vw - 2rem, 22rem);
+    max-height: calc(100vh - 2rem);
+    padding: 0; border: 0; border-radius: var(--radius-media); overflow: hidden;
+    background: var(--ink); color: var(--paper);
+  }
+  .viewer::backdrop { background: rgb(36 16 24 / 0.86); backdrop-filter: blur(3px); }
+  .viewer[open] { animation: viewer-in 0.3s ease; }
+  @keyframes viewer-in { from { opacity: 0; transform: scale(0.98); } }
+  .viewer-inner { display: grid; grid-template-rows: 1fr auto; max-height: calc(100vh - 2rem); }
+  .viewer-media { display: grid; place-items: center; min-height: 0; background: #000; }
+  .viewer-media :global(img), .viewer-media :global(video) {
+    display: block; width: 100%; height: auto; aspect-ratio: var(--ar, 1.7778);
+    max-height: calc(100vh - 9rem); object-fit: contain; background: #000;
+  }
+  .viewer-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem 1rem; }
+  .viewer-text { margin: 0; display: grid; gap: 0.1rem; min-width: 0; }
+  .viewer-text p { margin: 0; }
+  .viewer-pos { margin-left: 0.5rem; color: var(--greige); font-weight: 400; letter-spacing: 0.04em; }
+  .viewer-role { font-size: var(--fs-small); color: var(--greige); max-width: 60ch; }
+  .viewer-brand { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper); }
+  .viewer-title { font-family: var(--font-serif); font-size: var(--fs-lead); line-height: 1.2; }
+  .viewer-nav { display: flex; gap: 0.4rem; flex-shrink: 0; }
+  .viewer-nav button[hidden] { display: none; }
+  .viewer-nav button {
+    width: 2.75rem; height: 2.75rem; border-radius: 50%;
+    background: rgb(247 244 234 / 0.1); color: var(--paper);
+    border: 1px solid rgb(247 244 234 / 0.25);
+    font-size: var(--fs-body); cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .viewer-nav button:hover { background: rgb(247 244 234 / 0.22); }
+  .viewer-nav button:focus-visible { outline: 2px solid var(--rose); outline-offset: 2px; }
+  /* Phones: the text and buttons get their own rows, and the video leaves room for them */
+  @media (max-width: 40rem) {
+    .viewer-bar { flex-wrap: wrap; }
+    .viewer-text { flex: 1 1 100%; }
+    .viewer-nav { margin-left: auto; }
+    .viewer { width: min(100vw - 2rem, calc((100vh - 15rem) * var(--ar, 1.7778))); }
+    .viewer-media :global(img), .viewer-media :global(video) { max-height: calc(100vh - 15rem); }
+    .viewer-role { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  }
+</style>
+
+<script>
+  // Viewer: shows one item at a time from a list (a tab's tiles, a brand collection, or the hero strip)
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  type Entry = { kind: string; full: string; poster?: string; title?: string; brand?: string; alt?: string; role?: string; aspect?: string };
+  const viewer = document.querySelector<HTMLDialogElement>('[data-viewer]');
+  const media = viewer?.querySelector<HTMLElement>('[data-viewer-media]');
+  const titleEl = viewer?.querySelector<HTMLElement>('[data-viewer-title]');
+  const brandEl = viewer?.querySelector<HTMLElement>('[data-viewer-brand]');
+  const roleEl = viewer?.querySelector<HTMLElement>('[data-viewer-role]');
+  const posEl = viewer?.querySelector<HTMLElement>('[data-viewer-pos]');
+  const prevBtn = viewer?.querySelector<HTMLButtonElement>('[data-viewer-prev]');
+  const nextBtn = viewer?.querySelector<HTMLButtonElement>('[data-viewer-next]');
+  let list: Entry[] = [];
+  let index = 0;
+  let opener: HTMLElement | null = null;
+
+  const registry: Record<string, Entry> = JSON.parse(document.getElementById('viewer-entries')?.textContent || '{}');
+  // Showcase tiles carry only an id; tiles elsewhere (the hero polaroids) carry their details as data attributes
+  const entryOf = (a: HTMLElement): Entry => (a.dataset.id && registry[a.dataset.id]) || ({ ...(a.dataset as unknown as Entry) });
+
+  function show(i: number) {
+    if (!media || !titleEl || !brandEl || !roleEl || !posEl) return;
+    index = (i + list.length) % list.length;
+    const d = list[index];
+    media.replaceChildren();
+    // Size the viewer to the piece's own shape (9:16 for reels) before the file loads, so it never jumps
+    const [aw, ah] = (d.aspect ?? (d.kind === 'video' ? '9:16' : '4:5')).split(':').map(Number);
+    viewer?.style.setProperty('--ar', String(aw / ah));
+    if (d.kind === 'video') {
+      const v = document.createElement('video');
+      v.controls = true;
+      v.playsInline = true;
+      v.autoplay = !reduce.matches;
+      v.preload = 'auto';
+      if (d.poster) v.poster = d.poster;
+      v.src = d.full;
+      v.setAttribute('aria-label', d.alt ?? '');
+      media.append(v);
+    } else {
+      const img = document.createElement('img');
+      img.src = d.full;
+      img.alt = d.alt ?? '';
+      media.append(img);
+    }
+    titleEl.textContent = d.title ?? '';
+    brandEl.textContent = d.brand ?? '';
+    roleEl.textContent = d.role ? `My role: ${d.role}` : '';
+    posEl.textContent = list.length > 1 ? `${index + 1} / ${list.length}` : '';
+    if (prevBtn && nextBtn) prevBtn.hidden = nextBtn.hidden = list.length < 2;
+  }
+
+  function close() {
+    media?.replaceChildren(); // stops any playing video
+    viewer?.close();
+  }
+
+  // One listener for every tile on the page, including the preview strip in the hero
+  document.addEventListener('click', (e) => {
+    const link = (e.target as HTMLElement).closest<HTMLAnchorElement>('a.tile-link');
+    if (!link || !viewer || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    if (link.dataset.items) {
+      // Either a list of ids (looked up in the shared list) or, for case study videos, the entries themselves
+      const raw = link.dataset.items;
+      list = raw.startsWith('[') ? JSON.parse(raw) : raw.split(',').map((id) => registry[id]).filter(Boolean);
+      index = 0;
+    } else {
+      const scope = link.closest<HTMLElement>('[data-viewer-list]');
+      const links = scope
+        ? [...scope.querySelectorAll<HTMLAnchorElement>('a.tile-link:not([data-items])')].filter((a) => a.offsetParent !== null && !a.closest('[aria-hidden="true"]'))
+        : [link];
+      list = links.map(entryOf);
+      index = Math.max(0, links.indexOf(link));
+    }
+    opener = link;
+    show(index);
+    viewer.showModal();
+    viewer.querySelector<HTMLButtonElement>('[data-viewer-close]')?.focus();
+  });
+
+  prevBtn?.addEventListener('click', () => show(index - 1));
+  nextBtn?.addEventListener('click', () => show(index + 1));
+  viewer?.querySelector('[data-viewer-close]')?.addEventListener('click', close);
+  viewer?.addEventListener('keydown', (e) => {
+    if ((e.target as HTMLElement).tagName === 'VIDEO' || list.length < 2) return; // arrow keys seek inside the video
+    if (e.key === 'ArrowRight') show(index + 1);
+    if (e.key === 'ArrowLeft') show(index - 1);
+  });
+  viewer?.addEventListener('click', (e) => { if (e.target === viewer) close(); }); // click outside
+  viewer?.addEventListener('close', () => {
+    media?.replaceChildren();
+    opener?.focus({ preventScroll: true });
+  });
+</script>

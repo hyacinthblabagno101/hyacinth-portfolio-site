@@ -16,5 +16,9 @@
     "@astrojs/sitemap": "^3.7.4",
     "astro": "^7.4.7",
     "simple-icons": "^15.22.0"
+  },
+  "devDependencies": {
+    "@iconify-json/logos": "^1.2.20",
+    "@iconify-json/vscode-icons": "^1.2.99"
   }
 }

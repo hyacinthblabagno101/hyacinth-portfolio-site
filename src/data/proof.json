@@ -4,53 +4,70 @@
     {
       "id": "influencer",
       "eyebrow": "Influencer marketing",
-      "title": "Creator partnerships for local and e-commerce brands",
-      "intro": "I found creators whose audiences matched each brand, handled the outreach and the deal, briefed them on what to make, and then turned their posts into Facebook ads.",
+      "title": "Influencer marketing",
+      "intro": "I matched creators to each brand, handled outreach and the deal, briefed them, and turned their posts into Facebook ads.",
       "rows": [
         {
           "brand": "Hair Solution Nails & Spa",
           "creator": "Run Dolph Vibes",
           "audience": "1M Facebook, 800K TikTok, 115K YouTube, 61K Instagram",
           "deal": "Creator collaboration",
-          "detail": "She filmed and posted content at the salon. I repurposed it as Facebook ads."
+          "detail": "She filmed and posted content at the salon. I repurposed it as Facebook ads.",
+          "video": "Run_Dolph_Vibes_x_Hair_Solution_Nails_Spa_v37cov"
         },
         {
           "brand": "iLuxe Aesthetic Center",
           "creator": "Jana Monteverde",
           "audience": "80K TikTok",
           "deal": "Ex-deal (service exchange)",
-          "detail": "She shared content across her platforms. I used it in Facebook ads."
+          "detail": "She shared content across her platforms. I used it in Facebook ads.",
+          "video": "Jana_Monteverde_x_iLuxe_Aesthetic_Center_fbvmjz"
         },
         {
           "brand": "Epic Tales",
           "creator": "Emily",
           "audience": "40K Instagram",
           "deal": "Gifting collaboration",
-          "detail": "She posted about our personalized children's books for parents. The team and I repurposed her content for ads."
+          "detail": "She posted about our personalized children's books for parents. The team and I repurposed her content for ads.",
+          "video": "Emily_x_Epic_Tales_wvopqy"
         },
         {
           "brand": "Epic Tales",
           "creator": "Daniela",
           "audience": "30K Instagram",
           "deal": "Gifting collaboration",
-          "detail": "She featured the personalized books on her account. Her content also went into our ads."
+          "detail": "She featured the personalized books on her account. Her content also went into our ads.",
+          "video": "Daniela_x_Epic_Tales_cc6eyl"
         }
-      ],
-      "videos": []
+      ]
     },
     {
       "id": "ugc",
       "eyebrow": "UGC marketing",
-      "title": "Gifting collaborations with UGC creators",
-      "intro": "I ran gifting (ex-deal) projects with UGC creators from start to finish.",
-      "points": [
-        "Reached out to creators and handled all communication",
-        "Wrote clear content guidelines and deliverables for each creator",
-        "Checked every piece against the brand's goals and visual style",
-        "Got creators' consent so their content could be reused in ads and marketing",
-        "Built a library of content the brand could keep using for advertising"
-      ],
-      "videos": []
+      "title": "UGC gifting collaborations",
+      "intro": "I ran gifting (ex-deal) projects with UGC creators from outreach to final files: clear guidelines and deliverables, a check of every piece against the brand's style, and creator consent so the content could be reused in ads.",
+      "videos": [
+        {
+          "media": "5_mpioaa",
+          "title": "UGC sample",
+          "alt": "UGC creator video made through a gifting collaboration"
+        },
+        {
+          "media": "6_mbn6td",
+          "title": "UGC sample",
+          "alt": "UGC creator video made through a gifting collaboration"
+        },
+        {
+          "media": "7_goplr2",
+          "title": "UGC sample",
+          "alt": "UGC creator video made through a gifting collaboration"
+        },
+        {
+          "media": "8_widrkd",
+          "title": "UGC sample",
+          "alt": "UGC creator video made through a gifting collaboration"
+        }
+      ]
     },
     {
       "id": "analytics",
@@ -102,31 +119,36 @@
   ],
   "testimonials": [
     {
-      "quote": "You've been such a huge part of our success at Hair Solution Nails & Spa. You handle everything from our social media to our monthly marketing and it all flows so seamlessly because of your creativity, strategy, and consistency. The content you create gets real attention, your promotions bring in actual clients, and you always think ahead. I love how invested you are. You're not just helping with marketing, you're genuinely helping grow the business. We're so lucky to have you.",
-      "name": "Weng D.",
-      "role": "CEO, Hair Solution Nails & Spa"
+      "quote": "Cinth is the best amongst the rest. She has the experience and know-how to get things done and she does it in a timely manner. We have loved working with her and recommend her to anyone.",
+      "name": "Ohr F.",
+      "role": "Founder & CEO, Proper Ecom",
+      "url": "https://www.upwork.com/freelancers/~01eb2e42eba7f5cd31"
     },
     {
-      "quote": "Cinth, you've been such a huge asset to iLuxe. You created our brand identity and guides, set up and managed our social media, ran ads, and even handled our influencer and UGC marketing. Thanks to your creativity and strategy, we have a strong digital presence and are connecting with more clients than ever.",
+      "quote": "Thank you for being such a valued part of our team, you are such a pleasure to work with and we really appreciate all the hard work and effort you put in.",
+      "name": "Winnie L.",
+      "role": "Founder & CEO, Winnie & Co. · Creative Director, Style State"
+    },
+    {
+      "quote": "Hyacinth was a pleasure to work with. She brought creativity, dedication, and fresh ideas to our brand. She was reliable, easy to communicate with, and always willing to go the extra mile to deliver quality work. I truly appreciate her contributions to Hair Solution.",
+      "name": "Weng D.",
+      "role": "Founder & CEO, Hair Solution Nails & Spa"
+    },
+    {
+      "quote": "Hyacinth is creative, hardworking, and reliable. She has a good understanding of social media and content creation, and she brings fresh ideas to help improve our brand's online presence. She is easy to work with and dedicated to delivering quality work.",
       "name": "Karen S.",
-      "role": "CEO, iLuxe Aesthetic Center"
+      "role": "Founder & CEO, iLuxe Aesthetic Center"
+    },
+    {
+      "quote": "Cinth is really good at what she does and really tried to understand the business so that she can make effective ad and content strategies.",
+      "name": "Sean S.",
+      "role": "Founder & CEO, Flow IO Technology and Solutions",
+      "url": "https://www.upwork.com/freelancers/~01eb2e42eba7f5cd31"
     },
     {
       "quote": "I really love your energy and how open you are to feedback and continuous improvement that's exactly the kind of quality I value most. I'm genuinely excited to keep working with you, and I can see why Dom speaks so highly of you. Great work!",
       "name": "Chris F.",
       "role": "CEO, Moname Consulting Inc."
-    },
-    {
-      "quote": "Cinth is the best amongst the rest. She has the experience and know-how to get things done and she does it in a timely manner.",
-      "name": "Upwork client",
-      "role": "AI-Driven Social Media Manager project",
-      "url": "https://www.upwork.com/freelancers/~01eb2e42eba7f5cd31"
-    },
-    {
-      "quote": "Cinth is really good at what she does and really tried to understand the business so that she can make effective ad and content strategies.",
-      "name": "Upwork client",
-      "role": "Social Media Marketer project",
-      "url": "https://www.upwork.com/freelancers/~01eb2e42eba7f5cd31"
     }
   ],
   "certifications": [
@@ -172,5 +194,15 @@
       "date": "May 2023",
       "image": "Hyacinth-Marr-Blabagno-Social-Media-Management-Social-Media-Management-Kurso.ph"
     }
-  ]
+  ],
+  "platforms": {
+    "used": [
+      "Insense"
+    ],
+    "similar": [
+      "GRIN",
+      "Aspire",
+      "Upfluence"
+    ]
+  }
 }

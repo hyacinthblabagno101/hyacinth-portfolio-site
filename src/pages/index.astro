@@ -1,14 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
-import Logos from '../components/Logos.astro';
-import SelectedWork from '../components/SelectedWork.astro';
-import Credentials from '../components/Credentials.astro';
-import Showcase from '../components/Showcase.astro';
-import CaseStudies from '../components/CaseStudies.astro';
-import Testimonials from '../components/Testimonials.astro';
-import Skills from '../components/Skills.astro';
 import About from '../components/About.astro';
+import Logos from '../components/Logos.astro';
+import Skills from '../components/Skills.astro';
+import CaseStudies from '../components/CaseStudies.astro';
+import Showcase from '../components/Showcase.astro';
+import Testimonials from '../components/Testimonials.astro';
 import Experience from '../components/Experience.astro';
 import Contact from '../components/Contact.astro';
 import { showAbout, showExperience } from '../lib/data';
@@ -16,14 +14,12 @@ import { showAbout, showExperience } from '../lib/data';
 
 <Base>
   <Hero />
-  <Logos />
   {showAbout && <About />}
-  <SelectedWork />
-  <Showcase />
-  <Testimonials />
+  <Logos />
   <Skills />
   <CaseStudies />
+  <Showcase />
+  <Testimonials />
   {showExperience && <Experience />}
-  <Credentials />
   <Contact />
 </Base>

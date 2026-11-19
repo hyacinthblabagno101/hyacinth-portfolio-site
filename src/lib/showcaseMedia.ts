@@ -14,6 +14,8 @@ export type ViewerEntry = {
   brand?: string;
   alt: string;
   role?: string;
+  /** Shape of the piece, e.g. "9:16", so the viewer opens at the right size before the file loads. */
+  aspect?: string;
 };
 
 export function viewerEntry(i: ShowcaseItem): ViewerEntry {
@@ -26,6 +28,7 @@ export function viewerEntry(i: ShowcaseItem): ViewerEntry {
     brand: i.brand,
     alt: i.alt,
     role: roleFor(i.brand),
+    aspect: i.aspect,
   };
 }
 

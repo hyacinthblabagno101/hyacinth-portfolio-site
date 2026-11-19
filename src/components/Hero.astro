@@ -1,233 +1,140 @@
 ---
 /**
- * Hero: my name, role and status, a short headline and intro, two buttons, and a wall of my real reels.
- * - The wall is three columns that drift slowly in opposite directions. One reel per column plays a short
- *   silent preview; the rest are still frames. Selecting a reel opens it in the viewer (Showcase.astro).
- * - With reduced motion turned on, the wall stands still and nothing plays.
- * - On phones and tablets the wall becomes one row of reels you can swipe, under the text.
- * Text comes from "hero" in src/data/site.json. "Schedule a call" uses bookingUrl when it's set, otherwise the form.
+ * Hero, photo first (this site is my portfolio and resume in one): my name and role, "Open to work" in green,
+ * the headline and intro, then See my work and Book a call (Calendly). My photo sits beside it.
+ * Below it, the numbers bar counts up once when it scrolls into view (it shows the final numbers straight away
+ * for reduced motion or without JavaScript).
+ * Text and numbers come from "hero" and "stats" in src/data/site.json. Photo: src/assets/portrait-about.jpg.
  */
-import { site, filled, showUnconfirmed, showcase, proof, bookingUrl } from '../lib/data';
-import { viewerEntry } from '../lib/showcaseMedia';
-import { posterFor, videoPreviewUrl } from '../lib/cloudinary';
+import { Picture } from 'astro:assets';
+import portrait from '../assets/portrait-about.jpg';
+import { site, filled, showUnconfirmed, bookingUrl } from '../lib/data';
 
 const { hero } = site;
 const availability = filled(site.availability);
-const shortRole = site.role.split('|')[0].trim();
+const role = site.role.split('|')[0].trim();
 const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-// "scrolling" is set in the italic accent
 const headlineHtml = escape(hero.headline).replace(/scrolling/i, (m) => `<em>${m}</em>`);
-
-const items = showcase.flatMap((c) => c.items);
-const brands = new Set(items.map((i) => i.brand).filter(Boolean));
-// Facts: every number is counted from the data files, never typed in by hand
-const facts = [
-  { value: brands.size, label: 'brands' },
-  { value: showcase.length, label: 'content formats' },
-  { value: proof.testimonials.length, label: 'client reviews' },
-];
-
-// Reel wall: branded reels first, then featured ones, 12 in all, split into 3 columns
-const reels = (showcase.find((c) => c.key === 'reels')?.items ?? [])
-  .slice()
-  .sort((a, b) => Number(!!b.brand) - Number(!!a.brand) || Number(!!b.featured) - Number(!!a.featured))
-  .slice(0, 12);
-const columns = [0, 1, 2].map((c) =>
-  reels
-    .filter((_, i) => i % 3 === c)
-    .map((r, i) => ({
-      entry: viewerEntry(r),
-      poster: posterFor({ id: r.media }, 360, '9:16'),
-      // The second reel in each column plays a short silent preview
-      preview: i === 1 ? videoPreviewUrl(r.media, 360, '9:16') : undefined,
-      alt: r.alt,
-    })),
-);
-
-const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.secondaryCta.href, external: false };
+const book = bookingUrl ?? hero.secondaryCta.href;
 ---
 
 <section class="hero" aria-labelledby="hero-title">
   <div class="wrap grid">
     <div class="copy">
       <p class="meta rise">
-        <span class="who"><strong>{site.name}</strong> <span aria-hidden="true">/</span> {shortRole}</span>
-        <span class="right">
-          <span>Remote, based in the {site.location}</span>
-          {availability ? <span class="status"><i aria-hidden="true" />{availability}</span> : showUnconfirmed && <span class="placeholder">{site.availability}</span>}
-        </span>
+        <span class="who"><strong>{site.name}</strong> <span aria-hidden="true">/</span> {role}</span>
+      </p>
+      <p class="badges rise">
+        {availability ? <span class="status"><i aria-hidden="true" />{availability}</span> : showUnconfirmed && <span class="placeholder">{site.availability}</span>}
+        <span class="where">Remote, based in the {site.location}</span>
       </p>
 
       <h1 id="hero-title" class="rise" style="--delay: 0.06s">
-        <span class="visually-hidden">{site.name}, {shortRole}. </span>
+        <span class="visually-hidden">{site.name}, {role}. </span>
         <span set:html={headlineHtml} />
       </h1>
-
       <p class="intro rise" style="--delay: 0.12s">{hero.intro}</p>
 
       <div class="actions rise" style="--delay: 0.18s">
         <a class="btn btn-primary" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
-        <a class="btn btn-ghost" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>
-          {hero.secondaryCta.label}
-          {book.external && <span class="visually-hidden">(opens in a new tab)</span>}
+        <a class="btn btn-ghost" href={book} target="_blank" rel="noopener">
+          {hero.secondaryCta.label} <span class="visually-hidden">(opens Calendly in a new tab)</span>
         </a>
       </div>
-
-      <ul class="facts rise" style="--delay: 0.24s" role="list" aria-label="This portfolio at a glance">
-        {facts.map((f) => <li><strong>{f.value}</strong> <span>{f.label}</span></li>)}
-      </ul>
     </div>
 
-    <div class="wall rise" style="--delay: 0.15s" role="group" aria-label="Recent reels">
-      {
-        columns.map((col, c) => (
-          <div class:list={['col', `col-${c + 1}`]}>
-            <ul class="track" role="list" data-viewer-list>
-              {col.map((r) => (
-                <li>
-                  <a
-                    class="tile-link reel"
-                    href={r.entry.full}
-                    data-kind={r.entry.kind}
-                    data-full={r.entry.full}
-                    data-poster={r.entry.poster}
-                    data-title={r.entry.title}
-                    data-brand={r.entry.brand}
-                    data-alt={r.entry.alt}
-                    data-role={r.entry.role}
-                  >
-                    <img src={r.poster} width="360" height="640" alt={r.alt} loading={c === 1 ? 'eager' : 'lazy'} decoding="async" />
-                    {r.preview && <video muted loop playsinline preload="none" data-wall-src={r.preview} aria-hidden="true" />}
-                    {r.entry.brand && <span class="tag" aria-hidden="true">{r.entry.brand}</span>}
-                    <span class="visually-hidden">Play video: {r.entry.title}{r.entry.brand ? `, ${r.entry.brand}` : ''}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-            {/* A copy of the column so the drift loops without a gap; hidden from screen readers and the viewer */}
-            <ul class="track copy-track" role="list" aria-hidden="true">
-              {col.map((r) => (
-                <li>
-                  <span class="reel">
-                    <img src={r.poster} width="360" height="640" alt="" loading="lazy" decoding="async" />
-                    {r.entry.brand && <span class="tag">{r.entry.brand}</span>}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      }
-    </div>
+    <figure class="photo rise" style="--delay: 0.1s">
+      <Picture
+        src={portrait}
+        alt="Hyacinth Blabagno in a brown suit, on a phone call while working on a laptop"
+        widths={[480, 720, 960]}
+        sizes="(min-width: 64rem) 40vw, 92vw"
+        formats={['avif', 'webp']}
+        loading="eager"
+        fetchpriority="high"
+      />
+    </figure>
   </div>
 </section>
 
+<section class="stats" aria-label="At a glance">
+  <ul class="wrap" role="list">
+    {site.stats.map((s) => (
+      <li>
+        <strong><span data-count={s.value}>{s.value.toLocaleString('en-US')}</span>{s.suffix}</strong>
+        <span>{s.label}</span>
+      </li>
+    ))}
+  </ul>
+</section>
+
 <style>
-  .hero { padding-block: clamp(1.5rem, 1rem + 2vw, 2.5rem) clamp(3rem, 2rem + 4vw, 5rem); overflow-x: clip; }
-  .grid { display: grid; gap: clamp(2rem, 1rem + 3vw, 3.5rem); align-items: center; }
-  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 4rem; } }
+  .hero { padding-block: clamp(2rem, 1rem + 3vw, 4rem) clamp(2.5rem, 1.5rem + 3vw, 4rem); overflow-x: clip; }
+  .grid { display: grid; gap: clamp(2rem, 1rem + 3vw, 4rem); align-items: center; }
+  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); } }
   .grid > * { min-width: 0; }
 
-  .copy { display: grid; gap: clamp(1.25rem, 1rem + 1vw, 1.75rem); align-content: center; }
-  .meta {
-    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1.5rem;
-    font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);
+  .copy { display: grid; gap: 1.25rem; align-content: center; }
+  .meta { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+  .meta strong { color: var(--ink); font-weight: 700; }
+  .badges { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; font-size: var(--fs-small); color: var(--text-muted); }
+  .status {
+    display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-pill); background: var(--green-soft); color: var(--green);
+    font-weight: 700; font-size: var(--fs-small);
   }
-  .meta .who strong { color: var(--ink); font-weight: 700; }
-  .meta .right { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; }
-  .status { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.2rem 0.65rem; border: 1px solid var(--line); border-radius: var(--radius-pill); color: var(--ink); }
-  .status i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #2b8a3e; box-shadow: 0 0 0 3px var(--greige-soft); }
+  .status i { position: relative; width: 0.55rem; height: 0.55rem; border-radius: 50%; background: #2f9e4a; }
+  @media (prefers-reduced-motion: no-preference) {
+    .status i::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid #2f9e4a; opacity: 0; animation: ping 2s ease-out infinite; }
+    @keyframes ping { 0% { transform: scale(0.6); opacity: 0.8; } 100% { transform: scale(1.6); opacity: 0; } }
+  }
 
-  h1 {
-    font-size: clamp(2.75rem, 1.2rem + 5.4vw, 5.75rem);
-    font-weight: 800; letter-spacing: -0.055em; line-height: 0.95;
-    max-width: 11ch;
-  }
+  h1 { font-size: clamp(2.75rem, 1.2rem + 5.4vw, 5.5rem); font-weight: 800; letter-spacing: -0.055em; line-height: 0.95; max-width: 11ch; }
   h1 :global(em) { font-size: 0.92em; }
   .intro { color: var(--text-muted); max-width: 46ch; font-size: var(--fs-lead); line-height: 1.5; }
-  .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.25rem; }
   @media (max-width: 30rem) { .actions .btn { flex: 1 1 100%; } }
 
-  .facts { list-style: none; margin: 0; padding: 1rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; border-top: 1px solid var(--line); }
-  .facts li { display: flex; align-items: baseline; gap: 0.45rem; }
-  .facts strong { font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.04em; }
-  .facts span { font-family: var(--font-serif); font-style: italic; color: var(--text-muted); }
+  .photo { margin: 0; justify-self: center; width: min(100%, 32rem); }
+  .photo :global(img) {
+    width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 25%;
+    border-radius: calc(var(--radius-media) * 2); background: #fff;
+  }
 
-  /* Reel wall */
-  .wall {
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem;
-    height: clamp(30rem, 24rem + 14vw, 40rem);
-    overflow: hidden;
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+  /* Numbers bar */
+  .stats { background: var(--wine); color: var(--paper); }
+  .stats ul {
+    list-style: none; margin-block: 0; padding-block: clamp(1.75rem, 1.25rem + 2vw, 2.75rem);
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.75rem 1rem; text-align: center;
   }
-  .col { display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
-  .col-2 { margin-top: -4rem; }
-  .track { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
-  .reel {
-    position: relative; display: block; overflow: hidden;
-    aspect-ratio: 9 / 16; border-radius: var(--radius-media); background: var(--greige);
-    color: inherit; text-decoration: none;
-  }
-  .reel img, .reel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .reel img { transition: transform 0.5s ease; }
-  a.reel:hover img { transform: scale(1.03); }
-  .reel video { opacity: 0; transition: opacity 0.6s ease; }
-  .reel :global(video.playing) { opacity: 1; }
-  .tag {
-    position: absolute; left: 0.5rem; bottom: 0.5rem; z-index: 1;
-    padding: 0.2rem 0.55rem; border-radius: var(--radius-pill);
-    background: rgb(34 21 22 / 0.6); color: var(--paper); backdrop-filter: blur(4px);
-    font-size: var(--fs-label); font-weight: 600;
-    max-width: calc(100% - 1rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  a.reel:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
-
-  /* The drift: each column moves by exactly one copy of itself, then repeats. Hover or focus pauses it. */
-  @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
-    .col { animation: drift-up 48s linear infinite; }
-    .col-2 { animation-name: drift-down; animation-duration: 56s; }
-    .col-3 { animation-duration: 52s; }
-    .wall:hover .col, .wall:focus-within .col { animation-play-state: paused; }
-    @keyframes drift-up { to { transform: translateY(calc(-50% - 0.375rem)); } }
-    @keyframes drift-down { from { transform: translateY(calc(-50% - 0.375rem)); } to { transform: translateY(0); } }
-  }
-  @media (prefers-reduced-motion: reduce) { .copy-track { display: none; } }
-
-  /* Phones and tablets: one row of reels to swipe through, under the text */
-  @media (max-width: 63.99rem) {
-    .wall {
-      display: flex; height: auto; gap: 0.6rem;
-      overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
-      margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter);
-      -webkit-mask-image: none; mask-image: none;
-    }
-    .wall::-webkit-scrollbar { display: none; }
-    .col, .track { display: contents; }
-    .col-2 { margin: 0; }
-    .copy-track { display: none; }
-    .track li { flex: none; width: clamp(8rem, 5rem + 14vw, 11rem); scroll-snap-align: start; }
-  }
+  @media (min-width: 48rem) { .stats ul { grid-template-columns: repeat(4, 1fr); } }
+  .stats li { display: grid; gap: 0.35rem; }
+  .stats strong { font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.5rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .stats li > span { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rose); }
 </style>
 
 <script>
-  // Start the few wall previews once the wall is on screen; never with reduced motion or data saver
-  const wall = document.querySelector<HTMLElement>('.hero .wall');
+  // Count the numbers up from zero once the bar is on screen (skipped with reduced motion)
+  const counters = document.querySelectorAll<HTMLElement>('[data-count]');
   const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-  if (wall && !calm && !saveData) {
-    const start = () => {
-      wall.querySelectorAll<HTMLVideoElement>('video[data-wall-src]').forEach((v) => {
-        v.src = v.dataset.wallSrc!;
-        v.addEventListener('playing', () => v.classList.add('playing'), { once: true });
-        v.play().catch(() => {});
-      });
+  if (counters.length && !calm) {
+    const run = (el: HTMLElement) => {
+      const end = Number(el.dataset.count);
+      const start = performance.now();
+      const step = (now: number) => {
+        const t = Math.min(1, (now - start) / 1400);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(end * eased).toLocaleString('en-US');
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
     };
-    new IntersectionObserver((entries, obs) => {
-      if (entries.some((e) => e.isIntersecting)) {
-        start();
-        obs.disconnect();
-      }
-    }).observe(wall);
+    counters.forEach((el) => (el.textContent = '0'));
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) { run(e.target as HTMLElement); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.4 });
+    counters.forEach((el) => io.observe(el));
   }
 </script>

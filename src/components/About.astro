@@ -1,66 +1,276 @@
 ---
 /**
- * About: photo, bio and quick facts. Bio and facts: src/data/about.json. Photo: src/assets/portrait-about.jpg.
- * Certifications and tools are in Credentials.astro, further down the page.
+ * About me: photo (Cloudinary "profile-about"), bio, "Open to work", and the main actions
+ * (Download CV once confirmed, Let's talk, See my work, My experience, Book a call).
+ * Two cards open pop-ups:
+ * - Certifications: one certificate at a time with previous/next, and a button over to Tools.
+ * - Tools I use: rows of real tool logos drifting left and right, and a button back to Certifications.
+ * Both pop-ups close with the X at the top, Escape, or a click outside.
+ * Text: src/data/about.json. Certificates: "certifications" in src/data/proof.json. Tools: src/data/tools.json,
+ * logos: src/data/tool-logos.json (files in public/tools).
  */
-import { Picture } from 'astro:assets';
-import portrait from '../assets/portrait-about.jpg';
-import { about, isPlaceholder } from '../lib/data';
+import { about, site, proof, tools, filled, resumeFile, bookingUrl, showUnconfirmed } from '../lib/data';
+import { jpgUrl } from '../lib/cloudinary';
+import toolLogos from '../data/tool-logos.json';
+
+const logos = toolLogos as Record<string, string>;
+const availability = filled(site.availability);
+const photo = (w: number) => `https://res.cloudinary.com/${site.cloudName}/image/upload/f_auto,q_auto,w_${w}/profile-about`;
+
+const allTools = tools.groups.flatMap((g) => g.tools.map((t) => (typeof t === 'string' ? t : t.name))).filter((n) => logos[n]);
+// Three rows for the tools pop-up, drifting in alternating directions
+const rows = [0, 1, 2].map((r) => allTools.filter((_, i) => i % 3 === r));
+const certs = proof.certifications;
 ---
 
 <section id="about" class="about" aria-labelledby="about-title">
-  <div class="wrap">
-    <div class="grid">
-      <figure class="photo">
-        <Picture
-          src={portrait}
-          alt={about.portraitAlt}
-          widths={[400, 640, 900]}
-          sizes="(min-width: 64rem) 30vw, 90vw"
-          formats={['avif', 'webp']}
-        />
-      </figure>
+  <div class="wrap grid">
+    <figure class="photo reveal">
+      <img
+        src={photo(800)}
+        srcset={`${photo(480)} 480w, ${photo(800)} 800w, ${photo(1200)} 1200w`}
+        sizes="(min-width: 64rem) 40vw, 92vw"
+        width="800" height="1000"
+        alt={about.portraitAlt}
+        loading="lazy" decoding="async"
+      />
+    </figure>
 
-      <div class="copy">
-        <h2 id="about-title" set:html={about.heading.replace(/&/g, '&amp;').replace(/(\S+)$/, '<em>$1</em>')} />
-        {!about.confirmed && <p><span class="placeholder">Draft bio: needs your confirmation</span></p>}
-        <div class="bio">
-          {about.bio.map((p) => <p>{p}</p>)}
-        </div>
-        <dl class="facts">
-          {
-            about.facts.map((f) => (
-              <div>
-                <dt>{f.label}</dt>
-                <dd>{isPlaceholder(f.value) ? <span class="placeholder">{f.value}</span> : f.value}</dd>
-              </div>
-            ))
-          }
-        </dl>
+    <div class="copy reveal">
+      <h2 id="about-title">About me</h2>
+      {availability && <p class="status"><i aria-hidden="true" />{availability}</p>}
+      <div class="bio">
+        {about.bio.map((p) => <p>{p}</p>)}
+      </div>
+
+      <div class="actions">
+        {resumeFile ? (
+          <a class="btn btn-ghost" href={resumeFile} target="_blank" rel="noopener">Download CV <span class="visually-hidden">(PDF, opens in a new tab)</span></a>
+        ) : (
+          showUnconfirmed && <span class="placeholder">Download CV appears once the CV is confirmed</span>
+        )}
+        <a class="btn btn-primary" href="#contact">Let's talk</a>
+      </div>
+      <p class="links">
+        <a href="#work">See my work <span aria-hidden="true">&rarr;</span></a>
+        <a href="#experience">My experience <span aria-hidden="true">&rarr;</span></a>
+        {bookingUrl && <a href={bookingUrl} target="_blank" rel="noopener">Book a call <span aria-hidden="true">&nearr;</span><span class="visually-hidden">(opens Calendly in a new tab)</span></a>}
+      </p>
+
+      <div class="cards">
+        <button type="button" class="pop-card" data-pop="certs" aria-haspopup="dialog">
+          <span class="fan" aria-hidden="true">
+            {certs.slice(0, 3).map((c, i) => <img src={jpgUrl(c.image, 240)} alt="" width="120" height="90" loading="lazy" style={`--i: ${i}`} />)}
+          </span>
+          <span class="pop-text"><strong>Certifications</strong><span>{certs.length} courses &middot; view one by one</span></span>
+        </button>
+        <button type="button" class="pop-card" data-pop="tools" aria-haspopup="dialog">
+          <span class="fan tools-fan" aria-hidden="true">
+            {allTools.slice(0, 5).map((n, i) => <img src={logos[n]} alt="" width="40" height="40" loading="lazy" style={`--i: ${i}`} />)}
+          </span>
+          <span class="pop-text"><strong>Tools I use</strong><span>{allTools.length} tools &middot; with real logos</span></span>
+        </button>
       </div>
     </div>
-
   </div>
+
+  <dialog class="pop" id="pop-certs" aria-labelledby="pop-certs-title">
+    <div class="pop-inner">
+      <header class="pop-head">
+        <h3 id="pop-certs-title">Certifications</h3>
+        <button type="button" class="x" data-pop-close aria-label="Close">&times;</button>
+      </header>
+      <div class="cert-stage">
+        {certs.map((c, i) => (
+          <figure class="cert" data-cert={i} hidden={i !== 0}>
+            <a href={jpgUrl(c.image, 1600)} target="_blank" rel="noopener">
+              <img src={jpgUrl(c.image, 900)} width="900" height="670" alt={`${c.issuer} certificate for ${c.title}, issued to Hyacinth Blabagno`} loading="lazy" />
+              <span class="visually-hidden">(opens the full certificate in a new tab)</span>
+            </a>
+            <figcaption><strong>{c.title}</strong><span>{c.issuer} &middot; {c.date}</span></figcaption>
+          </figure>
+        ))}
+      </div>
+      <footer class="pop-foot">
+        <div class="pager">
+          <button type="button" data-cert-prev aria-label="Previous certificate">&larr;</button>
+          <span data-cert-pos aria-live="polite">1 / {certs.length}</span>
+          <button type="button" data-cert-next aria-label="Next certificate">&rarr;</button>
+        </div>
+        <button type="button" class="btn btn-primary" data-pop-switch="tools">View tools I use <span aria-hidden="true">&rarr;</span></button>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog class="pop pop-wide" id="pop-tools" aria-labelledby="pop-tools-title">
+    <div class="pop-inner">
+      <header class="pop-head">
+        <h3 id="pop-tools-title">Tools I use</h3>
+        <button type="button" class="x" data-pop-close aria-label="Close">&times;</button>
+      </header>
+      <div class="marquees">
+        {rows.map((row, r) => (
+          <div class:list={['marquee', r % 2 ? 'right' : 'left']}>
+            {[0, 1].map((copy) => (
+              <ul role="list" aria-hidden={copy ? 'true' : undefined}>
+                {row.map((n) => (
+                  <li><img src={logos[n]} alt="" width="40" height="40" loading="lazy" /><span>{n}</span></li>
+                ))}
+              </ul>
+            ))}
+          </div>
+        ))}
+      </div>
+      <footer class="pop-foot">
+        <span class="hint">Hover a row to pause it.</span>
+        <button type="button" class="btn btn-ghost" data-pop-switch="certs"><span aria-hidden="true">&larr;</span> View certifications</button>
+      </footer>
+    </div>
+  </dialog>
 </section>
 
 <style>
-  .about { --bg: var(--greige); background: var(--greige); padding-block: var(--section); }
+  .about { padding-block: var(--section); }
   .grid { display: grid; gap: clamp(2.5rem, 2rem + 3vw, 5rem); align-items: center; }
-  @media (min-width: 64rem) { .grid { grid-template-columns: 0.85fr 1.25fr; } }
+  @media (min-width: 64rem) { .grid { grid-template-columns: 0.9fr 1.1fr; } }
+  .grid > * { min-width: 0; }
 
-  .photo { margin: 0; width: min(100%, 26rem); justify-self: center; }
-  .photo :global(img) {
-    width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 30%;
-    border-radius: var(--radius-media); background: #fff;
+  .photo { margin: 0; justify-self: center; width: min(100%, 30rem); }
+  .photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 20%; border-radius: calc(var(--radius-media) * 2); background: #fff; }
+
+  .copy { display: grid; gap: 1.25rem; justify-items: start; }
+  h2 { font-size: clamp(2.75rem, 1.6rem + 4vw, 4.75rem); font-weight: 800; letter-spacing: -0.055em; text-transform: uppercase; line-height: 0.95; }
+  .status {
+    display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-pill); background: var(--green-soft); color: var(--green); font-weight: 700; font-size: var(--fs-small);
   }
-
-  .copy { display: grid; gap: 1.25rem; }
-  .bio { display: grid; gap: 1rem; max-width: 60ch; }
+  .status i { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: #2f9e4a; }
+  .bio { display: grid; gap: 0.9rem; max-width: 58ch; }
   .bio p { color: var(--text-muted); }
-  .bio p:first-child { font-family: var(--font-serif); font-size: var(--fs-lead); line-height: 1.55; color: var(--ink); }
+  .bio p:first-child { font-size: var(--fs-lead); line-height: 1.5; color: var(--ink); }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; }
+  .links a { display: inline-flex; gap: 0.35rem; align-items: center; min-height: 2.75rem; font-weight: 600; color: var(--wine); }
 
-  .facts { margin: 0.5rem 0 0; display: flex; flex-wrap: wrap; gap: 1.25rem 3rem; }
-  .facts dt { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--wine); }
-  .facts dd { margin: 0.25rem 0 0; }
+  /* Cards that open the pop-ups: thumbnails fan out on hover */
+  .cards { display: grid; gap: 0.75rem; width: 100%; margin-top: 0.5rem; }
+  @media (min-width: 40rem) { .cards { grid-template-columns: 1fr 1fr; } }
+  .pop-card {
+    display: flex; align-items: center; gap: 1rem; min-height: 5.5rem; padding: 0.9rem 1rem;
+    border: 1px solid var(--line); border-radius: calc(var(--radius-media) * 1.5); background: #fff;
+    font: inherit; color: var(--ink); text-align: left; cursor: pointer;
+    transition: border-color 0.25s ease, transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.3s ease;
+  }
+  .pop-card:hover, .pop-card:focus-visible { border-color: var(--wine); transform: translateY(-3px); box-shadow: 0 14px 30px -18px rgb(50 13 30 / 0.45); }
+  .fan { position: relative; flex: none; width: 5.5rem; height: 3.5rem; }
+  .fan img {
+    position: absolute; top: 0.25rem; left: 0; width: 3.75rem; height: 2.8rem; object-fit: cover;
+    border-radius: 5px; border: 1px solid var(--line); background: #fff;
+    transform: translateX(calc(var(--i) * 0.6rem)) rotate(calc((var(--i) - 1) * 4deg));
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .pop-card:hover .fan img, .pop-card:focus-visible .fan img { transform: translateX(calc(var(--i) * 1rem)) rotate(calc((var(--i) - 1) * 9deg)); }
+  .tools-fan img { width: 2.25rem; height: 2.25rem; top: 0.6rem; object-fit: contain; padding: 0.3rem; border-radius: 9px; transform: translateX(calc(var(--i) * 0.55rem)); }
+  .pop-card:hover .tools-fan img, .pop-card:focus-visible .tools-fan img { transform: translateX(calc(var(--i) * 0.8rem)) translateY(calc((var(--i) % 2) * -6px)); }
+  .pop-text { display: grid; gap: 0.15rem; }
+  .pop-text strong { font-weight: 700; }
+  .pop-text span { font-size: var(--fs-small); color: var(--text-muted); }
 
+  /* Pop-ups */
+  .pop {
+    width: min(100vw - 2rem, 46rem); max-height: calc(100vh - 2rem); padding: 0; border: 0;
+    border-radius: calc(var(--radius-media) * 2); background: var(--paper); color: var(--ink); overflow: hidden;
+  }
+  .pop-wide { width: min(100vw - 2rem, 60rem); }
+  .pop::backdrop { background: rgb(36 16 24 / 0.75); backdrop-filter: blur(3px); }
+  .pop[open] { animation: pop-in 0.3s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  @keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(0.98); } }
+  .pop-inner { display: grid; grid-template-rows: auto 1fr auto; max-height: calc(100vh - 2rem); }
+  .pop-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); }
+  .pop-head h3 { font-size: var(--fs-h3); }
+  .x {
+    width: 2.75rem; height: 2.75rem; border-radius: 50%; border: 1px solid var(--line); background: #fff;
+    font-size: 1.5rem; line-height: 1; color: var(--ink); cursor: pointer;
+  }
+  .x:hover { background: var(--wine); color: var(--paper); border-color: var(--wine); }
+  .pop-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem; border-top: 1px solid var(--line); }
+
+  .cert-stage { overflow: auto; padding: 1.25rem; }
+  .cert { margin: 0; display: grid; gap: 0.75rem; }
+  .cert[hidden] { display: none; }
+  .cert:not([hidden]) { animation: fade 0.35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateX(12px); } }
+  .cert img { width: 100%; height: auto; max-height: calc(100vh - 16rem); object-fit: contain; border: 1px solid var(--line); border-radius: var(--radius-media); background: #fff; }
+  .cert figcaption { display: grid; gap: 0.1rem; }
+  .cert figcaption span { font-size: var(--fs-small); color: var(--text-muted); }
+  .pager { display: inline-flex; align-items: center; gap: 0.75rem; font-variant-numeric: tabular-nums; }
+  .pager button {
+    width: 2.75rem; height: 2.75rem; border-radius: 50%; border: 1px solid var(--line); background: #fff;
+    font-size: 1.1rem; color: var(--ink); cursor: pointer;
+  }
+  .pager button:hover { border-color: var(--wine); }
+
+  /* Tools: rows of logos drifting left and right */
+  .marquees { display: grid; gap: 1rem; padding: 1.5rem 0; overflow: hidden; }
+  .marquee { display: flex; width: max-content; }
+  .marquee ul { list-style: none; margin: 0; padding: 0 0.5rem; display: flex; gap: 0.75rem; flex: none; }
+  .marquee li {
+    display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.55rem 1rem 0.55rem 0.6rem;
+    border: 1px solid var(--line); border-radius: var(--radius-pill); background: #fff; white-space: nowrap;
+    font-size: var(--fs-small); font-weight: 600;
+  }
+  .marquee img { width: 2rem; height: 2rem; object-fit: contain; }
+  @media (prefers-reduced-motion: no-preference) {
+    .pop[open] .marquee.left { animation: slide-left 40s linear infinite; }
+    .pop[open] .marquee.right { animation: slide-right 40s linear infinite; }
+    .marquee:hover { animation-play-state: paused !important; }
+    @keyframes slide-left { to { transform: translateX(-50%); } }
+    @keyframes slide-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquees { padding-inline: 1.25rem; }
+    .marquee { width: auto; }
+    .marquee ul { flex-wrap: wrap; padding: 0; }
+    .marquee ul[aria-hidden] { display: none; }
+  }
+  .hint { font-size: var(--fs-small); color: var(--text-muted); }
 </style>
+
+<script>
+  const pops = { certs: document.getElementById('pop-certs'), tools: document.getElementById('pop-tools') } as Record<string, HTMLDialogElement | null>;
+  let opener: HTMLElement | null = null;
+  const open = (key: string) => pops[key]?.showModal();
+
+  document.querySelectorAll<HTMLButtonElement>('[data-pop]').forEach((b) =>
+    b.addEventListener('click', () => { opener = b; open(b.dataset.pop!); }),
+  );
+  Object.values(pops).forEach((d) => {
+    if (!d) return;
+    d.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      if (t === d || t.closest('[data-pop-close]')) d.close();
+      const sw = t.closest<HTMLElement>('[data-pop-switch]');
+      if (sw) { d.dataset.switching = '1'; d.close(); open(sw.dataset.popSwitch!); }
+    });
+    d.addEventListener('close', () => {
+      if (!d.dataset.switching && !Object.values(pops).some((p) => p?.open)) opener?.focus();
+      delete d.dataset.switching;
+    });
+  });
+
+  // Certificates: one at a time
+  const slides = [...document.querySelectorAll<HTMLElement>('[data-cert]')];
+  const pos = document.querySelector<HTMLElement>('[data-cert-pos]');
+  let current = 0;
+  const go = (i: number) => {
+    current = (i + slides.length) % slides.length;
+    slides.forEach((s, k) => (s.hidden = k !== current));
+    if (pos) pos.textContent = `${current + 1} / ${slides.length}`;
+  };
+  document.querySelector('[data-cert-prev]')?.addEventListener('click', () => go(current - 1));
+  document.querySelector('[data-cert-next]')?.addEventListener('click', () => go(current + 1));
+  pops.certs?.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') go(current + 1);
+    if (e.key === 'ArrowLeft') go(current - 1);
+  });
+</script>

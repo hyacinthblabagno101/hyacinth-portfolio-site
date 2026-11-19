@@ -1,185 +1,165 @@
 ---
 /**
- * Case studies: influencer marketing, UGC, and analytics. Text lives in "caseStudies" in src/data/proof.json.
+ * UGC & influencer marketing case studies, kept simple:
+ * 1. Influencer marketing: one phone per creator collaboration (video, brand x creator, audience, deal, what I did).
+ * 2. UGC gifting collaborations: a row of UGC sample videos with a short note.
+ * 3. Monthly reporting: two compact report cards.
+ * Phones open the video in the viewer (Viewer.astro) at its own 9:16 size.
+ * Text and video IDs: "caseStudies" and "platforms" in src/data/proof.json.
  */
-import { proof, showUnconfirmed } from '../lib/data';
-import { videoUrl, posterFor } from '../lib/cloudinary';
+import { proof } from '../lib/data';
+import { site } from '../lib/data';
+import { videoUrl } from '../lib/cloudinary';
 
-/** Viewer entries for a case study's videos (the viewer itself lives in Showcase.astro). */
-const videoEntries = (c: (typeof proof.caseStudies)[number]) =>
-  (c.videos ?? []).map((v) => ({ kind: 'video', full: videoUrl(v.media), poster: posterFor({ id: v.media }, 720), title: v.title, brand: v.brand, alt: v.alt }));
+const byId = Object.fromEntries(proof.caseStudies.map((c) => [c.id, c]));
+const influencer = byId.influencer;
+const ugc = byId.ugc;
+const analytics = byId.analytics;
+const { platforms } = proof;
+
+// Cover frame taken 3 seconds in: several of these videos open on a dark frame
+const frame = (media: string, w: number) =>
+  `https://res.cloudinary.com/${site.cloudName}/video/upload/so_3,f_auto,q_auto,w_${w},ar_9:16,c_fill,g_auto/${media}.jpg`;
+const phone = (media: string, title: string, brand: string | undefined, alt: string) => ({
+  full: videoUrl(media),
+  poster: frame(media, 720),
+  thumb: frame(media, 360),
+  title, brand, alt,
+});
+const creators = (influencer?.rows ?? []).filter((r) => r.video).map((r) => ({
+  ...r,
+  v: phone(r.video!, `${r.creator} x ${r.brand}`, r.brand, `Creator video by ${r.creator} for ${r.brand}`),
+}));
+const ugcVideos = (ugc?.videos ?? []).map((v) => phone(v.media, v.title, undefined, v.alt));
 ---
 
 <section id="case-studies" class="cases" aria-labelledby="cases-title">
   <div class="wrap">
     <header class="section-head reveal">
-      <h2 id="cases-title">Case <em>studies</em></h2>
-      <p class="lede">Influencer marketing, UGC, and monthly reporting.</p>
+      <h2 id="cases-title">UGC &amp; influencer marketing</h2>
+      <p class="lede">
+        I've built and run creator campaigns in {platforms.used.join(' and ')}, and I'm comfortable in similar platforms like {platforms.similar.join(', ')}.
+      </p>
     </header>
 
-    <div class="list">
-      {
-        proof.caseStudies.map((c, n) => (
-          <article class="case reveal" aria-labelledby={`case-${c.id}`}>
-            <div class="case-head">
-              <span class="num" aria-hidden="true">{String(n + 1).padStart(2, '0')}</span>
-              <p class="eyebrow">{c.eyebrow}</p>
-              <h3 id={`case-${c.id}`}>{c.title}</h3>
-              <p class="intro">{c.intro}</p>
-            </div>
+    {influencer && (
+      <article class="panel light reveal" aria-labelledby="case-influencer">
+        <div class="panel-head">
+          <h3 id="case-influencer">{influencer.title}</h3>
+          <p>{influencer.intro}</p>
+        </div>
+        <ul class="phones" role="list" data-viewer-list>
+          {creators.map((c) => (
+            <li>
+              <a class="tile-link phone" href={c.v.full} data-kind="video" data-full={c.v.full} data-poster={c.v.poster} data-title={c.v.title} data-brand={c.v.brand} data-alt={c.v.alt} data-aspect="9:16">
+                <img src={c.v.thumb} width="360" height="640" alt="" loading="lazy" decoding="async" />
+                <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M8 5v14l11-7z" fill="currentColor" /></svg></span>
+                <span class="visually-hidden">Play video: {c.v.title}</span>
+              </a>
+              <p class="who"><strong>{c.brand}</strong> <span aria-hidden="true">&times;</span> {c.creator}</p>
+              <p class="tags">{c.audience} &middot; {c.deal}</p>
+              <p class="detail">{c.detail}</p>
+            </li>
+          ))}
+        </ul>
+      </article>
+    )}
 
-            <div class="case-body">
-              {c.videos && (
-                videoEntries(c).length > 0 ? (
-                  <a class="tile-link btn btn-primary watch" href={videoEntries(c)[0].full} data-items={JSON.stringify(videoEntries(c))}>
-                    <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
-                    Watch the videos <span class="visually-hidden">for {c.title}</span>
-                  </a>
-                ) : (
-                  showUnconfirmed && <p><span class="placeholder">[PLACEHOLDER: {c.eyebrow} videos, uploading to Cloudinary]</span></p>
-                )
-              )}
+    {ugc && (
+      <article class="panel dark reveal" aria-labelledby="case-ugc">
+        <div class="panel-head">
+          <h3 id="case-ugc">{ugc.title}</h3>
+          <p>{ugc.intro}</p>
+        </div>
+        <ul class="phones" role="list" data-viewer-list>
+          {ugcVideos.map((v, i) => (
+            <li>
+              <a class="tile-link phone" href={v.full} data-kind="video" data-full={v.full} data-poster={v.poster} data-title={`UGC sample ${i + 1}`} data-alt={v.alt} data-aspect="9:16">
+                <img src={v.thumb} width="360" height="640" alt="" loading="lazy" decoding="async" />
+                <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M8 5v14l11-7z" fill="currentColor" /></svg></span>
+                <span class="visually-hidden">Play UGC sample {i + 1}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </article>
+    )}
 
-              {(c.rows || c.points) ? (
-                <details class="more">
-                  <summary>
-                    <span>{c.rows ? 'See the creators I worked with' : 'See how I ran it'}</span>
-                    <span class="plus" aria-hidden="true"></span>
-                  </summary>
-              {c.rows && (
-                <ul class="collabs" role="list">
-                  {c.rows.map((r) => (
-                    <li class="collab">
-                      <p class="pair">
-                        <strong>{r.brand}</strong>
-                        <span class="x" aria-hidden="true">&times;</span>
-                        <span>{r.creator}</span>
-                      </p>
-                      <p class="tags">
-                        <span>{r.audience}</span>
-                        <span>{r.deal}</span>
-                      </p>
-                      <p class="detail">{r.detail}</p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              {c.points && (
-                <ol class="steps" role="list">
-                  {c.points.map((p, i) => (
-                    <li>
-                      <span class="step" aria-hidden="true">{i + 1}</span>
-                      {p}
-                    </li>
-                  ))}
-                </ol>
-              )}
-                </details>
-              ) : null}
-
-              {c.reports && (
-                <div class="reports">
-                  {c.reports.map((r) => (
-                    <figure class="report">
-                      <figcaption class="eyebrow">{r.label}</figcaption>
-                      <dl class="stats">
-                        {r.stats.map((s) => (
-                          <div class="stat">
-                            <dt>{s.label}</dt>
-                            <dd>
-                              <span class="value">{s.value}</span>
-                              {s.change && <span class="change">{s.change}</span>}
-                            </dd>
-                          </div>
-                        ))}
-                      </dl>
-                      <p class="note">{r.note}</p>
-                    </figure>
-                  ))}
-                </div>
-              )}
-            </div>
-          </article>
-        ))
-      }
-    </div>
+    {analytics?.reports && (
+      <article class="reports reveal" aria-labelledby="case-reports">
+        <div class="panel-head">
+          <h3 id="case-reports">{analytics.title}</h3>
+          <p>{analytics.intro}</p>
+        </div>
+        <div class="report-grid">
+          {analytics.reports.map((r) => (
+            <figure class="report">
+              <figcaption>{r.label}</figcaption>
+              <dl>
+                {r.stats.map((s) => (
+                  <div><dt>{s.label}</dt><dd>{s.value}{s.change && <span>{s.change}</span>}</dd></div>
+                ))}
+              </dl>
+              <p>{r.note}</p>
+            </figure>
+          ))}
+        </div>
+      </article>
+    )}
   </div>
 </section>
 
 <style>
-  .cases {
-    padding-block: var(--section); background: var(--greige);
+  .cases { padding-block: var(--section); background: var(--greige); }
+  .cases .wrap { display: grid; gap: clamp(1.25rem, 1rem + 1vw, 2rem); }
+  .cases .section-head { margin-bottom: 0.5rem; }
+
+  .panel { border-radius: calc(var(--radius-media) * 2); padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); display: grid; gap: 1.75rem; }
+  .light { background: var(--paper); }
+  .dark { background: var(--wine); color: var(--paper); }
+  .panel-head { display: grid; gap: 0.6rem; max-width: 62ch; }
+  .panel-head h3 { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem); font-weight: 800; letter-spacing: -0.04em; color: inherit; }
+  .panel-head p { color: var(--text-muted); }
+  .dark .panel-head p { color: var(--rose); }
+
+  .phones { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.5rem 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 64rem) { .phones { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .phones li { display: grid; gap: 0.5rem; align-content: start; }
+
+  /* A phone frame around each video */
+  .phone {
+    position: relative; display: block; aspect-ratio: 9 / 16; overflow: hidden;
+    border: 6px solid #120408; border-radius: 1.6rem; background: #120408;
+    box-shadow: 0 18px 34px -22px rgb(36 16 24 / 0.6);
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-
-  .list { display: grid; }
-  .case {
-    display: grid; gap: 1.75rem;
-    padding-block: clamp(2rem, 1.5rem + 2vw, 3rem);
-    border-top: 1px solid var(--line);
+  .phone::before { content: ''; position: absolute; top: 0.45rem; left: 50%; z-index: 2; width: 30%; height: 0.9rem; border-radius: 1rem; background: #120408; transform: translateX(-50%); }
+  .phone img { width: 100%; height: 100%; object-fit: cover; border-radius: 1.1rem; }
+  .phone:hover { transform: translateY(-4px); }
+  .phone:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
+  .play {
+    position: absolute; left: 50%; top: 50%; z-index: 2; transform: translate(-50%, -50%);
+    display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border-radius: 50%;
+    background: rgb(247 244 234 / 0.92); color: var(--wine);
+    transition: transform 0.3s ease;
   }
-  .case:first-child { border-top: 0; }
-  @media (min-width: 64rem) { .case { grid-template-columns: 5fr 7fr; gap: 5rem; } }
+  .phone:hover .play { transform: translate(-50%, -50%) scale(1.08); }
 
-  .case-head { display: grid; gap: 0.6rem; align-content: start; }
-  .num { font-family: var(--font-serif); font-style: italic; font-size: var(--fs-lead); color: var(--wine); }
-  .intro { color: var(--text-muted); max-width: 40ch; }
+  .who { font-size: var(--fs-small); }
+  .who strong { font-weight: 700; }
+  .tags { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.04em; color: var(--wine); }
+  .detail { font-size: var(--fs-small); color: var(--text-muted); }
 
-  .case-body { display: grid; gap: 1.25rem; align-content: start; }
-  .watch { justify-self: start; }
-
-  /* Details stay folded until someone asks for them */
-  .more { border-top: 1px solid var(--ink); }
-  .more summary {
-    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
-    min-height: 3.25rem; cursor: pointer; list-style: none;
-    font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink);
-  }
-  .more summary::-webkit-details-marker { display: none; }
-  .more summary:hover { color: var(--wine); }
-  .plus { position: relative; width: 0.9rem; height: 0.9rem; flex: none; }
-  .plus::before, .plus::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; background: currentColor; transition: transform 0.25s ease; }
-  .plus::after { transform: rotate(90deg); }
-  .more[open] .plus::after { transform: rotate(0deg); }
-  .more[open] > :not(summary) { animation: unfold 0.35s ease; }
-  @media (prefers-reduced-motion: no-preference) {
-    @keyframes unfold { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
-  }
-
-  /* Creator partnerships: simple rows divided by hairlines */
-  .collabs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
-  .collab {
-    display: grid; gap: 0.3rem;
-    padding: 1.1rem 0;
-    border-bottom: 1px solid var(--line);
-    transition: padding 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-  .collab:hover { padding-left: 0.5rem; }
-  .pair { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem; font-size: var(--fs-body); }
-  .pair strong { font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; }
-  .pair span:last-child { font-family: var(--font-serif); font-style: italic; font-size: var(--fs-body); }
-  .x { color: var(--wine); }
-  .tags { margin: 0; display: flex; flex-wrap: wrap; gap: 0 0.5rem; font-size: var(--fs-label); color: var(--wine); }
-  .tags span + span::before { content: '\00b7'; margin-right: 0.5rem; }
-  .detail { margin: 0; color: var(--text-muted); font-size: var(--fs-small); }
-
-  .steps { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
-  .steps li {
-    display: grid; grid-template-columns: 2.25rem 1fr; align-items: baseline;
-    padding: 0.9rem 0; border-bottom: 1px solid var(--line);
-  }
-  .step { font-family: var(--font-serif); font-size: var(--fs-lead); color: var(--wine); }
-
-  /* Reports: two columns of figures, no boxes */
-  .reports { display: grid; gap: 2rem; }
-  @media (min-width: 40rem) { .reports { grid-template-columns: 1fr 1fr; } }
-  .report { margin: 0; display: grid; gap: 1rem; align-content: start; padding-top: 1rem; border-top: 1px solid var(--ink); }
-  .report figcaption { color: var(--text-muted); }
-  .stats { margin: 0; display: grid; gap: 0.9rem; }
-  .stat { display: grid; gap: 0.1rem; }
-  .stat dt { font-size: var(--fs-small); color: var(--text-muted); order: 2; }
-  .stat dd { margin: 0; display: flex; align-items: baseline; gap: 0.5rem; order: 1; }
-  .value { font-weight: 800; letter-spacing: -0.04em; font-size: var(--fs-stat); line-height: 1; color: var(--ink); }
-  .change { font-size: var(--fs-small); font-weight: 600; color: var(--wine); }
-  .note { margin: 0; font-size: var(--fs-small); color: var(--text-muted); }
+  /* Reporting */
+  .reports { display: grid; gap: 1.25rem; padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); border-radius: calc(var(--radius-media) * 2); background: var(--paper); }
+  .report-grid { display: grid; gap: 1rem; }
+  @media (min-width: 48rem) { .report-grid { grid-template-columns: 1fr 1fr; } }
+  .report { margin: 0; display: grid; gap: 0.75rem; padding: 1.25rem; border: 1px solid var(--line); border-radius: var(--radius-media); background: #fff; }
+  .report figcaption { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+  .report dl { margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  .report dt { font-size: var(--fs-small); color: var(--text-muted); order: 2; }
+  .report dd { margin: 0; font-size: var(--fs-h3); font-weight: 800; letter-spacing: -0.04em; color: var(--wine); order: 1; }
+  .report dd span { display: block; font-size: var(--fs-small); font-weight: 600; letter-spacing: 0; color: var(--green); }
+  .report dl div { display: flex; flex-direction: column; }
+  .report > p { font-size: var(--fs-small); color: var(--text-muted); }
 </style>

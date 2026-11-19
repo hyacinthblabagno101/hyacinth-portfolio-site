@@ -7,15 +7,13 @@
  * - Click: opens the viewer with the full video (with sound) or full image, plus my role for that brand.
  * - Other tabs show the first 8 items (two rows of 4), with a button to show the rest.
  * Without JavaScript, every tile is a plain link to the full media file.
- * The viewer also opens from any .tile-link elsewhere on the page (e.g. the preview strip in the hero).
+ * Selecting a tile opens the viewer (Viewer.astro, on every page).
  */
 import { showcase, groupedTabs, roleFor, groupOf } from '../lib/data';
 import { viewerEntry, tileMedia } from '../lib/showcaseMedia';
 
 const INITIAL = 8; // two rows of 4
 
-/** One shared list of viewer entries by id, so collections only need to list ids in the page. */
-const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => [i.id, viewerEntry(i)]));
 
 /** Tile shape per tab, so each grid stays even. */
 const tileAspect = (key: string) => (key === 'statics' ? '4:5' : '9:16');
@@ -168,26 +166,6 @@ const tabs = showcase.map((c) => {
     }
   </div>
 
-  {/* Every piece of work once, by id, for collections (brand covers and the Selected work rows) */}
-  <script type="application/json" id="viewer-entries" set:html={JSON.stringify(registry)} />
-
-  <dialog class="viewer" aria-labelledby="viewer-title" data-viewer>
-    <div class="viewer-inner">
-      <div class="viewer-media" data-viewer-media></div>
-      <div class="viewer-bar">
-        <div class="viewer-text">
-          <p class="viewer-brand"><span data-viewer-brand></span> <span class="viewer-pos" data-viewer-pos></span></p>
-          <p id="viewer-title" class="viewer-title" data-viewer-title></p>
-          <p class="viewer-role" data-viewer-role></p>
-        </div>
-        <div class="viewer-nav">
-          <button type="button" data-viewer-prev aria-label="Previous">&larr;</button>
-          <button type="button" data-viewer-next aria-label="Next">&rarr;</button>
-          <button type="button" class="close" data-viewer-close aria-label="Close">&times;</button>
-        </div>
-      </div>
-    </div>
-  </dialog>
 </section>
 
 <style>
@@ -266,7 +244,7 @@ const tabs = showcase.map((c) => {
     position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
     display: grid; place-items: center;
     width: 1.9rem; height: 1.9rem; border-radius: 50%;
-    background: rgb(34 21 22 / 0.55); color: var(--paper);
+    background: rgb(36 16 24 / 0.55); color: var(--paper);
     backdrop-filter: blur(4px);
     transition: opacity 0.3s ease;
   }
@@ -274,7 +252,7 @@ const tabs = showcase.map((c) => {
     position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
     display: inline-flex; align-items: center; gap: 0.3rem;
     padding: 0.25rem 0.55rem; border-radius: var(--radius-pill);
-    background: rgb(34 21 22 / 0.6); color: var(--paper);
+    background: rgb(36 16 24 / 0.6); color: var(--paper);
     font-size: var(--fs-label); font-weight: 600;
     backdrop-filter: blur(4px);
   }
@@ -282,7 +260,7 @@ const tabs = showcase.map((c) => {
     position: absolute; inset: auto 0 0 0; z-index: 2;
     display: grid; gap: 0.15rem;
     padding: 2.5rem 0.85rem 0.85rem;
-    background: linear-gradient(to top, rgb(34 21 22 / 0.82), rgb(34 21 22 / 0));
+    background: linear-gradient(to top, rgb(36 16 24 / 0.82), rgb(36 16 24 / 0));
     color: var(--paper);
     opacity: 0; transform: translateY(6px);
     transition: opacity 0.35s ease, transform 0.35s ease;
@@ -311,38 +289,6 @@ const tabs = showcase.map((c) => {
     @keyframes tile-in { from { opacity: 0; transform: translateY(10px); } }
   }
 
-  /* Viewer */
-  .viewer {
-    width: min(100vw - 2rem, 64rem); max-height: calc(100vh - 2rem);
-    padding: 0; border: 0; border-radius: var(--radius-media); overflow: hidden;
-    background: var(--ink); color: var(--paper);
-  }
-  .viewer::backdrop { background: rgb(34 21 22 / 0.86); backdrop-filter: blur(3px); }
-  .viewer[open] { animation: viewer-in 0.3s ease; }
-  @keyframes viewer-in { from { opacity: 0; transform: scale(0.98); } }
-  .viewer-inner { display: grid; grid-template-rows: 1fr auto; max-height: calc(100vh - 2rem); }
-  .viewer-media { display: grid; place-items: center; min-height: 0; background: #000; }
-  .viewer-media :global(img), .viewer-media :global(video) {
-    max-width: 100%; max-height: calc(100vh - 7rem); width: auto; height: auto; object-fit: contain;
-  }
-  .viewer-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem 1rem; }
-  .viewer-text { margin: 0; display: grid; gap: 0.1rem; min-width: 0; }
-  .viewer-text p { margin: 0; }
-  .viewer-pos { margin-left: 0.5rem; color: var(--greige); font-weight: 400; letter-spacing: 0.04em; }
-  .viewer-role { font-size: var(--fs-small); color: var(--greige); max-width: 60ch; }
-  .viewer-brand { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper); }
-  .viewer-title { font-family: var(--font-serif); font-size: var(--fs-lead); line-height: 1.2; }
-  .viewer-nav { display: flex; gap: 0.4rem; flex-shrink: 0; }
-  .viewer-nav button[hidden] { display: none; }
-  .viewer-nav button {
-    width: 2.75rem; height: 2.75rem; border-radius: 50%;
-    background: rgb(244 244 241 / 0.1); color: var(--paper);
-    border: 1px solid rgb(244 244 241 / 0.25);
-    font-size: var(--fs-body); cursor: pointer;
-    transition: background 0.2s ease;
-  }
-  .viewer-nav button:hover { background: rgb(244 244 241 / 0.22); }
-  .viewer-nav button:focus-visible { outline: 2px solid var(--rose); outline-offset: 2px; }
 </style>
 
 <script>
@@ -438,92 +384,4 @@ const tabs = showcase.map((c) => {
     });
   });
 
-  // Viewer: shows one item at a time from a list (a tab's tiles, a brand collection, or the hero strip)
-  type Entry = { kind: string; full: string; poster?: string; title?: string; brand?: string; alt?: string; role?: string };
-  const viewer = document.querySelector<HTMLDialogElement>('[data-viewer]');
-  const media = viewer?.querySelector<HTMLElement>('[data-viewer-media]');
-  const titleEl = viewer?.querySelector<HTMLElement>('[data-viewer-title]');
-  const brandEl = viewer?.querySelector<HTMLElement>('[data-viewer-brand]');
-  const roleEl = viewer?.querySelector<HTMLElement>('[data-viewer-role]');
-  const posEl = viewer?.querySelector<HTMLElement>('[data-viewer-pos]');
-  const prevBtn = viewer?.querySelector<HTMLButtonElement>('[data-viewer-prev]');
-  const nextBtn = viewer?.querySelector<HTMLButtonElement>('[data-viewer-next]');
-  let list: Entry[] = [];
-  let index = 0;
-  let opener: HTMLElement | null = null;
-
-  const registry: Record<string, Entry> = JSON.parse(document.getElementById('viewer-entries')?.textContent || '{}');
-  // Showcase tiles carry only an id; tiles elsewhere (the hero polaroids) carry their details as data attributes
-  const entryOf = (a: HTMLElement): Entry => (a.dataset.id && registry[a.dataset.id]) || ({ ...(a.dataset as unknown as Entry) });
-
-  function show(i: number) {
-    if (!media || !titleEl || !brandEl || !roleEl || !posEl) return;
-    index = (i + list.length) % list.length;
-    const d = list[index];
-    media.replaceChildren();
-    if (d.kind === 'video') {
-      const v = document.createElement('video');
-      v.controls = true;
-      v.playsInline = true;
-      v.autoplay = !reduce.matches;
-      v.preload = 'auto';
-      if (d.poster) v.poster = d.poster;
-      v.src = d.full;
-      v.setAttribute('aria-label', d.alt ?? '');
-      media.append(v);
-    } else {
-      const img = document.createElement('img');
-      img.src = d.full;
-      img.alt = d.alt ?? '';
-      media.append(img);
-    }
-    titleEl.textContent = d.title ?? '';
-    brandEl.textContent = d.brand ?? '';
-    roleEl.textContent = d.role ? `My role: ${d.role}` : '';
-    posEl.textContent = list.length > 1 ? `${index + 1} / ${list.length}` : '';
-    if (prevBtn && nextBtn) prevBtn.hidden = nextBtn.hidden = list.length < 2;
-  }
-
-  function close() {
-    media?.replaceChildren(); // stops any playing video
-    viewer?.close();
-  }
-
-  // One listener for every tile on the page, including the preview strip in the hero
-  document.addEventListener('click', (e) => {
-    const link = (e.target as HTMLElement).closest<HTMLAnchorElement>('a.tile-link');
-    if (!link || !viewer || e.metaKey || e.ctrlKey || e.shiftKey) return;
-    e.preventDefault();
-    if (link.dataset.items) {
-      // Either a list of ids (looked up in the shared list) or, for case study videos, the entries themselves
-      const raw = link.dataset.items;
-      list = raw.startsWith('[') ? JSON.parse(raw) : raw.split(',').map((id) => registry[id]).filter(Boolean);
-      index = 0;
-    } else {
-      const scope = link.closest<HTMLElement>('[data-viewer-list]');
-      const links = scope
-        ? [...scope.querySelectorAll<HTMLAnchorElement>('a.tile-link:not([data-items])')].filter((a) => a.offsetParent !== null && !a.closest('[aria-hidden="true"]'))
-        : [link];
-      list = links.map(entryOf);
-      index = Math.max(0, links.indexOf(link));
-    }
-    opener = link;
-    show(index);
-    viewer.showModal();
-    viewer.querySelector<HTMLButtonElement>('[data-viewer-close]')?.focus();
-  });
-
-  prevBtn?.addEventListener('click', () => show(index - 1));
-  nextBtn?.addEventListener('click', () => show(index + 1));
-  viewer?.querySelector('[data-viewer-close]')?.addEventListener('click', close);
-  viewer?.addEventListener('keydown', (e) => {
-    if ((e.target as HTMLElement).tagName === 'VIDEO' || list.length < 2) return; // arrow keys seek inside the video
-    if (e.key === 'ArrowRight') show(index + 1);
-    if (e.key === 'ArrowLeft') show(index - 1);
-  });
-  viewer?.addEventListener('click', (e) => { if (e.target === viewer) close(); }); // click outside
-  viewer?.addEventListener('close', () => {
-    media?.replaceChildren();
-    opener?.focus({ preventScroll: true });
-  });
 </script>

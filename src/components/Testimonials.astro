@@ -1,7 +1,8 @@
 ---
 /**
  * Client feedback, word for word. Text lives in "testimonials" in src/data/proof.json.
- * Shows the first 3 quotes (reorder proof.json to change which) as cards side by side.
+ * The first 3 quotes show as cards (reorder proof.json to change which); "More feedback" shows the rest.
+ * A quote with a url is verified on Upwork and gets a small badge linking there.
  * - Hover lifts a card. Long quotes show their first lines with "Read more" to open the rest.
  * - No ratings or badges: only what clients actually wrote.
  */
@@ -10,7 +11,7 @@ import { proof } from '../lib/data';
 const SHOWN = 3;
 const LONG = 220; // characters; longer quotes start folded
 
-const quotes = proof.testimonials.slice(0, SHOWN).map((t, i) => ({ ...t, id: `quote-${i + 1}`, long: t.quote.length > LONG }));
+const quotes = proof.testimonials.map((t, i) => ({ ...t, id: `quote-${i + 1}`, long: t.quote.length > LONG, extra: i >= SHOWN }));
 ---
 
 <section id="feedback" class="feedback" aria-labelledby="feedback-title">
@@ -22,7 +23,7 @@ const quotes = proof.testimonials.slice(0, SHOWN).map((t, i) => ({ ...t, id: `qu
 
     <ul class="cards" role="list">
       {quotes.map((t, i) => (
-        <li class="reveal" style={`--delay: ${i * 80}ms`}>
+        <li class:list={['reveal', { extra: t.extra }]} style={`--delay: ${(i % 3) * 80}ms`}>
           <figure class="card">
             <span class="mark" aria-hidden="true">&ldquo;</span>
             <blockquote id={t.id} class:list={['quote', { folded: t.long }]}>
@@ -35,20 +36,23 @@ const quotes = proof.testimonials.slice(0, SHOWN).map((t, i) => ({ ...t, id: `qu
             )}
             <figcaption>
               <strong>{t.name}</strong>
-              <span>
-                {t.url ? (
-                  <a href={t.url} target="_blank" rel="noopener">
-                    {t.role}, on Upwork <span class="visually-hidden">(opens in a new tab)</span>
-                  </a>
-                ) : (
-                  t.role
-                )}
-              </span>
+              <span>{t.role}</span>
+              {t.url && (
+                <a class="verified" href={t.url} target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="3" /></svg>
+                  Verified on Upwork <span class="visually-hidden">(opens in a new tab)</span>
+                </a>
+              )}
             </figcaption>
           </figure>
         </li>
       ))}
     </ul>
+    {quotes.length > SHOWN && (
+      <button type="button" class="btn btn-ghost more-quotes" aria-expanded="false" data-more-quotes>
+        More feedback ({quotes.length - SHOWN})
+      </button>
+    )}
   </div>
 </section>
 
@@ -67,7 +71,7 @@ const quotes = proof.testimonials.slice(0, SHOWN).map((t, i) => ({ ...t, id: `qu
     transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s ease;
   }
   @media (hover: hover) {
-    .card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -24px rgb(34 21 22 / 0.45); }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -24px rgb(36 16 24 / 0.45); }
     .card:hover .mark { transform: translateY(-3px) rotate(-6deg); }
   }
   .mark {
@@ -103,9 +107,26 @@ const quotes = proof.testimonials.slice(0, SHOWN).map((t, i) => ({ ...t, id: `qu
   figcaption strong { font-weight: 700; color: var(--ink); }
   figcaption span { color: var(--text-muted); }
   figcaption a { color: var(--wine); }
+  .cards .extra { display: none; }
+  .cards.all .extra { display: block; }
+  .more-quotes { display: flex; width: fit-content; margin: 2rem auto 0; }
+  .verified {
+    justify-self: start; display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.35rem;
+    padding: 0.2rem 0.6rem; border-radius: var(--radius-pill); background: var(--green-soft); color: var(--green);
+    font-size: var(--fs-label); font-weight: 700; text-decoration: none;
+  }
 </style>
 
 <script>
+  const moreQuotes = document.querySelector<HTMLButtonElement>('[data-more-quotes]');
+  moreQuotes?.addEventListener('click', () => {
+    const list = document.querySelector('#feedback .cards');
+    const open = !list?.classList.contains('all');
+    list?.classList.toggle('all', open);
+    moreQuotes.setAttribute('aria-expanded', String(open));
+    moreQuotes.textContent = open ? 'Show less' : `More feedback (${list?.querySelectorAll('.extra').length ?? ''})`;
+  });
+
   document.querySelectorAll<HTMLButtonElement>('[data-more-quote]').forEach((btn) => {
     const quote = document.getElementById(btn.getAttribute('aria-controls')!);
     btn.addEventListener('click', () => {

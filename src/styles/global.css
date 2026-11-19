@@ -4,21 +4,23 @@
  * Contrast ratios are WCAG (AA body text needs 4.5:1).
  */
 :root {
-  /* Palette */
-  --paper: #f4f4f1;        /* Soft White: background, and light text on dark (16:1 on ink) */
-  --greige: #e1dbd7;       /* Greige: alternate band, image backgrounds (wine 13:1, muted text 6.1:1 on it) */
-  --greige-soft: #ebe6e2;  /* Greige tint: hover backgrounds */
-  --wine: #3b0510;         /* Wine: accents, links, the brands band (16:1 on paper) */
-  --ink: #221516;          /* Espresso Black: text and dark sections (17:1 on paper) */
-  --rose: #d9b8bd;         /* Soft rose: accent text on dark (9.6:1 on ink, 9:1 on wine) */
+  /* Palette: Dark Cherry and Porcelain, from the brief */
+  --paper: #f7f4ea;        /* Porcelain: background, and light text on dark (15:1 on Dark Cherry) */
+  --greige: #ece6d6;       /* Deeper porcelain: alternate band, image backgrounds */
+  --greige-soft: #f2eee2;  /* Porcelain tint: hover backgrounds */
+  --wine: #320d1e;         /* Dark Cherry: accents, buttons, dark sections (15.7:1 on Porcelain) */
+  --ink: #241018;          /* Near-black cherry: body text (16:1 on Porcelain) */
+  --rose: #e6c3d1;         /* Pale cherry: accent text on Dark Cherry (10:1) */
+  --green: #1f6b30;        /* "Open to work" text (6.3:1 on its pale green) */
+  --green-soft: #e1f3e4;
 
   /* Roles (light sections); dark sections swap these in .band-dark */
   --bg: var(--paper);
   --text: var(--ink);
-  --text-muted: #5a4a4c;   /* 7.6:1 on paper, 6.1:1 on greige */
+  --text-muted: #5c4a52;   /* 7.6:1 on Porcelain, 6.6:1 on deeper porcelain */
   --heading: var(--ink);
   --accent: var(--wine);
-  --line: rgb(34 21 22 / 0.15);
+  --line: rgb(50 13 30 / 0.14);
   --rule: var(--ink);
   --focus: var(--wine);
 
@@ -55,7 +57,7 @@
   --text-muted: var(--greige);       /* 12:1 */
   --heading: var(--paper);
   --accent: var(--rose);            /* 9.6:1 */
-  --line: rgb(244 244 241 / 0.18);
+  --line: rgb(247 244 234 / 0.18);
   --rule: var(--paper);
   --focus: var(--rose);
   background: var(--bg);

@@ -103,10 +103,10 @@ const skills = about.skills.map((s, i) => {
     display: grid; grid-template-rows: auto auto 1fr auto; gap: 0.9rem;
     padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
     border: 1px solid var(--line); border-radius: var(--radius-media);
-    background: rgb(244 244 241 / 0.03);
+    background: rgb(247 244 234 / 0.03);
     transition: border-color 0.3s ease, background 0.3s ease;
   }
-  .card:hover { border-color: rgb(244 244 241 / 0.4); background: rgb(244 244 241 / 0.06); }
+  .card:hover { border-color: rgb(247 244 234 / 0.4); background: rgb(247 244 234 / 0.06); }
   .num { font-family: var(--font-serif); font-style: italic; color: var(--rose); }
   .help { color: var(--text-muted); }
   .buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -117,9 +117,9 @@ const skills = about.skills.map((s, i) => {
     width: min(100vw - 2rem, 36rem); max-height: calc(100vh - 2rem);
     padding: 0; border: 0; border-radius: var(--radius-media);
     background: var(--paper); color: var(--ink);
-    --text-muted: #5a4a4c; --line: rgb(34 21 22 / 0.15); --focus: var(--wine); --heading: var(--ink);
+    --text-muted: #5c4a52; --line: rgb(36 16 24 / 0.15); --focus: var(--wine); --heading: var(--ink);
   }
-  .details::backdrop { background: rgb(34 21 22 / 0.7); backdrop-filter: blur(3px); }
+  .details::backdrop { background: rgb(36 16 24 / 0.7); backdrop-filter: blur(3px); }
   .details[open] { animation: pop 0.25s ease; }
   @keyframes pop { from { opacity: 0; transform: translateY(8px); } }
   .details-inner { position: relative; display: grid; gap: 0.9rem; padding: clamp(1.5rem, 1rem + 2vw, 2.25rem); }
