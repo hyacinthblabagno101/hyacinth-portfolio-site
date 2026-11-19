@@ -5,7 +5,7 @@
  *    (overview, what I did, brands) in the panel on the right. On phones each role opens in place.
  * 2. Two panels side by side: Additional experience & projects (Blue) and Business background (Chocopie).
  *    Each shows a preview of names and opens a pop-up: the full list of projects (no dates), or the businesses
- *    as a timeline with the skills that carry over.
+ * with the skills that carry over. Both pop-ups share one format (intro, then a grid of cards).
  */
 import { experience } from '../lib/data';
 
@@ -58,15 +58,19 @@ const { professional, additional, businesses } = experience;
         <ul class="names" role="list">
           {businesses.list.map((b) => <li>{b.name}</li>)}
         </ul>
-        <button type="button" class="btn btn-book" data-exp-open="exp-biz" aria-haspopup="dialog">See the businesses</button>
+        <button type="button" class="btn btn-book" data-exp-open="exp-biz" aria-haspopup="dialog">View all {businesses.list.length}</button>
       </article>
     </div>
 
+    <!-- Both pop-ups share one format: a short intro, then a grid of cards -->
     <dialog class="exp-pop" id="exp-extra" aria-labelledby="exp-extra-title">
       <header class="exp-head">
         <h3 id="exp-extra-title">Additional experience &amp; projects</h3>
         <button type="button" class="x" data-exp-close aria-label="Close">&times;</button>
       </header>
+      <div class="exp-intro">
+        <p>{additional.length} more brands and projects I've supported.</p>
+      </div>
       <ul class="extra" role="list">
         {additional.map((a) => (
           <li>
@@ -83,27 +87,21 @@ const { professional, additional, businesses } = experience;
         <h3 id="exp-biz-title">Business background</h3>
         <button type="button" class="x" data-exp-close aria-label="Close">&times;</button>
       </header>
-      <div class="biz">
-        <div class="biz-intro">
-          <p>{businesses.intro}</p>
-          <p class="skills-title">Skills that carry over</p>
-          <ul class="skills" role="list">
-            {businesses.skills.map((s) => <li>{s}</li>)}
-          </ul>
-        </div>
-        <ol class="timeline" role="list">
-          {businesses.list.map((b) => (
-            <li>
-              <span class="when">{b.dates}</span>
-              <div>
-                <strong>{b.name}</strong>
-                <span class="biz-industry">{b.industry}</span>
-                <span class="biz-hl">{b.highlight}</span>
-              </div>
-            </li>
-          ))}
-        </ol>
+      <div class="exp-intro">
+        <p>{businesses.intro}</p>
+        <ul class="skills" role="list" aria-label="Skills that carry over">
+          {businesses.skills.map((s) => <li>{s}</li>)}
+        </ul>
       </div>
+      <ul class="extra" role="list">
+        {businesses.list.map((b) => (
+          <li>
+            <span class="extra-top"><strong>{b.name}</strong><span class="extra-when">{b.dates}</span></span>
+            <span class="extra-role">{b.industry}</span>
+            <span class="extra-note">{b.highlight}</span>
+          </li>
+        ))}
+      </ul>
     </dialog>
   </div>
 </section>
@@ -127,7 +125,7 @@ const { professional, additional, businesses } = experience;
     font: inherit; color: var(--ink); text-align: left; cursor: pointer;
     transition: background 0.25s ease, padding 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .role:hover, .role.active { background: rgb(67 47 46 / 0.05); padding-left: 1.1rem; }
+  .role:hover, .role.active { background: rgb(107 31 18 / 0.05); padding-left: 1.1rem; }
   .role .dates { grid-column: 1; font-size: var(--fs-small); color: var(--text-muted); }
   .role .name { grid-column: 1; font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
   .role .title { grid-column: 1; font-size: var(--fs-small); font-weight: 600; color: var(--wine); }
@@ -170,11 +168,11 @@ const { professional, additional, businesses } = experience;
   .tile-extra { background: var(--blue); color: var(--ink); }
   .tile-extra > p { color: var(--text-muted); }
   .tile-biz { background: var(--wine); color: var(--paper); }
-  .tile-biz > p { color: #e7ddd2; }
+  .tile-biz > p { color: #e6cfc0; }
   .names { list-style: none; margin: 0 0 0.5rem; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
   .names li { padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); font-size: var(--fs-label); font-weight: 600; }
   .tile-extra .names li { background: var(--paper); }
-  .tile-extra .names .rest { background: transparent; border: 1px dashed rgb(67 47 46 / 0.35); }
+  .tile-extra .names .rest { background: transparent; border: 1px dashed rgb(107 31 18 / 0.35); }
   .tile-biz .names li { background: rgb(250 246 240 / 0.12); color: var(--paper); }
 
   /* Pop-ups */
@@ -184,7 +182,7 @@ const { professional, additional, businesses } = experience;
   }
   .exp-pop[open] { animation: exp-pop-in 0.3s cubic-bezier(0.2, 0.7, 0.2, 1); }
   @keyframes exp-pop-in { from { opacity: 0; transform: translateY(14px); } }
-  .exp-pop::backdrop { background: rgb(43 30 29 / 0.72); backdrop-filter: blur(3px); }
+  .exp-pop::backdrop { background: rgb(46 21 16 / 0.72); backdrop-filter: blur(3px); }
   .exp-head {
     position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
     padding: 1rem clamp(1.25rem, 1rem + 1vw, 2rem); background: var(--paper); border-bottom: 1px solid var(--line);
@@ -200,25 +198,15 @@ const { professional, additional, businesses } = experience;
   @media (min-width: 40rem) { .extra { grid-template-columns: repeat(2, 1fr); } }
   .extra li { display: grid; gap: 0.2rem; align-content: start; padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: var(--radius-media); }
   .extra strong { font-weight: 700; }
-  .extra-role { font-size: var(--fs-small); font-weight: 600; color: var(--wine); }
+  .extra-role { font-size: var(--fs-small); font-weight: 600; color: var(--salsa); }
   .extra-note { font-size: var(--fs-small); color: var(--text-muted); }
 
-  .biz { display: grid; gap: 1.75rem; padding: clamp(1.25rem, 1rem + 1vw, 2rem); }
-  @media (min-width: 48rem) { .biz { grid-template-columns: 0.85fr 1.15fr; gap: 2.5rem; } }
-  .biz-intro { display: grid; gap: 0.9rem; align-content: start; }
-  .biz-intro > p:first-child { font-size: var(--fs-lead); line-height: 1.45; }
-  .skills-title { font-size: var(--fs-small); font-weight: 700; margin-top: 0.5rem; }
+  .exp-intro { display: grid; gap: 0.9rem; padding: clamp(1.25rem, 1rem + 1vw, 2rem) clamp(1.25rem, 1rem + 1vw, 2rem) 0; max-width: 62ch; }
+  .exp-intro p { color: var(--text-muted); }
   .skills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  .skills li { padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); background: var(--greige); font-size: var(--fs-small); font-weight: 600; }
-  /* A timeline: the businesses in the order I started them */
-  .timeline { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); display: grid; gap: 1.25rem; }
-  .timeline li { position: relative; display: grid; gap: 0.15rem; padding-left: 1.25rem; }
-  .timeline li::before { content: ''; position: absolute; left: -0.4rem; top: 0.35rem; width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--wine); }
-  .timeline .when { font-size: var(--fs-label); font-weight: 600; color: var(--text-muted); }
-  .timeline div { display: grid; gap: 0.1rem; }
-  .timeline strong { font-weight: 700; }
-  .biz-industry { font-size: var(--fs-small); font-weight: 600; color: var(--wine); }
-  .biz-hl { font-size: var(--fs-small); color: var(--text-muted); }
+  .skills li { padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); background: var(--clay); font-size: var(--fs-label); font-weight: 600; }
+  .extra-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem; }
+  .extra-when { flex: none; font-size: var(--fs-label); font-weight: 600; color: var(--text-muted); }
 </style>
 
 <script>

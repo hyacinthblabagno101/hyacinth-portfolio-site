@@ -117,9 +117,9 @@ const skills = about.skills.map((s, i) => {
     width: min(100vw - 2rem, 36rem); max-height: calc(100vh - 2rem);
     padding: 0; border: 0; border-radius: var(--radius-media);
     background: var(--paper); color: var(--ink);
-    --text-muted: #5f4a48; --line: rgb(43 30 29 / 0.15); --focus: var(--wine); --heading: var(--ink);
+    --text-muted: #6b4a40; --line: rgb(46 21 16 / 0.15); --focus: var(--wine); --heading: var(--ink);
   }
-  .details::backdrop { background: rgb(43 30 29 / 0.7); backdrop-filter: blur(3px); }
+  .details::backdrop { background: rgb(46 21 16 / 0.7); backdrop-filter: blur(3px); }
   .details[open] { animation: pop 0.25s ease; }
   @keyframes pop { from { opacity: 0; transform: translateY(8px); } }
   .details-inner { position: relative; display: grid; gap: 0.9rem; padding: clamp(1.5rem, 1rem + 2vw, 2.25rem); }
@@ -134,8 +134,8 @@ const skills = about.skills.map((s, i) => {
   .details .buttons { margin-top: 0.5rem; }
   .details .btn-ghost { color: var(--ink); }
   .details .btn-ghost:hover { background: var(--ink); color: var(--paper); }
-  .details .btn-primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
-  .details .btn-primary:hover { background: var(--wine); border-color: var(--wine); }
+  .details .btn-primary { background: var(--wine); border-color: var(--wine); color: var(--paper); }
+  .details .btn-primary:hover { background: var(--salsa); border-color: var(--salsa); }
   .close {
     position: absolute; top: 1rem; right: 1rem;
     width: 2.75rem; height: 2.75rem; border-radius: 50%;

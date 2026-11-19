@@ -44,7 +44,7 @@ const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => 
     padding: 0; border: 0; border-radius: var(--radius-media); overflow: hidden;
     background: var(--ink); color: var(--paper);
   }
-  .viewer::backdrop { background: rgb(43 30 29 / 0.86); backdrop-filter: blur(3px); }
+  .viewer::backdrop { background: rgb(46 21 16 / 0.86); backdrop-filter: blur(3px); }
   .viewer[open] { animation: viewer-in 0.3s ease; }
   @keyframes viewer-in { from { opacity: 0; transform: scale(0.98); } }
   .viewer-inner { display: grid; grid-template-rows: 1fr auto; max-height: calc(100vh - 2rem); }

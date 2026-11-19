@@ -1,31 +1,38 @@
 /*
  * Design tokens. Every color, type size and corner radius on the site comes from here.
- * Palette: Ivory, Blue, Butter, Chocopie, plus green for "Open to work".
+ * Palette: Sand, Clay, Salsa, Maroon, plus green for "Open to work".
  * Contrast ratios are WCAG (AA body text needs 4.5:1).
  */
 :root {
-  /* Palette: Ivory, Blue, Butter and Chocopie (from the palette board), with a green "Open to work" */
-  --paper: #faf6f0;        /* Ivory: main background, and light text on dark (11.6:1 on Chocopie) */
-  --blue: #c4dae8;         /* Blue: the What I do band and soft panels */
-  --greige: #feefb8;       /* Butter: Book a call buttons, chips and highlights (not a section background) */
-  --greige-soft: #f1ebe1;  /* Soft ivory: hover backgrounds and image placeholders */
-  --wine: #432f2e;         /* Chocopie: accents, buttons, dark sections (11.6:1 on Ivory) */
-  --ink: #2b1e1d;          /* Dark Chocopie: body text and the footer (14.9:1 on Ivory) */
-  --rose: #feefb8;         /* Butter: accent text on Chocopie (10.8:1) */
+  /*
+   * Palette: Sand, Clay, Salsa and Maroon (from the palette board). Each has one job:
+   * Sand = page background · Clay = secondary band, panels, the lighter Book a call button ·
+   * Maroon = dark bands, main buttons · Salsa = the one accent (links, numbers bar, active states).
+   * Salsa is never placed on Maroon (1.7:1).
+   */
+  --paper: #f7f2ed;        /* Sand: page background, light text on dark (10.3:1 on Maroon) */
+  --clay: #f0ded1;         /* Clay: secondary band and panels (body text 13:1) */
+  --blue: var(--clay);     /* older name for the secondary band */
+  --greige: #f0ded1;       /* Clay: Book a call buttons and chips */
+  --greige-soft: #f3e8df;  /* Between Sand and Clay: hover backgrounds, image placeholders */
+  --salsa: #a3360f;        /* Salsa: accent (6.1:1 on Sand, 5.2:1 on Clay) */
+  --wine: #6b1f12;         /* Maroon: dark bands, buttons, headings accents (10.3:1 on Sand) */
+  --ink: #2e1510;          /* Deep brown: body text and the footer (15.3:1 on Sand) */
+  --rose: #f0ded1;         /* Clay: accent text on Maroon and Salsa (8.8:1 / 5.2:1) */
   --sage: #5f9a4e;         /* Green dot for "Open to work" */
-  --sage-light: #feefb8;   /* Butter: small accents on dark sections */
+  --sage-light: #f0ded1;   /* Clay: small accents on dark sections */
   --green: #2f6a2a;        /* "Open to work" text (6.3:1 on its pale green) */
   --green-soft: #e4f1dc;
 
   /* Roles (light sections); dark sections swap these in .band-dark */
   --bg: var(--paper);
   --text: var(--ink);
-  --text-muted: #5f4a48;   /* 7.9:1 on Ivory, 5.7:1 on Blue */
+  --text-muted: #6b4a40;   /* 7:1 on Sand, 6:1 on Clay */
   --heading: var(--ink);
-  --accent: var(--wine);
-  --line: rgb(67 47 46 / 0.16);
+  --accent: var(--salsa);
+  --line: rgb(107 31 18 / 0.16);
   --rule: var(--ink);
-  --focus: var(--wine);
+  --focus: var(--salsa);
 
   /*
    * Type: Helvetica Now for everything plain, Libre Baskerville italic for the one accent word in titles
@@ -55,15 +62,15 @@
 }
 
 /*
- * Section color rhythm, top to bottom (Butter is only for buttons and highlights, never a section background):
- * Hero Ivory, numbers Chocopie, About Ivory, brands Chocopie, What I do Blue, Selected work Ivory,
- * Feedback Chocopie, Experience Ivory, Contact Ivory (hairline above), footer dark Chocopie.
+ * Section color rhythm, top to bottom:
+ * Hero Sand, numbers Salsa, About Sand, brands Maroon, What I do Clay, Selected work Sand, Feedback Maroon,
+ * Experience Sand, Contact Clay, footer deep brown.
  * Dark band: put class="band-dark" on any section.
  */
 .band-dark {
   --bg: var(--wine);
   --text: var(--paper);              /* 16:1 */
-  --text-muted: #e7ddd2;            /* 9.3:1 on Chocopie */
+  --text-muted: #e6cfc0;            /* 7.6:1 on Maroon */
   --heading: var(--paper);
   --accent: var(--rose);            /* 9.6:1 */
   --line: rgb(250 246 240 / 0.18);
@@ -178,12 +185,12 @@ a:hover { text-decoration-thickness: 2px; }
   border-radius: var(--radius-pill);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
-.btn-primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
-.btn-primary:hover { background: var(--wine); border-color: var(--wine); }
+.btn-primary { background: var(--wine); border-color: var(--wine); color: var(--paper); }
+.btn-primary:hover { background: var(--salsa); border-color: var(--salsa); }
 .btn-ghost { color: var(--text); background: transparent; }
 .btn-ghost:hover { background: var(--text); color: var(--bg); }
 /* Book a call: a lighter Milk button, on light and dark sections */
-.btn-book { background: var(--greige); border-color: rgb(67 47 46 / 0.25); color: var(--wine); }
+.btn-book { background: var(--greige); border-color: rgb(107 31 18 / 0.25); color: var(--wine); }
 .band-dark .btn-book { border-color: var(--greige); }
 .btn-book:hover { background: var(--paper); border-color: var(--wine); color: var(--wine); }
 .band-dark .btn-book:hover { border-color: var(--paper); }
