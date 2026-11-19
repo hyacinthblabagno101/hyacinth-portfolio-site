@@ -2,8 +2,9 @@
 /**
  * Contact. Email, profile links and resume all come from src/data/site.json.
  * Anything still a [PLACEHOLDER] is left off the live site, so a fake address is never published.
- * My photo (phone call and laptop, background removed: src/assets/portrait-call-cutout.png) stands on the
- * bottom edge of the section under the email and links.
+ * Layout: on the left, the title and my photo (phone call and laptop, background removed:
+ * src/assets/portrait-call-cutout.png) standing on the section's bottom edge. On the right: email, Book a call,
+ * links, then the form. On phones: title, contact details, form, then the photo.
  */
 import { Picture } from 'astro:assets';
 import callPhoto from '../assets/portrait-call-cutout.png';
@@ -13,15 +14,27 @@ const mailto = publicEmail ? `mailto:${publicEmail}?subject=${encodeURIComponent
 const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholder(s.url)) : [];
 ---
 
-<section id="contact" class="contact band-dark" aria-labelledby="contact-title">
+<section id="contact" class="contact" aria-labelledby="contact-title">
   <div class="wrap grid">
-    <div class="left">
+    <div class="visual">
     <div class="intro">
       <h2 id="contact-title">Let's work <em>together</em></h2>
       <p class="lede">
         If you're hiring for social media, content, or creative support, book a call, send me a message here, or email me and tell me a little about the team and the role.
       </p>
     </div>
+    <figure class="photo">
+      <Picture
+        src={callPhoto}
+        alt="Hyacinth Blabagno in a brown suit, on a phone call while working on a laptop"
+        widths={[400, 640, 900]}
+        sizes="(min-width: 64rem) 30rem, 80vw"
+        formats={['avif', 'webp']}
+        loading="lazy"
+      />
+    </figure>
+    </div>
+    <div class="side">
 
     <div class="actions">
       {
@@ -74,17 +87,6 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
         )
       }
     </div>
-    <figure class="photo">
-      <Picture
-        src={callPhoto}
-        alt="Hyacinth Blabagno in a brown suit, on a phone call while working on a laptop"
-        widths={[400, 640, 900]}
-        sizes="(min-width: 64rem) 30rem, 80vw"
-        formats={['avif', 'webp']}
-        loading="lazy"
-      />
-    </figure>
-      </div>
 
     <form
       class="form"
@@ -100,6 +102,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
         <label>Leave this empty <input name="company-website" tabindex="-1" autocomplete="off" /></label>
       </p>
 
+      <div class="pair">
       <div class="field">
         <label for="cf-name">Your name</label>
         <input id="cf-name" name="name" type="text" autocomplete="name" required />
@@ -107,6 +110,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
       <div class="field">
         <label for="cf-email">Email</label>
         <input id="cf-email" name="email" type="email" autocomplete="email" required />
+      </div>
       </div>
       <div class="field">
         <label for="cf-company">Company <span class="opt">(optional)</span></label>
@@ -131,52 +135,58 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
       <button class="btn btn-primary submit" type="submit">Send message</button>
       <p class="form-status" role="status" aria-live="polite" data-form-status></p>
     </form>
+    </div>
   </div>
 </section>
 
 
 <style>
-  /* Colors come from .band-dark in global.css */
-  /* No bottom padding: the photo stands on the section's bottom edge (the form keeps its own space) */
-  .contact { padding-top: var(--section); overflow: hidden; }
-  .grid { display: grid; gap: 3.5rem; align-items: start; }
-  @media (min-width: 64rem) { .grid { grid-template-columns: 1fr 1fr; gap: 5rem; align-items: stretch; } .form { align-self: start; padding-bottom: var(--section); } }
-  .left { display: flex; flex-direction: column; gap: 2.5rem; }
-  .photo { margin: auto 0 0; width: min(100%, 30rem); }
+  /* A light Ivory section, with a hairline between it and Experience */
+  /* No bottom padding: the photo stands on the section's bottom edge (the right column keeps its own space) */
+  .contact { padding-top: var(--section); overflow: hidden; background: var(--paper); border-top: 1px solid var(--line); }
+  .grid { display: grid; gap: 2.5rem; }
+  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: clamp(3rem, 2rem + 3vw, 5rem); } }
+  .visual { display: flex; flex-direction: column; gap: 2rem; }
+  .side { display: grid; gap: 2rem; align-content: start; padding-bottom: var(--section); }
+  .photo { margin: auto auto 0; width: min(100%, 24rem); }
   .photo :global(picture), .photo :global(img) { display: block; width: 100%; height: auto; }
-  /* Phones and tablets: the form comes right after the intro, then email and links, then the photo */
+  @media (min-width: 64rem) { .photo { width: 100%; max-width: 34rem; margin: auto 0 0; } }
+  /* Phones and tablets: title, details, form, then the photo on the bottom edge */
   @media (max-width: 63.99rem) {
-    .left { display: contents; }
-    .actions { order: 2; }
-    .photo { order: 3; margin: 0 auto; width: min(100%, 24rem); }
+    .visual { display: contents; }
+    .intro { order: 0; } .side { order: 1; padding-bottom: 0; } .photo { order: 2; }
   }
+  /* Form: name and email side by side where there's room */
+  .pair { display: grid; gap: 1.1rem; }
+  @media (min-width: 40rem) { .pair { grid-template-columns: 1fr 1fr; } }
+  .form { padding-top: 2rem; border-top: 1px solid var(--line); }
   .actions { gap: 1rem; }
 
   /* Contact form (Netlify Forms) */
   .form { display: grid; gap: 1.1rem; }
   .hp { position: absolute; left: -9999px; }
   .field { display: grid; gap: 0.4rem; }
-  .field label { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper); }
+  .field label { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); }
   .opt { font-weight: 400; letter-spacing: 0; text-transform: none; }
   .field input, .field textarea {
     width: 100%; min-height: 3rem; padding: 0.75rem 0.9rem;
-    font: inherit; font-size: var(--fs-body); color: var(--paper);
-    background: rgb(250 246 240 / 0.06);
-    border: 1px solid rgb(250 246 240 / 0.5); border-radius: var(--radius-media);
+    font: inherit; font-size: var(--fs-body); color: var(--ink);
+    background: rgb(255 255 255 / 0.65);
+    border: 1px solid rgb(56 26 23 / 0.28); border-radius: var(--radius-media);
   }
   .field textarea { resize: vertical; min-height: 8rem; }
   .field select {
     width: 100%; min-height: 3rem; padding: 0.75rem 2.5rem 0.75rem 0.9rem;
-    font: inherit; font-size: var(--fs-body); color: var(--paper);
-    background: rgb(250 246 240 / 0.06) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23faf6f0' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 1rem center;
-    border: 1px solid rgb(250 246 240 / 0.5); border-radius: var(--radius-media);
+    font: inherit; font-size: var(--fs-body); color: var(--ink);
+    background: rgb(255 255 255 / 0.65) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23381a17' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 1rem center;
+    border: 1px solid rgb(56 26 23 / 0.28); border-radius: var(--radius-media);
     appearance: none;
   }
   .field select option { color: var(--ink); background: var(--paper); }
-  .skill-note { font-size: var(--fs-small); color: var(--rose); }
-  .field select:focus-visible { outline: 3px solid var(--rose); outline-offset: 2px; border-color: var(--paper); }
-  .field input:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--rose); outline-offset: 2px; border-color: var(--paper); }
-  .field input:user-invalid, .field textarea:user-invalid { border-color: var(--rose); }
+  .skill-note { font-size: var(--fs-small); color: var(--wine); }
+  .field select:focus-visible { outline: 3px solid var(--wine); outline-offset: 2px; border-color: var(--ink); }
+  .field input:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--wine); outline-offset: 2px; border-color: var(--ink); }
+  .field input:user-invalid, .field textarea:user-invalid { border-color: #9b2c2c; }
   .submit { justify-self: start; cursor: pointer; }
   .submit[disabled] { opacity: 0.6; cursor: progress; }
   @media (max-width: 30rem) { .submit { justify-self: stretch; } }
@@ -196,25 +206,25 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
     font-size: var(--fs-lead);
     line-height: 1.2;
     letter-spacing: -0.02em;
-    color: var(--paper);
+    color: var(--ink);
     overflow-wrap: anywhere;
     display: inline-flex; align-items: center; min-height: 2.75rem;
   }
   .copy {
     display: inline-flex; align-items: center; gap: 0.4rem;
     min-height: 2.75rem; padding: 0 0.9rem;
-    background: transparent; color: var(--paper);
+    background: transparent; color: var(--ink);
     border: 1px solid var(--line); border-radius: var(--radius-pill);
     font: inherit; font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
   }
-  .copy:hover { border-color: var(--paper); }
+  .copy:hover { border-color: var(--ink); }
   .copied { min-height: 1.5em; font-size: var(--fs-small); color: var(--text-muted); }
 
   .links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; }
   .links a {
     display: inline-flex; gap: 0.35rem; align-items: center;
     min-height: 2.75rem;
-    color: var(--paper);
+    color: var(--ink);
     font-weight: 600;
     text-transform: uppercase; letter-spacing: 0.12em; font-size: var(--fs-label);
   }
@@ -223,7 +233,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
     justify-self: start;
     display: inline-flex; align-items: center; gap: 0.5rem;
     min-height: 2.75rem;
-    color: var(--paper);
+    color: var(--ink);
     font-weight: 600;
   }
   .resume .meta { font-weight: 400; color: var(--text-muted); }
