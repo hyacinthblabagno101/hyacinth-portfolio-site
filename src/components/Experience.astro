@@ -4,7 +4,7 @@
  * 1. Professional experience: a list of roles on the left; hovering, focusing, or tapping one shows its history
  *    (overview, what I did, brands) in the panel on the right. On phones each role opens in place.
  * 2. Additional experience & projects: compact cards, no dates, hidden behind a button until opened.
- * 3. Business background: the six businesses I built and ran, with the skills that carry over.
+ * 3. Business background: the six businesses I built and ran, with the skills that carry over, also behind a button.
  */
 import { experience } from '../lib/data';
 
@@ -60,7 +60,14 @@ const { professional, additional, businesses } = experience;
     </ul>
     </details>
 
-    <h3 class="group-title">Business background</h3>
+    <details class="more-exp">
+      <summary>
+        <span class="more-label">
+          <strong>Business background</strong>
+          <span>{businesses.list.length} businesses I built and ran, and the skills that carry over</span>
+        </span>
+        <span class="more-btn"><span class="when-closed">View all</span><span class="when-open">Hide</span> <span class="chev" aria-hidden="true">+</span></span>
+      </summary>
     <div class="biz">
       <div class="biz-intro">
         <p>{businesses.intro}</p>
@@ -78,6 +85,7 @@ const { professional, additional, businesses } = experience;
         ))}
       </ul>
     </div>
+    </details>
   </div>
 </section>
 
@@ -131,7 +139,8 @@ const { professional, additional, businesses } = experience;
   }
 
   /* Additional: a bar that opens the cards */
-  .more-exp { margin-top: clamp(2rem, 1.5rem + 2vw, 3rem); border: 1px solid var(--line); border-radius: calc(var(--radius-media) * 1.5); background: var(--greige-soft); }
+  .more-exp + .more-exp { margin-top: 1rem; }
+  .more-exp { margin-top: clamp(2rem, 1.5rem + 2vw, 3rem); transition: border-color 0.25s ease, box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); border: 1px solid var(--line); border-radius: calc(var(--radius-media) * 1.5); background: var(--greige-soft); }
   .more-exp summary {
     display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
     padding: 1.25rem clamp(1.1rem, 1rem + 1vw, 1.75rem); cursor: pointer; list-style: none; border-radius: inherit;
@@ -146,7 +155,10 @@ const { professional, additional, businesses } = experience;
     font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
     transition: background 0.2s ease;
   }
+  .more-exp:not([open]):hover { border-color: var(--wine); transform: translateY(-3px); box-shadow: 0 18px 36px -26px rgb(34 22 22 / 0.5); }
   .more-exp summary:hover .more-btn { background: var(--ink); }
+  .more-exp summary:hover .chev { transform: rotate(90deg); }
+  .more-exp[open] summary:hover .chev { transform: rotate(45deg); }
   .chev { font-size: 1.1rem; line-height: 1; transition: transform 0.3s ease; }
   .more-exp[open] .chev { transform: rotate(45deg); }
   .when-open, .more-exp[open] .when-closed { display: none; }
@@ -172,15 +184,23 @@ const { professional, additional, businesses } = experience;
   .extra-note { font-size: var(--fs-small); color: var(--text-muted); }
 
   /* Business background */
-  .biz { display: grid; gap: 1.5rem; padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); border-radius: calc(var(--radius-media) * 2); background: var(--greige); }
+  .biz { display: grid; gap: 1.5rem; padding: 0 clamp(1.1rem, 1rem + 1vw, 1.75rem) clamp(1.1rem, 1rem + 1vw, 1.75rem); }
+  @media (prefers-reduced-motion: no-preference) {
+    .more-exp[open] .biz > * { animation: exp-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+    .more-exp[open] .biz-list { animation-delay: 80ms; }
+  }
   @media (min-width: 64rem) { .biz { grid-template-columns: 0.8fr 1.2fr; gap: 2.5rem; } }
   .biz-intro { display: grid; gap: 1rem; align-content: start; }
   .biz-intro p { font-size: var(--fs-lead); line-height: 1.45; }
   .skills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  .skills li { padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); background: var(--paper); font-size: var(--fs-small); font-weight: 600; }
+  .skills li { padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); background: var(--greige); font-size: var(--fs-small); font-weight: 600; }
   .biz-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
   @media (min-width: 40rem) { .biz-list { grid-template-columns: 1fr 1fr; } }
-  .biz-list li { display: grid; gap: 0.2rem; padding: 0.9rem 1rem; border-radius: var(--radius-media); background: var(--paper); }
+  .biz-list li {
+    display: grid; gap: 0.2rem; padding: 0.9rem 1rem; border: 1px solid var(--line); border-radius: var(--radius-media); background: var(--paper);
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.25s ease;
+  }
+  .biz-list li:hover { transform: translateY(-3px); border-color: var(--wine); }
   .biz-top { display: flex; justify-content: space-between; gap: 0.75rem; }
   .biz-top strong { font-weight: 700; }
   .biz-top span { font-size: var(--fs-small); color: var(--text-muted); white-space: nowrap; }

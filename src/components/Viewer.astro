@@ -44,7 +44,7 @@ const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => 
     padding: 0; border: 0; border-radius: var(--radius-media); overflow: hidden;
     background: var(--ink); color: var(--paper);
   }
-  .viewer::backdrop { background: rgb(36 16 24 / 0.86); backdrop-filter: blur(3px); }
+  .viewer::backdrop { background: rgb(34 22 22 / 0.86); backdrop-filter: blur(3px); }
   .viewer[open] { animation: viewer-in 0.3s ease; }
   @keyframes viewer-in { from { opacity: 0; transform: scale(0.98); } }
   .viewer-inner { display: grid; grid-template-rows: 1fr auto; max-height: calc(100vh - 2rem); }
@@ -59,17 +59,17 @@ const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => 
   .viewer-pos { margin-left: 0.5rem; color: var(--greige); font-weight: 400; letter-spacing: 0.04em; }
   .viewer-role { font-size: var(--fs-small); color: var(--greige); max-width: 60ch; }
   .viewer-brand { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper); }
-  .viewer-title { font-family: var(--font-serif); font-size: var(--fs-lead); line-height: 1.2; }
+  .viewer-title { font-size: var(--fs-body); font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; }
   .viewer-nav { display: flex; gap: 0.4rem; flex-shrink: 0; }
   .viewer-nav button[hidden] { display: none; }
   .viewer-nav button {
     width: 2.75rem; height: 2.75rem; border-radius: 50%;
-    background: rgb(247 244 234 / 0.1); color: var(--paper);
-    border: 1px solid rgb(247 244 234 / 0.25);
+    background: rgb(250 246 240 / 0.1); color: var(--paper);
+    border: 1px solid rgb(250 246 240 / 0.25);
     font-size: var(--fs-body); cursor: pointer;
     transition: background 0.2s ease;
   }
-  .viewer-nav button:hover { background: rgb(247 244 234 / 0.22); }
+  .viewer-nav button:hover { background: rgb(250 246 240 / 0.22); }
   .viewer-nav button:focus-visible { outline: 2px solid var(--rose); outline-offset: 2px; }
   /* Phones: the text and buttons get their own rows, and the video leaves room for them */
   @media (max-width: 40rem) {

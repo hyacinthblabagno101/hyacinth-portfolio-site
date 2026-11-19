@@ -1,8 +1,8 @@
 ---
 /**
  * Client feedback, word for word. Text lives in "testimonials" in src/data/proof.json.
- * A slider: 3 cards at a time on wide screens (2 on tablets, 1 on phones). The arrows slide to the next set,
- * the dots show where you are, and on touch screens you can swipe. Reorder proof.json to change the first 3.
+ * A slider: 3 cards at a time on wide screens (2 on tablets, 1 on phones). It moves on by one card every few
+ * seconds (pausing on hover or focus), the arrows move one card, the dots show where you are, and you can swipe. Reorder proof.json to change the first 3.
  * - Every card is the same size: quotes show their first 6 lines, and "Read more" (only when a quote is longer)
  *   opens the rest.
  * - A quote with a url is verified on Upwork and gets a small badge linking there. No ratings.
@@ -79,7 +79,7 @@ const quotes = proof.testimonials.map((t, i) => ({ ...t, id: `quote-${i + 1}` })
 
   .controls { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 0.75rem; }
   .dots { display: flex; gap: 0.4rem; }
-  .dots :global(i) { width: 0.5rem; height: 0.5rem; border-radius: var(--radius-pill); background: rgb(50 13 30 / 0.25); transition: width 0.35s ease, background 0.35s ease; }
+  .dots :global(i) { width: 0.5rem; height: 0.5rem; border-radius: var(--radius-pill); background: rgb(56 26 23 / 0.25); transition: width 0.35s ease, background 0.35s ease; }
   .dots :global(i.on) { width: 1.75rem; background: var(--wine); }
   .arrows { display: flex; gap: 0.5rem; }
   .arrow {
@@ -88,7 +88,6 @@ const quotes = proof.testimonials.map((t, i) => ({ ...t, id: `quote-${i + 1}` })
     transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
   }
   .arrow:hover:not(:disabled) { background: var(--wine); color: var(--paper); }
-  .arrow:disabled { opacity: 0.35; cursor: default; }
 
   figure { margin: 0; }
   .card {
@@ -98,7 +97,7 @@ const quotes = proof.testimonials.map((t, i) => ({ ...t, id: `quote-${i + 1}` })
     transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s ease, border-color 0.3s ease;
   }
   @media (hover: hover) {
-    .card:hover { transform: translateY(-6px); border-color: var(--wine); box-shadow: 0 20px 40px -24px rgb(36 16 24 / 0.45); }
+    .card:hover { transform: translateY(-6px); border-color: var(--wine); box-shadow: 0 20px 40px -24px rgb(34 22 22 / 0.45); }
     .card:hover .mark { transform: translateY(-3px) rotate(-6deg); }
   }
   .mark {
@@ -115,7 +114,7 @@ const quotes = proof.testimonials.map((t, i) => ({ ...t, id: `quote-${i + 1}` })
   }
   .quote.folded::after {
     content: ''; position: absolute; inset: auto 0 0 0; height: 2.5em;
-    background: linear-gradient(to bottom, rgb(247 244 234 / 0), var(--paper));
+    background: linear-gradient(to bottom, rgb(250 246 240 / 0), var(--paper));
     transition: opacity 0.3s ease;
   }
   .quote.fits::after, .quote.open::after { opacity: 0; }
@@ -142,7 +141,9 @@ const quotes = proof.testimonials.map((t, i) => ({ ...t, id: `quote-${i + 1}` })
 </style>
 
 <script>
-  // Slider: arrows move one full set of cards; dots and the arrows' disabled state follow the scroll position
+  // Slider: shows 3 at a time (2 on tablets, 1 on phones) and moves one card at a time, on its own every few
+  // seconds. It pauses while you hover, focus, or touch it, and while it's off screen; it never auto-plays with
+  // reduced motion. The arrows and arrow keys move one card; the dots show where you are.
   const slider = document.querySelector<HTMLElement>('[data-slider]');
   const track = slider?.querySelector<HTMLElement>('[data-track]');
   if (slider && track) {
@@ -153,32 +154,44 @@ const quotes = proof.testimonials.map((t, i) => ({ ...t, id: `quote-${i + 1}` })
     const items = [...track.children] as HTMLElement[];
     const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const per = () => Number(getComputedStyle(track).getPropertyValue('--per')) || 1;
-    const pages = () => Math.ceil(items.length / per());
-    const page = () => Math.round(track.scrollLeft / (track.clientWidth || 1));
-    const go = (p: number) => {
-      const k = Math.max(0, Math.min(pages() - 1, p));
-      const target = items[k * per()];
-      if (target) track.scrollTo({ left: k === 0 ? 0 : target.offsetLeft - items[0].offsetLeft, behavior: calm ? 'auto' : 'smooth' });
+    const last = () => Math.max(0, items.length - per());
+    const step = () => (items[1] ? items[1].offsetLeft - items[0].offsetLeft : track.clientWidth);
+    const index = () => Math.min(last(), Math.round(track.scrollLeft / step()));
+    const go = (k: number) => {
+      const i = k > last() ? 0 : k < 0 ? last() : k; // wraps around at either end
+      track.scrollTo({ left: i * step(), behavior: calm ? 'auto' : 'smooth' });
     };
     const update = () => {
-      const p = Math.min(page(), pages() - 1), n = pages();
+      const i = index(), n = last() + 1;
       if (dots.childElementCount !== n) dots.replaceChildren(...Array.from({ length: n }, () => document.createElement('i')));
-      [...dots.children].forEach((d, k) => d.classList.toggle('on', k === p));
-      prev.disabled = track.scrollLeft < 8;
-      next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
-      const first = p * per() + 1;
-      status.textContent = `Showing feedback ${first} to ${Math.min(items.length, first + per() - 1)} of ${items.length}`;
+      [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
+      const p = per();
+      status.textContent = `Showing feedback ${i + 1}${p > 1 ? ` to ${Math.min(items.length, i + p)}` : ''} of ${items.length}`;
     };
-    prev.addEventListener('click', () => go(page() - 1));
-    next.addEventListener('click', () => go(page() + 1));
+    prev.addEventListener('click', () => { go(index() - 1); restart(); });
+    next.addEventListener('click', () => { go(index() + 1); restart(); });
     track.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); go(page() + 1); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); go(page() - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(index() + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(index() - 1); }
     });
-    let t = 0;
-    track.addEventListener('scroll', () => { cancelAnimationFrame(t); t = requestAnimationFrame(update); }, { passive: true });
+    let raf = 0;
+    track.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(update); }, { passive: true });
     window.addEventListener('resize', update);
     update();
+
+    // Auto-advance
+    let timer = 0, held = false, onScreen = false;
+    const tick = () => { if (!held && onScreen && !document.hidden) go(index() + 1); };
+    function restart() { window.clearInterval(timer); if (!calm) timer = window.setInterval(tick, 4500); }
+    const hold = (v: boolean) => () => { held = v; };
+    slider.addEventListener('mouseenter', hold(true));
+    slider.addEventListener('mouseleave', hold(false));
+    slider.addEventListener('focusin', hold(true));
+    slider.addEventListener('focusout', hold(false));
+    track.addEventListener('touchstart', () => { held = true; restart(); }, { passive: true });
+    track.addEventListener('touchend', () => { held = false; }, { passive: true });
+    new IntersectionObserver((e) => { onScreen = e[0].isIntersecting; }, { threshold: 0.3 }).observe(slider);
+    restart();
   }
 
   // "Read more" only shows on quotes longer than 6 lines; it animates the quote open to its full height

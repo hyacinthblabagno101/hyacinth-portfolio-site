@@ -16,7 +16,7 @@ const has = (key: string) => showcase.some((c) => c.key === key);
 const links: Record<string, { label: string; href: string } | undefined> = {
   'Short-Form Video': has('reels') ? { label: 'See my video reels', href: '/?work=reels#work' } : undefined,
   'Social Media & Design': has('statics') ? { label: 'See my statics', href: '/?work=statics#work' } : undefined,
-  'UGC & Influencer': { label: 'See the case studies', href: '/#case-studies' },
+  'UGC & Influencer': { label: 'See the case studies and videos', href: '/#case-studies' },
 };
 
 /** "A, B, and C. More sentences." becomes the list [A, B, C] plus the remaining sentences as a note. */
@@ -50,11 +50,6 @@ const skills = about.skills.map((s, i) => {
           <span class="num" aria-hidden="true">{s.num}</span>
           <h3>{s.title}</h3>
           <p class="help">{s.help ?? s.text}</p>
-          {s.category === 'UGC & Influencer' && (
-            <button type="button" class="cases-cta" data-open-cases aria-haspopup="dialog">
-              <span>See the case studies and creator videos</span> <span aria-hidden="true">&rarr;</span>
-            </button>
-          )}
           <div class="buttons">
             <button type="button" class="btn btn-ghost small" data-open={s.id} aria-haspopup="dialog">
               See details <span class="visually-hidden">about {s.title}</span>
@@ -105,23 +100,14 @@ const skills = about.skills.map((s, i) => {
   @media (min-width: 64rem) { .cards { grid-template-columns: repeat(3, 1fr); } }
 
   .card {
-    display: grid; grid-template-rows: auto auto 1fr auto auto; gap: 0.9rem;
+    display: grid; grid-template-rows: auto auto 1fr auto; gap: 0.9rem;
     padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
     border: 1px solid var(--line); border-radius: calc(var(--radius-media) * 1.5);
     background: var(--paper);
     transition: border-color 0.3s ease, transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
   .card:hover { border-color: var(--wine); transform: translateY(-3px); }
-  .num { font-family: var(--font-serif); font-style: italic; color: var(--wine); }
-  /* UGC & Influencer: the way into the case studies pop-up */
-  .cases-cta {
-    display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; width: 100%;
-    padding: 0.8rem 1rem; border: 0; border-radius: var(--radius-media);
-    background: var(--wine); color: var(--paper); font: inherit; font-size: var(--fs-small); font-weight: 700; text-align: left; cursor: pointer;
-    transition: background 0.2s ease;
-  }
-  .cases-cta:hover { background: var(--ink); }
-  .cases-cta:focus-visible { outline: 3px solid var(--wine); outline-offset: 3px; }
+  .num { font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.12em; color: var(--wine); }
   .help { color: var(--text-muted); }
   .buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .btn.small { min-height: 2.75rem; padding: 0.5rem 1.1rem; }
@@ -131,9 +117,9 @@ const skills = about.skills.map((s, i) => {
     width: min(100vw - 2rem, 36rem); max-height: calc(100vh - 2rem);
     padding: 0; border: 0; border-radius: var(--radius-media);
     background: var(--paper); color: var(--ink);
-    --text-muted: #5c4a52; --line: rgb(36 16 24 / 0.15); --focus: var(--wine); --heading: var(--ink);
+    --text-muted: #5e4a44; --line: rgb(34 22 22 / 0.15); --focus: var(--wine); --heading: var(--ink);
   }
-  .details::backdrop { background: rgb(36 16 24 / 0.7); backdrop-filter: blur(3px); }
+  .details::backdrop { background: rgb(34 22 22 / 0.7); backdrop-filter: blur(3px); }
   .details[open] { animation: pop 0.25s ease; }
   @keyframes pop { from { opacity: 0; transform: translateY(8px); } }
   .details-inner { position: relative; display: grid; gap: 0.9rem; padding: clamp(1.5rem, 1rem + 2vw, 2.25rem); }
@@ -144,7 +130,7 @@ const skills = about.skills.map((s, i) => {
   .included li { padding: 0.6rem 0 0.6rem 1.5rem; border-bottom: 1px solid var(--line); position: relative; }
   .included li::before { content: ''; position: absolute; left: 0.2rem; top: 1.25rem; width: 0.55rem; height: 1px; background: var(--wine); }
   .note { color: var(--text-muted); }
-  .lead { font-family: var(--font-serif); font-size: var(--fs-body); line-height: 1.6; }
+  .lead { font-size: var(--fs-lead); line-height: 1.45; }
   .details .buttons { margin-top: 0.5rem; }
   .details .btn-ghost { color: var(--ink); }
   .details .btn-ghost:hover { background: var(--ink); color: var(--paper); }

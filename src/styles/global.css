@@ -1,26 +1,28 @@
 /*
  * Design tokens. Every color, type size and corner radius on the site comes from here.
- * Palette: Porcelain, deeper porcelain, Dark Cherry, near-black cherry, plus a pale cherry for accents on dark sections.
+ * Palette: Ivory, Milk, Plum, Wine (near-black) and Green.
  * Contrast ratios are WCAG (AA body text needs 4.5:1).
  */
 :root {
-  /* Palette: Dark Cherry and Porcelain, from the brief */
-  --paper: #f7f4ea;        /* Porcelain: background, and light text on dark (15:1 on Dark Cherry) */
-  --greige: #ece6d6;       /* Deeper porcelain: alternate band, image backgrounds */
-  --greige-soft: #f2eee2;  /* Porcelain tint: hover backgrounds */
-  --wine: #320d1e;         /* Dark Cherry: accents, buttons, dark sections (15.7:1 on Porcelain) */
-  --ink: #241018;          /* Near-black cherry: body text (16:1 on Porcelain) */
-  --rose: #e6c3d1;         /* Pale cherry: accent text on Dark Cherry (10:1) */
-  --green: #1f6b30;        /* "Open to work" text (6.3:1 on its pale green) */
-  --green-soft: #e1f3e4;
+  /* Palette: Ivory, Milk, Plum, Wine and Green (from the palette board) */
+  --paper: #faf6f0;        /* Ivory: background, and light text on dark (14.7:1 on Plum) */
+  --greige: #e8d9c9;       /* Milk: alternate band, image backgrounds */
+  --greige-soft: #f2eade;  /* Between Ivory and Milk: hover backgrounds, panels */
+  --wine: #381a17;         /* Plum: accents, buttons, dark sections (14.7:1 on Ivory) */
+  --ink: #221616;          /* Wine: body text and the footer (16.3:1 on Ivory) */
+  --rose: #e8d9c9;         /* Milk: accent text on Plum (11.4:1) */
+  --sage: #77835d;         /* Green: dots and small accents only (not for text on light backgrounds) */
+  --sage-light: #a9b48c;   /* Light green: accents on Plum (7.2:1) */
+  --green: #4a5634;        /* Deep green: "Open to work" text (6.4:1 on its pale green) */
+  --green-soft: #e7eadd;
 
   /* Roles (light sections); dark sections swap these in .band-dark */
   --bg: var(--paper);
   --text: var(--ink);
-  --text-muted: #5c4a52;   /* 7.6:1 on Porcelain, 6.6:1 on deeper porcelain */
+  --text-muted: #5e4a44;   /* 7.7:1 on Ivory, 6:1 on Milk */
   --heading: var(--ink);
   --accent: var(--wine);
-  --line: rgb(50 13 30 / 0.14);
+  --line: rgb(56 26 23 / 0.15);
   --rule: var(--ink);
   --focus: var(--wine);
 
@@ -52,8 +54,8 @@
 
 /*
  * Section color rhythm, top to bottom (one dark color, two light ones, alternating):
- * Hero porcelain, numbers Dark Cherry, About porcelain, brands Dark Cherry, What I do deeper porcelain,
- * Selected work porcelain, Feedback deeper porcelain, Experience porcelain, Contact Dark Cherry, footer near-black.
+ * Hero Ivory, numbers Plum, About Ivory, brands Plum, What I do Milk, Selected work Ivory, Feedback Milk,
+ * Experience Ivory, Contact Plum, footer Wine.
  * Dark band: put class="band-dark" on any section.
  */
 .band-dark {
@@ -62,7 +64,7 @@
   --text-muted: var(--greige);       /* 12:1 */
   --heading: var(--paper);
   --accent: var(--rose);            /* 9.6:1 */
-  --line: rgb(247 244 234 / 0.18);
+  --line: rgb(250 246 240 / 0.18);
   --rule: var(--paper);
   --focus: var(--rose);
   background: var(--bg);
