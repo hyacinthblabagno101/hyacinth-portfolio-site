@@ -108,7 +108,7 @@ const { professional, additional, businesses } = experience;
     font: inherit; color: var(--ink); text-align: left; cursor: pointer;
     transition: background 0.25s ease, padding 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .role:hover, .role.active { background: var(--greige-soft); padding-left: 1.1rem; }
+  .role:hover, .role.active { background: rgb(56 26 23 / 0.05); padding-left: 1.1rem; }
   .role .dates { grid-column: 1; font-size: var(--fs-small); color: var(--text-muted); }
   .role .name { grid-column: 1; font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
   .role .title { grid-column: 1; font-size: var(--fs-small); font-weight: 600; color: var(--wine); }
@@ -140,7 +140,7 @@ const { professional, additional, businesses } = experience;
 
   /* Additional: a bar that opens the cards */
   .more-exp + .more-exp { margin-top: 1rem; }
-  .more-exp { margin-top: clamp(2rem, 1.5rem + 2vw, 3rem); transition: border-color 0.25s ease, box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); border: 1px solid var(--line); border-radius: calc(var(--radius-media) * 1.5); background: var(--greige-soft); }
+  .more-exp { margin-top: clamp(2rem, 1.5rem + 2vw, 3rem); transition: border-color 0.25s ease, box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); border: 1px solid var(--line); border-radius: calc(var(--radius-media) * 1.5); background: var(--paper); }
   .more-exp summary {
     display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
     padding: 1.25rem clamp(1.1rem, 1rem + 1vw, 1.75rem); cursor: pointer; list-style: none; border-radius: inherit;

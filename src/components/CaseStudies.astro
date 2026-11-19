@@ -120,14 +120,14 @@ const ugcVideos = (ugc?.videos ?? []).map((v) => phone(v.media, v.title, undefin
   .cases {
     width: min(100vw - 1.5rem, 76rem); max-width: none; height: calc(100dvh - 1.5rem); max-height: none;
     margin: auto; padding: 0; border: 0; border-radius: calc(var(--radius-media) * 2);
-    background: var(--greige); color: var(--ink); overflow: hidden;
+    background: var(--paper); color: var(--ink); overflow: hidden;
   }
   .cases[open] { display: flex; flex-direction: column; animation: cases-in 0.3s cubic-bezier(0.2, 0.7, 0.2, 1); }
   @keyframes cases-in { from { opacity: 0; transform: translateY(16px); } }
   .cases::backdrop { background: rgb(34 22 22 / 0.75); backdrop-filter: blur(3px); }
   .bar {
     flex: none; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
-    padding: 0.75rem clamp(1rem, 0.75rem + 1.5vw, 2rem); border-bottom: 1px solid var(--line); background: var(--greige);
+    padding: 0.75rem clamp(1rem, 0.75rem + 1.5vw, 2rem); border-bottom: 1px solid var(--line); background: var(--paper);
   }
   .bar-label { font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--wine); }
   .x {
@@ -144,7 +144,7 @@ const ugcVideos = (ugc?.videos ?? []).map((v) => phone(v.media, v.title, undefin
   .cases h2 { font-size: clamp(2rem, 1.4rem + 2.4vw, 3.25rem); }
 
   .panel { border-radius: calc(var(--radius-media) * 2); padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); display: grid; gap: 1.75rem; }
-  .light { background: var(--paper); }
+  .light { background: var(--paper); border: 1px solid var(--line); }
   .dark { background: var(--wine); color: var(--paper); }
   .panel-head { display: grid; gap: 0.6rem; max-width: 62ch; }
   .panel-head h3 { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem); font-weight: 700; letter-spacing: -0.04em; color: inherit; }

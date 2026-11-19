@@ -2,7 +2,11 @@
 /**
  * Contact. Email, profile links and resume all come from src/data/site.json.
  * Anything still a [PLACEHOLDER] is left off the live site, so a fake address is never published.
+ * My photo (phone call and laptop, background removed: src/assets/portrait-call-cutout.png) stands on the
+ * bottom edge of the section under the email and links.
  */
+import { Picture } from 'astro:assets';
+import callPhoto from '../assets/portrait-call-cutout.png';
 import { bookingUrl, site, publicEmail, publishedSocials, resumeFile, isPlaceholder, showUnconfirmed } from '../lib/data';
 
 const mailto = publicEmail ? `mailto:${publicEmail}?subject=${encodeURIComponent('Job opportunity')}` : undefined;
@@ -32,7 +36,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
             </p>
             <p class="copied" role="status" aria-live="polite" data-copy-status></p>
             {bookingUrl && (
-              <a class="btn btn-primary book" href={bookingUrl} target="_blank" rel="noopener">
+              <a class="btn btn-book book" href={bookingUrl} target="_blank" rel="noopener">
                 Book a 30-minute call <span class="visually-hidden">(opens Calendly in a new tab)</span>
               </a>
             )}
@@ -70,6 +74,16 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
         )
       }
     </div>
+    <figure class="photo">
+      <Picture
+        src={callPhoto}
+        alt="Hyacinth Blabagno in a brown suit, on a phone call while working on a laptop"
+        widths={[400, 640, 900]}
+        sizes="(min-width: 64rem) 30rem, 80vw"
+        formats={['avif', 'webp']}
+        loading="lazy"
+      />
+    </figure>
       </div>
 
     <form
@@ -123,14 +137,18 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
 
 <style>
   /* Colors come from .band-dark in global.css */
-  .contact { padding-block: var(--section); }
+  /* No bottom padding: the photo stands on the section's bottom edge (the form keeps its own space) */
+  .contact { padding-top: var(--section); overflow: hidden; }
   .grid { display: grid; gap: 3.5rem; align-items: start; }
-  @media (min-width: 64rem) { .grid { grid-template-columns: 1fr 1fr; gap: 5rem; } }
-  .left { display: grid; gap: 2.5rem; align-content: start; }
-  /* Phones and tablets: the form comes right after the intro, email and links after it */
+  @media (min-width: 64rem) { .grid { grid-template-columns: 1fr 1fr; gap: 5rem; align-items: stretch; } .form { align-self: start; padding-bottom: var(--section); } }
+  .left { display: flex; flex-direction: column; gap: 2.5rem; }
+  .photo { margin: auto 0 0; width: min(100%, 30rem); }
+  .photo :global(picture), .photo :global(img) { display: block; width: 100%; height: auto; }
+  /* Phones and tablets: the form comes right after the intro, then email and links, then the photo */
   @media (max-width: 63.99rem) {
     .left { display: contents; }
     .actions { order: 2; }
+    .photo { order: 3; margin: 0 auto; width: min(100%, 24rem); }
   }
   .actions { gap: 1rem; }
 

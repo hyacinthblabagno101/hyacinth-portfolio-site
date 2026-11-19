@@ -53,9 +53,9 @@
 }
 
 /*
- * Section color rhythm, top to bottom (one dark color, two light ones, alternating):
- * Hero Ivory, numbers Plum, About Ivory, brands Plum, What I do Milk, Selected work Ivory, Feedback Milk,
- * Experience Ivory, Contact Plum, footer Wine.
+ * Section color rhythm, top to bottom. Milk is never a background, only the Book a call button and small details:
+ * Hero Ivory, numbers Plum, About Ivory, brands Plum, What I do Ivory, Selected work Ivory (with a hairline above),
+ * Feedback Wine, Experience Ivory, Contact Plum, footer Wine.
  * Dark band: put class="band-dark" on any section.
  */
 .band-dark {
@@ -180,6 +180,10 @@ a:hover { text-decoration-thickness: 2px; }
 .btn-primary:hover { background: var(--wine); border-color: var(--wine); }
 .btn-ghost { color: var(--text); background: transparent; }
 .btn-ghost:hover { background: var(--text); color: var(--bg); }
+/* Book a call: a lighter Milk button, on light and dark sections */
+.btn-book { background: var(--greige); border-color: var(--greige); color: var(--wine); }
+.btn-book:hover { background: var(--paper); border-color: var(--wine); color: var(--wine); }
+.band-dark .btn-book:hover { border-color: var(--paper); }
 .band-dark .btn-primary { background: var(--paper); border-color: var(--paper); color: var(--ink); }
 .band-dark .btn-primary:hover { background: var(--paper); border-color: var(--paper); }
 

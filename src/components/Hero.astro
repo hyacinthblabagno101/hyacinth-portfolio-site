@@ -59,7 +59,7 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
 
       <div class="actions rise" style="--delay: 0.18s">
         <a class="btn btn-primary" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
-        <a class="btn btn-ghost" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>
+        <a class="btn btn-book" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>
           {hero.secondaryCta.label}
           {book.external && <span class="visually-hidden">(opens in a new tab)</span>}
         </a>
