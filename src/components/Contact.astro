@@ -2,12 +2,9 @@
 /**
  * Contact. Email, profile links and resume all come from src/data/site.json.
  * Anything still a [PLACEHOLDER] is left off the live site, so a fake address is never published.
- * Layout: on the left, the title and my photo (phone call and laptop, background removed:
- * src/assets/portrait-call-cutout.png) standing on the section's bottom edge. On the right: email, Book a call,
- * links, then the form. On phones: title, contact details, form, then the photo.
+ * Layout: on the left, the title, email, Book a call, links and a small Calendly booking embed; on the right,
+ * the form. On phones: title and details, the form, then the Calendly embed.
  */
-import { Picture } from 'astro:assets';
-import callPhoto from '../assets/portrait-call-cutout.png';
 import { bookingUrl, site, publicEmail, publishedSocials, resumeFile, isPlaceholder, showUnconfirmed } from '../lib/data';
 
 const mailto = publicEmail ? `mailto:${publicEmail}?subject=${encodeURIComponent('Job opportunity')}` : undefined;
@@ -16,25 +13,13 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
 
 <section id="contact" class="contact" aria-labelledby="contact-title">
   <div class="wrap grid">
-    <div class="visual">
+    <div class="left">
     <div class="intro">
       <h2 id="contact-title">Let's work <em>together</em></h2>
       <p class="lede">
         If you're hiring for social media, content, or creative support, book a call, send me a message here, or email me and tell me a little about the team and the role.
       </p>
     </div>
-    <figure class="photo">
-      <Picture
-        src={callPhoto}
-        alt="Hyacinth Blabagno in a brown suit, on a phone call while working on a laptop"
-        widths={[400, 640, 900]}
-        sizes="(min-width: 64rem) 30rem, 80vw"
-        formats={['avif', 'webp']}
-        loading="lazy"
-      />
-    </figure>
-    </div>
-    <div class="side">
 
     <div class="actions">
       {
@@ -87,6 +72,20 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
         )
       }
     </div>
+    {bookingUrl && (
+      <div class="cal">
+        <p class="cal-title">Pick a time for a 30-minute call</p>
+        <iframe
+          title="Book a 30-minute call with Hyacinth on Calendly"
+          src={`${bookingUrl}?embed_type=Inline&hide_gdpr_banner=1&hide_landing_page_details=1&background_color=faf6f0&text_color=2b1e1d&primary_color=432f2e`}
+          loading="lazy"
+          width="100%"
+          height="620"
+        ></iframe>
+        <a class="cal-open" href={bookingUrl} target="_blank" rel="noopener">Open Calendly in a new tab</a>
+      </div>
+    )}
+    </div>
 
     <form
       class="form"
@@ -135,51 +134,49 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
       <button class="btn btn-primary submit" type="submit">Send message</button>
       <p class="form-status" role="status" aria-live="polite" data-form-status></p>
     </form>
-    </div>
   </div>
 </section>
 
 
 <style>
   /* A light Ivory section, with a hairline between it and Experience */
-  /* No bottom padding: the photo stands on the section's bottom edge (the right column keeps its own space) */
-  .contact { padding-top: var(--section); overflow: hidden; background: var(--paper); border-top: 1px solid var(--line); }
-  .grid { display: grid; gap: 2.5rem; }
-  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: clamp(3rem, 2rem + 3vw, 5rem); } }
-  .visual { display: flex; flex-direction: column; gap: 2rem; }
-  .side { display: grid; gap: 2rem; align-content: start; padding-bottom: var(--section); }
-  .photo { margin: auto auto 0; width: min(100%, 24rem); }
-  .photo :global(picture), .photo :global(img) { display: block; width: 100%; height: auto; }
-  @media (min-width: 64rem) { .photo { width: 100%; max-width: 34rem; margin: auto 0 0; } }
-  /* Phones and tablets: title, details, form, then the photo on the bottom edge */
+  .contact { padding-block: var(--section); background: var(--paper); border-top: 1px solid var(--line); }
+  .grid { display: grid; gap: 3rem; align-items: start; }
+  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(3rem, 2rem + 3vw, 5rem); } }
+  .left { display: grid; gap: 2rem; align-content: start; }
+  /* Phones and tablets: title and details, the form, then the booking embed */
   @media (max-width: 63.99rem) {
-    .visual { display: contents; }
-    .intro { order: 0; } .side { order: 1; padding-bottom: 0; } .photo { order: 2; }
+    .left { display: contents; }
+    .intro { order: 0; } .actions { order: 1; } .form { order: 2; } .cal { order: 3; }
   }
+  /* Small Calendly embed */
+  .cal { display: grid; gap: 0.6rem; }
+  .cal-title { font-weight: 700; }
+  .cal iframe { display: block; width: 100%; height: 34rem; border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--paper); }
+  .cal-open { justify-self: start; font-size: var(--fs-small); font-weight: 600; color: var(--wine); min-height: 2.75rem; display: inline-flex; align-items: center; }
   /* Form: name and email side by side where there's room */
   .pair { display: grid; gap: 1.1rem; }
   @media (min-width: 40rem) { .pair { grid-template-columns: 1fr 1fr; } }
-  .form { padding-top: 2rem; border-top: 1px solid var(--line); }
   .actions { gap: 1rem; }
 
   /* Contact form (Netlify Forms) */
   .form { display: grid; gap: 1.1rem; }
   .hp { position: absolute; left: -9999px; }
   .field { display: grid; gap: 0.4rem; }
-  .field label { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); }
+  .field label { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: var(--ink); }
   .opt { font-weight: 400; letter-spacing: 0; text-transform: none; }
   .field input, .field textarea {
     width: 100%; min-height: 3rem; padding: 0.75rem 0.9rem;
     font: inherit; font-size: var(--fs-body); color: var(--ink);
     background: rgb(255 255 255 / 0.65);
-    border: 1px solid rgb(56 26 23 / 0.28); border-radius: var(--radius-media);
+    border: 1px solid rgb(67 47 46 / 0.28); border-radius: var(--radius-media);
   }
   .field textarea { resize: vertical; min-height: 8rem; }
   .field select {
     width: 100%; min-height: 3rem; padding: 0.75rem 2.5rem 0.75rem 0.9rem;
     font: inherit; font-size: var(--fs-body); color: var(--ink);
     background: rgb(255 255 255 / 0.65) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23381a17' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 1rem center;
-    border: 1px solid rgb(56 26 23 / 0.28); border-radius: var(--radius-media);
+    border: 1px solid rgb(67 47 46 / 0.28); border-radius: var(--radius-media);
     appearance: none;
   }
   .field select option { color: var(--ink); background: var(--paper); }
@@ -193,7 +190,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
   .form-status { min-height: 1.5em; font-size: var(--fs-small); color: var(--text-muted); }
 
   .intro { display: grid; gap: 1.25rem; }
-  h2 { font-size: var(--fs-h2); line-height: 0.98; max-width: 12ch; }
+  h2 { max-width: 12ch; }
   .lede { color: var(--text-muted); max-width: 46ch; }
 
   .actions { display: grid; gap: 2rem; }
@@ -215,7 +212,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
     min-height: 2.75rem; padding: 0 0.9rem;
     background: transparent; color: var(--ink);
     border: 1px solid var(--line); border-radius: var(--radius-pill);
-    font: inherit; font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+    font: inherit; font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; cursor: pointer;
   }
   .copy:hover { border-color: var(--ink); }
   .copied { min-height: 1.5em; font-size: var(--fs-small); color: var(--text-muted); }
@@ -226,7 +223,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
     min-height: 2.75rem;
     color: var(--ink);
     font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.12em; font-size: var(--fs-label);
+    letter-spacing: 0.01em; font-size: var(--fs-label);
   }
 
   .resume {

@@ -132,7 +132,7 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
   .copy { display: grid; gap: clamp(1.25rem, 1rem + 1vw, 1.75rem); align-content: center; }
   .meta {
     display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1.5rem;
-    font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);
+    font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: var(--text-muted);
   }
   .meta .who strong { color: var(--ink); font-weight: 700; }
   .meta .right { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; }
@@ -149,11 +149,10 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
 
 
   h1 {
-    font-size: clamp(2.75rem, 1.2rem + 5.4vw, 5.75rem);
-    font-weight: 700; letter-spacing: -0.055em; line-height: 0.95;
-    max-width: 11ch;
+    font-size: clamp(2.75rem, 1.4rem + 4.6vw, 5.25rem);
+    line-height: 1; letter-spacing: -0.035em;
+    max-width: 12ch;
   }
-  h1 :global(em) { font-size: 0.92em; }
   .intro { color: var(--text-muted); max-width: 46ch; font-size: var(--fs-lead); line-height: 1.5; }
   .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
   @media (max-width: 30rem) { .actions .btn { flex: 1 1 100%; } }
@@ -172,7 +171,7 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
   .track { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
   .reel {
     position: relative; display: block; overflow: hidden;
-    aspect-ratio: 9 / 16; border-radius: var(--radius-media); background: var(--greige);
+    aspect-ratio: 9 / 16; border-radius: var(--radius-media); background: var(--greige-soft);
     color: inherit; text-decoration: none;
   }
   .reel img, .reel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -183,7 +182,7 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
   .tag {
     position: absolute; left: 0.5rem; bottom: 0.5rem; z-index: 1;
     padding: 0.2rem 0.55rem; border-radius: var(--radius-pill);
-    background: rgb(34 22 22 / 0.6); color: var(--paper); backdrop-filter: blur(4px);
+    background: rgb(43 30 29 / 0.6); color: var(--paper); backdrop-filter: blur(4px);
     font-size: var(--fs-label); font-weight: 600;
     max-width: calc(100% - 1rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
@@ -222,9 +221,9 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
   }
   @media (min-width: 48rem) { .stats ul { grid-template-columns: repeat(4, 1fr); } }
   .stats li { display: grid; gap: 0.35rem; }
-  .stats strong { font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.5rem); font-weight: 700; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .stats strong { font-family: var(--font-serif); font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.5rem); font-weight: 400; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums lining-nums; }
   .stats .suffix { color: var(--sage-light); }
-  .stats li > span { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rose); }
+  .stats li > span { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: var(--rose); }
 </style>
 
 <script>

@@ -1,28 +1,29 @@
 /*
  * Design tokens. Every color, type size and corner radius on the site comes from here.
- * Palette: Ivory, Milk, Plum, Wine (near-black) and Green.
+ * Palette: Ivory, Blue, Butter, Chocopie, plus green for "Open to work".
  * Contrast ratios are WCAG (AA body text needs 4.5:1).
  */
 :root {
-  /* Palette: Ivory, Milk, Plum, Wine and Green (from the palette board) */
-  --paper: #faf6f0;        /* Ivory: background, and light text on dark (14.7:1 on Plum) */
-  --greige: #e8d9c9;       /* Milk: alternate band, image backgrounds */
-  --greige-soft: #f2eade;  /* Between Ivory and Milk: hover backgrounds, panels */
-  --wine: #381a17;         /* Plum: accents, buttons, dark sections (14.7:1 on Ivory) */
-  --ink: #221616;          /* Wine: body text and the footer (16.3:1 on Ivory) */
-  --rose: #e8d9c9;         /* Milk: accent text on Plum (11.4:1) */
-  --sage: #77835d;         /* Green: dots and small accents only (not for text on light backgrounds) */
-  --sage-light: #a9b48c;   /* Light green: accents on Plum (7.2:1) */
-  --green: #4a5634;        /* Deep green: "Open to work" text (6.4:1 on its pale green) */
-  --green-soft: #e7eadd;
+  /* Palette: Ivory, Blue, Butter and Chocopie (from the palette board), with a green "Open to work" */
+  --paper: #faf6f0;        /* Ivory: main background, and light text on dark (11.6:1 on Chocopie) */
+  --blue: #c4dae8;         /* Blue: the What I do band and soft panels */
+  --greige: #feefb8;       /* Butter: Book a call buttons, chips and highlights (not a section background) */
+  --greige-soft: #f1ebe1;  /* Soft ivory: hover backgrounds and image placeholders */
+  --wine: #432f2e;         /* Chocopie: accents, buttons, dark sections (11.6:1 on Ivory) */
+  --ink: #2b1e1d;          /* Dark Chocopie: body text and the footer (14.9:1 on Ivory) */
+  --rose: #feefb8;         /* Butter: accent text on Chocopie (10.8:1) */
+  --sage: #5f9a4e;         /* Green dot for "Open to work" */
+  --sage-light: #feefb8;   /* Butter: small accents on dark sections */
+  --green: #2f6a2a;        /* "Open to work" text (6.3:1 on its pale green) */
+  --green-soft: #e4f1dc;
 
   /* Roles (light sections); dark sections swap these in .band-dark */
   --bg: var(--paper);
   --text: var(--ink);
-  --text-muted: #5e4a44;   /* 7.7:1 on Ivory, 6:1 on Milk */
+  --text-muted: #5f4a48;   /* 7.9:1 on Ivory, 5.7:1 on Blue */
   --heading: var(--ink);
   --accent: var(--wine);
-  --line: rgb(56 26 23 / 0.15);
+  --line: rgb(67 47 46 / 0.16);
   --rule: var(--ink);
   --focus: var(--wine);
 
@@ -36,32 +37,33 @@
 
   /* Type scale: the only sizes used on the site */
   --fs-display: clamp(3.25rem, 0.4rem + 11vw, 9.5rem);   /* hero */
-  --fs-h2: clamp(2.25rem, 1.4rem + 3.4vw, 4.25rem);      /* section titles */
+  --fs-h2: clamp(2.125rem, 1.4rem + 3vw, 3.75rem);       /* section titles (Libre Baskerville) */
   --fs-h3: clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem);     /* item titles, brand names */
   --fs-stat: clamp(1.75rem, 1.4rem + 1.2vw, 2.5rem);     /* numbers */
   --fs-lead: clamp(1.1875rem, 1.1rem + 0.4vw, 1.375rem);  /* intro lines, pull quotes */
   --fs-body: 1.0625rem;
   --fs-small: 0.875rem;
-  --fs-label: 0.75rem;                                    /* small uppercase labels (never smaller) */
+  --fs-label: 0.8125rem;                                  /* small labels and buttons (sentence case) */
 
   /* Space, layout, corners */
   --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
   --section: clamp(3.5rem, 2.25rem + 4vw, 6rem);
   --max: 82rem;
   --radius-media: 8px;     /* photos, tiles, inputs */
+  --radius-panel: 18px;    /* large panels and pop-ups */
   --radius-pill: 999px;    /* buttons, badges */
 }
 
 /*
- * Section color rhythm, top to bottom. Milk is never a background, only the Book a call button and small details:
- * Hero Ivory, numbers Plum, About Ivory, brands Plum, What I do Ivory, Selected work Ivory (with a hairline above),
- * Feedback Wine, Experience Ivory, Contact Ivory (hairline above), footer Wine.
+ * Section color rhythm, top to bottom (Butter is only for buttons and highlights, never a section background):
+ * Hero Ivory, numbers Chocopie, About Ivory, brands Chocopie, What I do Blue, Selected work Ivory,
+ * Feedback Chocopie, Experience Ivory, Contact Ivory (hairline above), footer dark Chocopie.
  * Dark band: put class="band-dark" on any section.
  */
 .band-dark {
   --bg: var(--wine);
   --text: var(--paper);              /* 16:1 */
-  --text-muted: var(--greige);       /* 12:1 */
+  --text-muted: #e7ddd2;            /* 9.3:1 on Chocopie */
   --heading: var(--paper);
   --accent: var(--rose);            /* 9.6:1 */
   --line: rgb(250 246 240 / 0.18);
@@ -102,19 +104,19 @@ h1, h2, h3 {
   margin: 0;
   text-wrap: balance;
 }
-/* Titles: bold sans, sentence case. Quiet, so the work does the talking */
-h1, h2, h3 { font-family: var(--font-sans); font-weight: 700; letter-spacing: -0.04em; }
-h1, h2 { font-size: var(--fs-h2); line-height: 0.95; }
+/*
+ * Titles: Libre Baskerville for every section title (h1, h2) and the big numbers; the sans for everything else.
+ * The italic word in a title stays the same color, so the type itself does the styling.
+ */
+h1, h2, h3 { font-family: var(--font-sans); font-weight: 700; letter-spacing: -0.02em; }
+h1, h2 { font-family: var(--font-serif); font-weight: 400; font-size: var(--fs-h2); line-height: 1.04; letter-spacing: -0.03em; }
 h2 { max-width: 22ch; }
-/* One word in each title is set in italic serif, lower case, in the accent color: "Selected <em>work</em>" */
 h1 em, h2 em {
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
-  text-transform: none;
-  font-size: 0.86em;
   letter-spacing: -0.02em;
-  color: var(--accent);
+  color: inherit;
   padding-right: 0.04em;
 }
 h3 { font-size: var(--fs-h3); line-height: 1.1; letter-spacing: -0.02em; }
@@ -127,7 +129,7 @@ h3 { font-size: var(--fs-h3); line-height: 1.1; letter-spacing: -0.02em; }
 .section-head .lede { color: var(--text-muted); max-width: 40ch; }
 .section-head .head-link {
   display: inline-flex; gap: 0.4rem; align-items: center; min-height: 2.75rem;
-  font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text);
+  font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: var(--text);
 }
 
 p { margin: 0; text-wrap: pretty; }
@@ -152,8 +154,8 @@ a:hover { text-decoration-thickness: 2px; }
   font-family: var(--font-sans);
   font-size: var(--fs-label);
   font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
+ 
   line-height: 1.4;
 }
 
@@ -167,10 +169,10 @@ a:hover { text-decoration-thickness: 2px; }
   padding: 0.7rem 1.4rem;
   cursor: pointer;
   font-family: var(--font-sans);
-  font-size: var(--fs-label);
+  font-size: var(--fs-small);
   font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+ 
   text-decoration: none;
   border: 1px solid currentColor;
   border-radius: var(--radius-pill);
@@ -181,7 +183,7 @@ a:hover { text-decoration-thickness: 2px; }
 .btn-ghost { color: var(--text); background: transparent; }
 .btn-ghost:hover { background: var(--text); color: var(--bg); }
 /* Book a call: a lighter Milk button, on light and dark sections */
-.btn-book { background: var(--greige); border-color: rgb(56 26 23 / 0.22); color: var(--wine); }
+.btn-book { background: var(--greige); border-color: rgb(67 47 46 / 0.25); color: var(--wine); }
 .band-dark .btn-book { border-color: var(--greige); }
 .btn-book:hover { background: var(--paper); border-color: var(--wine); color: var(--wine); }
 .band-dark .btn-book:hover { border-color: var(--paper); }

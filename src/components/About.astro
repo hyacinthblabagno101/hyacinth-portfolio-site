@@ -53,11 +53,29 @@ const certs = proof.certifications;
         )}
         <a class="btn btn-primary" href="#contact">Let's talk</a>
       </div>
-      <p class="links">
-        <a href="#work">See my work <span aria-hidden="true">&rarr;</span></a>
-        <a href="#experience">My experience <span aria-hidden="true">&rarr;</span></a>
-        {bookingUrl && <a href={bookingUrl} target="_blank" rel="noopener">Book a call <span aria-hidden="true">&nearr;</span><span class="visually-hidden">(opens Calendly in a new tab)</span></a>}
-      </p>
+      <ul class="go" role="list" aria-label="Where to next">
+        <li>
+          <a class="go-link" href="#work">
+            <span class="go-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" fill="none" stroke="currentColor" stroke-width="1.6" /></svg></span>
+            <span class="go-text"><strong>See my work</strong><span>Reels, ads, statics and more</span></span>
+          </a>
+        </li>
+        <li>
+          <a class="go-link" href="#experience">
+            <span class="go-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M3 8h18v12H3zM8 8V5h8v3M3 13h18" fill="none" stroke="currentColor" stroke-width="1.6" /></svg></span>
+            <span class="go-text"><strong>My experience</strong><span>Roles and brands I've supported</span></span>
+          </a>
+        </li>
+        {bookingUrl && (
+          <li>
+            <a class="go-link book" href={bookingUrl} target="_blank" rel="noopener">
+              <span class="go-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 6h16v14H4zM4 10h16M8 3v5M16 3v5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg></span>
+              <span class="go-text"><strong>Book a call</strong><span>30 minutes on Calendly</span></span>
+              <span class="visually-hidden">(opens in a new tab)</span>
+            </a>
+          </li>
+        )}
+      </ul>
 
       <div class="cards">
         <button type="button" class="pop-card" data-pop="certs" aria-haspopup="dialog">
@@ -135,23 +153,21 @@ const certs = proof.certifications;
   /* No bottom padding: the photo stands on the section's bottom edge */
   .about { padding-top: var(--section); overflow: hidden; }
   .grid { display: grid; gap: clamp(2rem, 1.5rem + 2vw, 4rem); }
-  @media (min-width: 64rem) { .grid { grid-template-columns: 1fr 1fr; align-items: stretch; } }
+  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); align-items: stretch; } }
   .grid > * { min-width: 0; }
 
   /* Phones: text first, photo last so it sits on the bottom edge */
   .photo { order: 2; margin: 0; justify-self: center; width: min(100%, 30rem); }
   .photo :global(img) { display: block; width: 100%; height: auto; }
-  /* Wide screens: the photo fills its column from the top of "ABOUT ME" down to the section's bottom edge */
+  /* Wide screens: the whole photo shows (no cropping), standing on the section's bottom edge */
   @media (min-width: 64rem) {
-    .photo { order: 0; position: relative; width: 100%; min-height: 36rem; }
-    .photo :global(picture), .photo :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .photo :global(img) { object-fit: cover; object-position: center top; }
+    .photo { order: 0; align-self: end; width: 100%; max-width: 34rem; }
   }
   .copy { padding-bottom: var(--section); }
   @media (max-width: 63.99rem) { .copy { padding-bottom: 0; } }
 
   .copy { display: grid; gap: 1.25rem; justify-items: start; }
-  h2 { font-size: var(--fs-h2); text-transform: uppercase; line-height: 0.95; }
+  h2 { font-size: clamp(2.5rem, 1.6rem + 3.4vw, 4.25rem); }
   .status {
     display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.85rem;
     border-radius: var(--radius-pill); background: var(--green-soft); color: var(--green); font-weight: 700; font-size: var(--fs-small);
@@ -161,19 +177,33 @@ const certs = proof.certifications;
   .bio p { color: var(--text-muted); }
   .bio p:first-child { font-size: var(--fs-lead); line-height: 1.5; color: var(--ink); }
   .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-  .links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; }
-  .links a { display: inline-flex; gap: 0.35rem; align-items: center; min-height: 2.75rem; font-weight: 600; color: var(--wine); }
+  /* Three ways onward: work, experience, a call */
+  .go { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; gap: 0.6rem; }
+  @media (min-width: 30rem) { .go { grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr)); } }
+  .go-link {
+    display: flex; align-items: center; gap: 0.75rem; height: 100%; padding: 0.85rem 0.95rem;
+    border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--paper);
+    color: var(--ink); text-decoration: none;
+    transition: border-color 0.25s ease, background 0.25s ease;
+  }
+  .go-link:hover { border-color: var(--wine); }
+  .go-link.book { background: var(--greige); border-color: rgb(67 47 46 / 0.25); }
+  .go-link.book:hover { border-color: var(--wine); }
+  .go-icon { flex: none; display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--wine); color: var(--paper); }
+  .go-text { display: grid; gap: 0.1rem; line-height: 1.3; }
+  .go-text strong { font-weight: 700; font-size: var(--fs-small); }
+  .go-text span { font-size: var(--fs-label); color: var(--text-muted); }
 
   /* Cards that open the pop-ups: thumbnails fan out on hover */
   .cards { display: grid; gap: 0.75rem; width: 100%; margin-top: 0.5rem; }
   @media (min-width: 40rem) { .cards { grid-template-columns: 1fr 1fr; } }
   .pop-card {
     display: flex; align-items: center; gap: 1rem; min-height: 5.5rem; padding: 0.9rem 1rem;
-    border: 1px solid var(--line); border-radius: calc(var(--radius-media) * 1.5); background: var(--paper);
+    border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--paper);
     font: inherit; color: var(--ink); text-align: left; cursor: pointer;
     transition: border-color 0.25s ease, transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.3s ease;
   }
-  .pop-card:hover, .pop-card:focus-visible { border-color: var(--wine); transform: translateY(-3px); box-shadow: 0 14px 30px -18px rgb(56 26 23 / 0.45); }
+  .pop-card:hover, .pop-card:focus-visible { border-color: var(--wine); }
   .fan { position: relative; flex: none; width: 5.5rem; height: 3.5rem; }
   .fan img {
     position: absolute; top: 0.25rem; left: 0; width: 3.75rem; height: 2.8rem; object-fit: cover;
@@ -191,10 +221,10 @@ const certs = proof.certifications;
   /* Pop-ups */
   .pop {
     width: min(100vw - 2rem, 46rem); max-height: calc(100vh - 2rem); padding: 0; border: 0;
-    border-radius: calc(var(--radius-media) * 2); background: var(--paper); color: var(--ink); overflow: hidden;
+    border-radius: var(--radius-panel); background: var(--paper); color: var(--ink); overflow: hidden;
   }
   .pop-wide { width: min(100vw - 2rem, 60rem); }
-  .pop::backdrop { background: rgb(34 22 22 / 0.75); backdrop-filter: blur(3px); }
+  .pop::backdrop { background: rgb(43 30 29 / 0.75); backdrop-filter: blur(3px); }
   .pop[open] { animation: pop-in 0.3s cubic-bezier(0.2, 0.7, 0.2, 1); }
   @keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(0.98); } }
   .pop-inner { display: grid; grid-template-rows: auto 1fr auto; max-height: calc(100vh - 2rem); }

@@ -47,7 +47,6 @@ const skills = about.skills.map((s, i) => {
     <ul class="cards" role="list">
       {skills.map((s, n) => (
         <li class="card reveal" style={`--delay: ${(n % 3) * 70}ms`}>
-          <span class="num" aria-hidden="true">{s.num}</span>
           <h3>{s.title}</h3>
           <p class="help">{s.help ?? s.text}</p>
           <div class="buttons">
@@ -68,7 +67,6 @@ const skills = about.skills.map((s, i) => {
           <dialog class="details" id={s.id} aria-labelledby={`${s.id}-dtitle`}>
             <div class="details-inner">
               <button type="button" class="close" data-close aria-label="Close">&times;</button>
-              <p class="num" aria-hidden="true">{s.num}</p>
               <h3 id={`${s.id}-dtitle`}>{s.title}</h3>
               {s.help && <p class="lead">{s.help}</p>}
               <p class="label">What this covers</p>
@@ -77,12 +75,14 @@ const skills = about.skills.map((s, i) => {
               </ul>
               {s.note && <p class="note">{s.note}</p>}
               <div class="buttons">
+                {/* UGC & Influencer leads with the case studies; the other skills lead with talking about a role */}
+                {s.link && s.category === 'UGC & Influencer' && <a class="btn btn-primary" href={s.link.href} data-close>{s.link.label}</a>}
                 {bookingUrl ? (
-                  <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Talk about a role <span class="visually-hidden">(opens in a new tab)</span></a>
+                  <a class:list={['btn', s.category === 'UGC & Influencer' ? 'btn-ghost' : 'btn-primary']} href={bookingUrl} target="_blank" rel="noopener">Talk about a role <span class="visually-hidden">(opens in a new tab)</span></a>
                 ) : (
-                  <a class="btn btn-primary" href="#contact" data-service={s.title} data-close>Talk about a role</a>
+                  <a class:list={['btn', s.category === 'UGC & Influencer' ? 'btn-ghost' : 'btn-primary']} href="#contact" data-service={s.title} data-close>Talk about a role</a>
                 )}
-                {s.link && <a class="btn btn-ghost" href={s.link.href} data-close>{s.link.label}</a>}
+                {s.link && s.category !== 'UGC & Influencer' && <a class="btn btn-ghost" href={s.link.href} data-close>{s.link.label}</a>}
               </div>
             </div>
           </dialog>
@@ -93,21 +93,21 @@ const skills = about.skills.map((s, i) => {
 </section>
 
 <style>
-  .skills { padding-block: var(--section); background: var(--paper); }
+  .skills { padding-block: var(--section); background: var(--blue); }
 
   .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
   @media (min-width: 40rem) { .cards { grid-template-columns: repeat(2, 1fr); } }
   @media (min-width: 64rem) { .cards { grid-template-columns: repeat(3, 1fr); } }
 
   .card {
-    display: grid; grid-template-rows: auto auto 1fr auto; gap: 0.9rem;
+    display: grid; grid-template-rows: auto 1fr auto; gap: 0.9rem;
     padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
-    border: 1px solid var(--line); border-radius: calc(var(--radius-media) * 1.5);
+    border: 1px solid var(--line); border-radius: var(--radius-panel);
     background: var(--paper);
     transition: border-color 0.3s ease, transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
   .card:hover { border-color: var(--wine); transform: translateY(-3px); }
-  .num { font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.12em; color: var(--wine); }
+  .num { font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.01em; color: var(--wine); }
   .help { color: var(--text-muted); }
   .buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .btn.small { min-height: 2.75rem; padding: 0.5rem 1.1rem; }
@@ -117,15 +117,15 @@ const skills = about.skills.map((s, i) => {
     width: min(100vw - 2rem, 36rem); max-height: calc(100vh - 2rem);
     padding: 0; border: 0; border-radius: var(--radius-media);
     background: var(--paper); color: var(--ink);
-    --text-muted: #5e4a44; --line: rgb(34 22 22 / 0.15); --focus: var(--wine); --heading: var(--ink);
+    --text-muted: #5f4a48; --line: rgb(43 30 29 / 0.15); --focus: var(--wine); --heading: var(--ink);
   }
-  .details::backdrop { background: rgb(34 22 22 / 0.7); backdrop-filter: blur(3px); }
+  .details::backdrop { background: rgb(43 30 29 / 0.7); backdrop-filter: blur(3px); }
   .details[open] { animation: pop 0.25s ease; }
   @keyframes pop { from { opacity: 0; transform: translateY(8px); } }
   .details-inner { position: relative; display: grid; gap: 0.9rem; padding: clamp(1.5rem, 1rem + 2vw, 2.25rem); }
   .details h3 { padding-right: 2.5rem; }
   .details .num { color: var(--wine); }
-  .label { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--wine); margin-top: 0.5rem; }
+  .label { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: var(--wine); margin-top: 0.5rem; }
   .included { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
   .included li { padding: 0.6rem 0 0.6rem 1.5rem; border-bottom: 1px solid var(--line); position: relative; }
   .included li::before { content: ''; position: absolute; left: 0.2rem; top: 1.25rem; width: 0.55rem; height: 1px; background: var(--wine); }

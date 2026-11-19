@@ -3,8 +3,9 @@
  * Experience, in three parts. All text: src/data/experience.json (from my Nov 2026 experience files).
  * 1. Professional experience: a list of roles on the left; hovering, focusing, or tapping one shows its history
  *    (overview, what I did, brands) in the panel on the right. On phones each role opens in place.
- * 2. Additional experience & projects: compact cards, no dates, hidden behind a button until opened.
- * 3. Business background: the six businesses I built and ran, with the skills that carry over, also behind a button.
+ * 2. Two panels side by side: Additional experience & projects (Blue) and Business background (Chocopie).
+ *    Each shows a preview of names and opens a pop-up: the full list of projects (no dates), or the businesses
+ *    as a timeline with the skills that carry over.
  */
 import { experience } from '../lib/data';
 
@@ -41,51 +42,69 @@ const { professional, additional, businesses } = experience;
       <div class="panel" aria-live="polite" data-panel></div>
     </div>
 
-    <details class="more-exp">
-      <summary>
-        <span class="more-label">
-          <strong>Additional experience &amp; projects</strong>
-          <span>{additional.length} more brands and projects I've supported</span>
-        </span>
-        <span class="more-btn"><span class="when-closed">View all</span><span class="when-open">Hide</span> <span class="chev" aria-hidden="true">+</span></span>
-      </summary>
-    <ul class="extra" role="list">
-      {additional.map((a) => (
-        <li>
-          <strong>{a.company}</strong>
-          <span class="extra-role">{a.role}</span>
-          <span class="extra-note">{a.note}</span>
-        </li>
-      ))}
-    </ul>
-    </details>
-
-    <details class="more-exp">
-      <summary>
-        <span class="more-label">
-          <strong>Business background</strong>
-          <span>{businesses.list.length} businesses I built and ran, and the skills that carry over</span>
-        </span>
-        <span class="more-btn"><span class="when-closed">View all</span><span class="when-open">Hide</span> <span class="chev" aria-hidden="true">+</span></span>
-      </summary>
-    <div class="biz">
-      <div class="biz-intro">
-        <p>{businesses.intro}</p>
-        <ul class="skills" role="list" aria-label="Skills that carry over">
-          {businesses.skills.map((s) => <li>{s}</li>)}
+    <div class="more">
+      <article class="tile tile-extra" aria-labelledby="extra-title">
+        <h3 id="extra-title">Additional experience &amp; projects</h3>
+        <p>{additional.length} more brands and projects I've supported.</p>
+        <ul class="names" role="list">
+          {additional.slice(0, 6).map((a) => <li>{a.company}</li>)}
+          {additional.length > 6 && <li class="rest">+{additional.length - 6} more</li>}
         </ul>
-      </div>
-      <ul class="biz-list" role="list">
-        {businesses.list.map((b) => (
+        <button type="button" class="btn btn-primary" data-exp-open="exp-extra" aria-haspopup="dialog">View all {additional.length}</button>
+      </article>
+      <article class="tile tile-biz" aria-labelledby="biz-title">
+        <h3 id="biz-title">Business background</h3>
+        <p>{businesses.intro}</p>
+        <ul class="names" role="list">
+          {businesses.list.map((b) => <li>{b.name}</li>)}
+        </ul>
+        <button type="button" class="btn btn-book" data-exp-open="exp-biz" aria-haspopup="dialog">See the businesses</button>
+      </article>
+    </div>
+
+    <dialog class="exp-pop" id="exp-extra" aria-labelledby="exp-extra-title">
+      <header class="exp-head">
+        <h3 id="exp-extra-title">Additional experience &amp; projects</h3>
+        <button type="button" class="x" data-exp-close aria-label="Close">&times;</button>
+      </header>
+      <ul class="extra" role="list">
+        {additional.map((a) => (
           <li>
-            <p class="biz-top"><strong>{b.name}</strong><span>{b.dates}</span></p>
-            <p class="biz-industry">{b.industry}</p>
-            <p class="biz-hl">{b.highlight}</p>
+            <strong>{a.company}</strong>
+            <span class="extra-role">{a.role}</span>
+            <span class="extra-note">{a.note}</span>
           </li>
         ))}
       </ul>
-    </div>
-    </details>
+    </dialog>
+
+    <dialog class="exp-pop" id="exp-biz" aria-labelledby="exp-biz-title">
+      <header class="exp-head">
+        <h3 id="exp-biz-title">Business background</h3>
+        <button type="button" class="x" data-exp-close aria-label="Close">&times;</button>
+      </header>
+      <div class="biz">
+        <div class="biz-intro">
+          <p>{businesses.intro}</p>
+          <p class="skills-title">Skills that carry over</p>
+          <ul class="skills" role="list">
+            {businesses.skills.map((s) => <li>{s}</li>)}
+          </ul>
+        </div>
+        <ol class="timeline" role="list">
+          {businesses.list.map((b) => (
+            <li>
+              <span class="when">{b.dates}</span>
+              <div>
+                <strong>{b.name}</strong>
+                <span class="biz-industry">{b.industry}</span>
+                <span class="biz-hl">{b.highlight}</span>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </dialog>
   </div>
 </section>
 
@@ -93,7 +112,7 @@ const { professional, additional, businesses } = experience;
   .experience { padding-block: var(--section); }
   .group-title {
     margin: clamp(2.5rem, 2rem + 2vw, 3.5rem) 0 1rem;
-    font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--wine);
+    font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.01em; color: var(--wine);
   }
   .group-title:first-of-type { margin-top: 0; }
 
@@ -108,7 +127,7 @@ const { professional, additional, businesses } = experience;
     font: inherit; color: var(--ink); text-align: left; cursor: pointer;
     transition: background 0.25s ease, padding 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .role:hover, .role.active { background: rgb(56 26 23 / 0.05); padding-left: 1.1rem; }
+  .role:hover, .role.active { background: rgb(67 47 46 / 0.05); padding-left: 1.1rem; }
   .role .dates { grid-column: 1; font-size: var(--fs-small); color: var(--text-muted); }
   .role .name { grid-column: 1; font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
   .role .title { grid-column: 1; font-size: var(--fs-small); font-weight: 600; color: var(--wine); }
@@ -129,7 +148,7 @@ const { professional, additional, businesses } = experience;
     .roles .detail { display: none; }
     .panel {
       display: block; position: sticky; top: 6rem;
-      padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem); border-radius: calc(var(--radius-media) * 2);
+      padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem); border-radius: var(--radius-panel);
       background: var(--wine); color: var(--paper);
       --text-muted: var(--rose); --ink: var(--paper);
     }
@@ -138,72 +157,66 @@ const { professional, additional, businesses } = experience;
     .panel :global(.points) { color: var(--rose); }
   }
 
-  /* Additional: a bar that opens the cards */
-  .more-exp + .more-exp { margin-top: 1rem; }
-  .more-exp { margin-top: clamp(2rem, 1.5rem + 2vw, 3rem); transition: border-color 0.25s ease, box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); border: 1px solid var(--line); border-radius: calc(var(--radius-media) * 1.5); background: var(--paper); }
-  .more-exp summary {
-    display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
-    padding: 1.25rem clamp(1.1rem, 1rem + 1vw, 1.75rem); cursor: pointer; list-style: none; border-radius: inherit;
+  /* Two panels side by side: Additional (Blue) and Business background (Chocopie); each opens a pop-up */
+  .more { display: grid; gap: 1rem; margin-top: clamp(2.5rem, 2rem + 2vw, 3.5rem); }
+  @media (min-width: 48rem) { .more { grid-template-columns: 1fr 1fr; } }
+  .tile {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 1rem;
+    padding: clamp(1.5rem, 1.1rem + 1.5vw, 2.25rem); border-radius: var(--radius-panel);
   }
-  .more-exp summary::-webkit-details-marker { display: none; }
-  .more-label { display: grid; gap: 0.15rem; }
-  .more-label strong { font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
-  .more-label span { font-size: var(--fs-small); color: var(--text-muted); }
-  .more-btn {
-    display: inline-flex; align-items: center; gap: 0.6rem; min-height: 2.875rem; padding: 0.6rem 1.25rem;
-    border-radius: var(--radius-pill); background: var(--wine); color: var(--paper);
-    font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
-    transition: background 0.2s ease;
+  .tile h3 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem); letter-spacing: -0.02em; line-height: 1.15; color: inherit; }
+  .tile > p { max-width: 46ch; }
+  .tile .btn { margin-top: auto; }
+  .tile-extra { background: var(--blue); color: var(--ink); }
+  .tile-extra > p { color: var(--text-muted); }
+  .tile-biz { background: var(--wine); color: var(--paper); }
+  .tile-biz > p { color: #e7ddd2; }
+  .names { list-style: none; margin: 0 0 0.5rem; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .names li { padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); font-size: var(--fs-label); font-weight: 600; }
+  .tile-extra .names li { background: var(--paper); }
+  .tile-extra .names .rest { background: transparent; border: 1px dashed rgb(67 47 46 / 0.35); }
+  .tile-biz .names li { background: rgb(250 246 240 / 0.12); color: var(--paper); }
+
+  /* Pop-ups */
+  .exp-pop {
+    width: min(100vw - 1.5rem, 56rem); max-height: calc(100dvh - 1.5rem); padding: 0; border: 0;
+    border-radius: var(--radius-panel); background: var(--paper); color: var(--ink);
   }
-  .more-exp:not([open]):hover { border-color: var(--wine); transform: translateY(-3px); box-shadow: 0 18px 36px -26px rgb(34 22 22 / 0.5); }
-  .more-exp summary:hover .more-btn { background: var(--ink); }
-  .more-exp summary:hover .chev { transform: rotate(90deg); }
-  .more-exp[open] summary:hover .chev { transform: rotate(45deg); }
-  .chev { font-size: 1.1rem; line-height: 1; transition: transform 0.3s ease; }
-  .more-exp[open] .chev { transform: rotate(45deg); }
-  .when-open, .more-exp[open] .when-closed { display: none; }
-  .more-exp[open] .when-open { display: inline; }
-  .more-exp .extra { padding: 0 clamp(1.1rem, 1rem + 1vw, 1.75rem) clamp(1.1rem, 1rem + 1vw, 1.75rem); }
-  @media (prefers-reduced-motion: no-preference) {
-    .more-exp[open] .extra li { animation: exp-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
-    .more-exp[open] .extra li:nth-child(3n + 2) { animation-delay: 60ms; }
-    .more-exp[open] .extra li:nth-child(3n) { animation-delay: 120ms; }
-    @keyframes exp-in { from { opacity: 0; transform: translateY(12px); } }
+  .exp-pop[open] { animation: exp-pop-in 0.3s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  @keyframes exp-pop-in { from { opacity: 0; transform: translateY(14px); } }
+  .exp-pop::backdrop { background: rgb(43 30 29 / 0.72); backdrop-filter: blur(3px); }
+  .exp-head {
+    position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    padding: 1rem clamp(1.25rem, 1rem + 1vw, 2rem); background: var(--paper); border-bottom: 1px solid var(--line);
   }
-  .extra { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+  .exp-head h3 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.35rem, 1.15rem + 0.8vw, 1.75rem); letter-spacing: -0.02em; }
+  .x {
+    flex: none; width: 2.75rem; height: 2.75rem; border-radius: 50%; border: 1px solid var(--line); background: var(--paper);
+    color: var(--ink); font-size: 1.5rem; line-height: 1; cursor: pointer;
+  }
+  .x:hover { background: var(--wine); color: var(--paper); border-color: var(--wine); }
+
+  .extra { list-style: none; margin: 0; padding: clamp(1.25rem, 1rem + 1vw, 2rem); display: grid; gap: 0.75rem; }
   @media (min-width: 40rem) { .extra { grid-template-columns: repeat(2, 1fr); } }
-  @media (min-width: 64rem) { .extra { grid-template-columns: repeat(3, 1fr); } }
-  .extra li {
-    display: grid; gap: 0.2rem; align-content: start; padding: 1rem 1.1rem;
-    border: 1px solid var(--line); border-radius: var(--radius-media); background: var(--paper);
-    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.25s ease;
-  }
-  .extra li:hover { transform: translateY(-3px); border-color: var(--wine); }
+  .extra li { display: grid; gap: 0.2rem; align-content: start; padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: var(--radius-media); }
   .extra strong { font-weight: 700; }
   .extra-role { font-size: var(--fs-small); font-weight: 600; color: var(--wine); }
   .extra-note { font-size: var(--fs-small); color: var(--text-muted); }
 
-  /* Business background */
-  .biz { display: grid; gap: 1.5rem; padding: 0 clamp(1.1rem, 1rem + 1vw, 1.75rem) clamp(1.1rem, 1rem + 1vw, 1.75rem); }
-  @media (prefers-reduced-motion: no-preference) {
-    .more-exp[open] .biz > * { animation: exp-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
-    .more-exp[open] .biz-list { animation-delay: 80ms; }
-  }
-  @media (min-width: 64rem) { .biz { grid-template-columns: 0.8fr 1.2fr; gap: 2.5rem; } }
-  .biz-intro { display: grid; gap: 1rem; align-content: start; }
-  .biz-intro p { font-size: var(--fs-lead); line-height: 1.45; }
+  .biz { display: grid; gap: 1.75rem; padding: clamp(1.25rem, 1rem + 1vw, 2rem); }
+  @media (min-width: 48rem) { .biz { grid-template-columns: 0.85fr 1.15fr; gap: 2.5rem; } }
+  .biz-intro { display: grid; gap: 0.9rem; align-content: start; }
+  .biz-intro > p:first-child { font-size: var(--fs-lead); line-height: 1.45; }
+  .skills-title { font-size: var(--fs-small); font-weight: 700; margin-top: 0.5rem; }
   .skills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
   .skills li { padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); background: var(--greige); font-size: var(--fs-small); font-weight: 600; }
-  .biz-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
-  @media (min-width: 40rem) { .biz-list { grid-template-columns: 1fr 1fr; } }
-  .biz-list li {
-    display: grid; gap: 0.2rem; padding: 0.9rem 1rem; border: 1px solid var(--line); border-radius: var(--radius-media); background: var(--paper);
-    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.25s ease;
-  }
-  .biz-list li:hover { transform: translateY(-3px); border-color: var(--wine); }
-  .biz-top { display: flex; justify-content: space-between; gap: 0.75rem; }
-  .biz-top strong { font-weight: 700; }
-  .biz-top span { font-size: var(--fs-small); color: var(--text-muted); white-space: nowrap; }
+  /* A timeline: the businesses in the order I started them */
+  .timeline { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); display: grid; gap: 1.25rem; }
+  .timeline li { position: relative; display: grid; gap: 0.15rem; padding-left: 1.25rem; }
+  .timeline li::before { content: ''; position: absolute; left: -0.4rem; top: 0.35rem; width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--wine); }
+  .timeline .when { font-size: var(--fs-label); font-weight: 600; color: var(--text-muted); }
+  .timeline div { display: grid; gap: 0.1rem; }
+  .timeline strong { font-weight: 700; }
   .biz-industry { font-size: var(--fs-small); font-weight: 600; color: var(--wine); }
   .biz-hl { font-size: var(--fs-small); color: var(--text-muted); }
 </style>
@@ -233,4 +246,14 @@ const { professional, additional, businesses } = experience;
     });
     show(0);
   }
+
+  // Additional experience and Business background pop-ups: X, Escape or a click outside closes them
+  document.querySelectorAll<HTMLButtonElement>('[data-exp-open]').forEach((btn) => {
+    const dialog = document.getElementById(btn.dataset.expOpen!) as HTMLDialogElement | null;
+    if (!dialog) return;
+    btn.addEventListener('click', () => dialog.showModal());
+    dialog.querySelector('[data-exp-close]')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+    dialog.addEventListener('close', () => btn.focus());
+  });
 </script>

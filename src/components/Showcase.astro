@@ -169,7 +169,7 @@ const tabs = showcase.map((c) => {
 </section>
 
 <style>
-  .showcase { padding-block: var(--section); background: var(--paper); border-top: 1px solid var(--line); }
+  .showcase { padding-block: var(--section); background: var(--paper); }
 
   /* Tabs: a quiet underline that slides to the active tab */
   .tabs {
@@ -199,7 +199,7 @@ const tabs = showcase.map((c) => {
     padding: 0.5rem 0;
     background: none; border: 0; cursor: pointer;
     font: inherit; font-weight: 600; font-size: var(--fs-small);
-    letter-spacing: 0.12em; text-transform: uppercase;
+    letter-spacing: 0.01em;
     color: var(--text-muted);
     transition: color 0.25s ease;
   }
@@ -230,7 +230,7 @@ const tabs = showcase.map((c) => {
   .frame {
     position: relative; display: block; overflow: hidden;
     border-radius: var(--radius-media);
-    background: var(--greige);
+    background: var(--greige-soft);
   }
   .frame img, .frame :global(video) {
     position: absolute; inset: 0;
@@ -244,7 +244,7 @@ const tabs = showcase.map((c) => {
     position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
     display: grid; place-items: center;
     width: 1.9rem; height: 1.9rem; border-radius: 50%;
-    background: rgb(34 22 22 / 0.55); color: var(--paper);
+    background: rgb(43 30 29 / 0.55); color: var(--paper);
     backdrop-filter: blur(4px);
     transition: opacity 0.3s ease;
   }
@@ -252,7 +252,7 @@ const tabs = showcase.map((c) => {
     position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
     display: inline-flex; align-items: center; gap: 0.3rem;
     padding: 0.25rem 0.55rem; border-radius: var(--radius-pill);
-    background: rgb(34 22 22 / 0.6); color: var(--paper);
+    background: rgb(43 30 29 / 0.6); color: var(--paper);
     font-size: var(--fs-label); font-weight: 600;
     backdrop-filter: blur(4px);
   }
@@ -260,12 +260,12 @@ const tabs = showcase.map((c) => {
     position: absolute; inset: auto 0 0 0; z-index: 2;
     display: grid; gap: 0.15rem;
     padding: 2.5rem 0.85rem 0.85rem;
-    background: linear-gradient(to top, rgb(34 22 22 / 0.82), rgb(34 22 22 / 0));
+    background: linear-gradient(to top, rgb(43 30 29 / 0.82), rgb(43 30 29 / 0));
     color: var(--paper);
     opacity: 0; transform: translateY(6px);
     transition: opacity 0.35s ease, transform 0.35s ease;
   }
-  .brand { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--paper); }
+  .brand { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: var(--paper); }
   .title { font-size: var(--fs-small); font-weight: 600; line-height: 1.2; }
 
   /* Hover and keyboard focus show the same details */
