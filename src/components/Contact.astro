@@ -146,7 +146,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
   .cal-title { font-weight: 700; padding: 0.25rem 0.25rem 0; }
   /* The calendar alone (event details hidden) fits this box without scrolling or overlapping */
   .cal { padding: 1rem; border-radius: var(--radius-panel); background: var(--paper); border: 1px solid var(--line); }
-  .cal iframe { display: block; width: 100%; min-width: 0; height: 41rem; border: 0; border-radius: var(--radius-media); background: var(--paper); }
+  .cal iframe { display: block; width: 100%; min-width: 0; height: 36.5rem; border: 0; border-radius: var(--radius-media); background: var(--paper); }
   @media (max-width: 40rem) { .cal { padding: 0.5rem; } .cal iframe { height: 46rem; } }
   .cal-open { justify-self: start; padding-inline: 0.25rem; font-size: var(--fs-small); font-weight: 600; color: var(--wine); min-height: 2.75rem; display: inline-flex; align-items: center; }
   /* Form: name and email side by side where there's room */
@@ -188,7 +188,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
   h2 { max-width: 12ch; }
   .lede { color: var(--text-muted); max-width: 46ch; }
 
-  .actions { display: grid; gap: 2rem; }
+  .actions { display: grid; gap: 1.25rem; }
   .email { display: grid; gap: 0.75rem; }
   .email-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; }
   /* Sans, not serif: in a serif "1" and "l" look alike, which matters in an email address */
