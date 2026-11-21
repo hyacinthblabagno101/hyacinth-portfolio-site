@@ -1,35 +1,35 @@
 /*
  * Design tokens. Every color, type size and corner radius on the site comes from here.
- * Palette: Espresso and Milk Punch, plus tints of the two.
+ * Palette: Linen, Black, Papaya, Banana, Sky, Saguaro.
  * Contrast ratios are WCAG (AA body text needs 4.5:1).
  */
 :root {
   /*
-   * Palette: Espresso and Milk Punch. No other colors, only tints of these two.
-   * Milk Punch = page background and text on dark bands · Espresso = all text, buttons, dark bands.
-   * Espresso on Milk Punch is 10.3:1.
+   * Palette: Linen, Black, Papaya, Banana, Sky and Saguaro. Each has one job:
+   * Linen = page background · Black = text, dark bands, footer · Papaya = main buttons ·
+   * Banana = soft section background · Sky = cards, panels, Book a call · Saguaro = small accents only.
    */
-  --paper: #fff4c7;        /* Milk Punch: page background */
-  --clay: #eee1b6;         /* Espresso at 10% on Milk Punch: second light band, cards (Espresso text 8.6:1) */
-  --blue: var(--clay);
-  --greige: #eee1b6;       /* Book a call buttons and chips */
-  --greige-soft: #f6eabf;  /* Espresso at 5%: hover backgrounds, image placeholders */
-  --salsa: #54321f;        /* Espresso: main buttons */
-  --wine: #54321f;         /* Espresso: dark bands and the footer */
-  --ink: #54321f;          /* Espresso: all text and headlines */
-  --rose: #fff4c7;         /* Milk Punch: accents on Espresso */
-  --sage: #54321f;         /* "Open to work" dot */
-  --sage-light: #fff4c7;   /* Milk Punch: small accents on Espresso */
-  --green: #54321f;        /* "Open to work" text */
-  --green-soft: #eee1b6;
+  --paper: #fffff0;        /* Linen: page background */
+  --clay: #fff4c6;         /* Banana: What I do and Contact backgrounds */
+  --blue: #a5b7e5;         /* Sky: cards and panels (Black text 8.2:1) */
+  --greige: #a5b7e5;       /* Sky: Book a call buttons and chips */
+  --greige-soft: #f4f3e4;  /* Black at 5% on Linen: hover backgrounds, image placeholders */
+  --salsa: #fc7140;        /* Papaya: main buttons (Black text 5.9:1) */
+  --wine: #341717;         /* Black: dark bands and the footer */
+  --ink: #341717;          /* Black: all text (16:1 on Linen) */
+  --rose: #d1d275;         /* Saguaro: small accents on Black (10.3:1) */
+  --sage: #341717;         /* "Open to work" dot */
+  --sage-light: #d1d275;   /* Saguaro: small accents on Black */
+  --green: #341717;        /* "Open to work" text */
+  --green-soft: #d1d275;   /* Saguaro badge */
 
   /* Roles (light sections); dark sections swap these in .band-dark */
   --bg: var(--paper);
   --text: var(--ink);
-  --text-muted: #7f6249;   /* Espresso at 75%: captions and secondary text (5.1:1) */
+  --text-muted: #715d58;   /* Black at 70%: captions (6.1:1 on Linen, 5.6:1 on Banana) */
   --heading: var(--ink);
   --accent: var(--ink);    /* links are Plum Noir with a Persimmon underline */
-  --line: rgb(84 50 31 / 0.18);
+  --line: rgb(52 23 23 / 0.15);
   --rule: var(--ink);
   --focus: var(--ink);
 
@@ -62,17 +62,17 @@
 
 /*
  * Section color rhythm, top to bottom:
- * Hero Milk Punch, numbers Espresso, About Milk Punch, brands Espresso, What I do light Espresso wash,
- * Selected work Milk Punch, Feedback Espresso, Experience Milk Punch, Contact light wash, footer Espresso.
+ * Hero Linen, numbers Black, About Linen, brands Black, What I do Sky, Selected work Linen, Feedback Black,
+ * Experience Linen (Sky and Black panels), Contact Banana, footer Black.
  * Dark band: put class="band-dark" on any section.
  */
 .band-dark {
   --bg: var(--wine);
   --text: var(--paper);              /* 16:1 */
-  --text-muted: rgb(255 244 199 / 0.8); /* Milk Punch tint on Espresso */
+  --text-muted: rgb(255 255 240 / 0.8); /* Linen tint on Black */
   --heading: var(--paper);
   --accent: var(--rose);            /* Wasabi */
-  --line: rgb(255 244 199 / 0.2);
+  --line: rgb(255 255 240 / 0.2);
   --rule: var(--paper);
   --focus: var(--rose);
   background: var(--bg);
@@ -140,8 +140,8 @@ h3 { font-size: var(--fs-h3); line-height: 1.1; letter-spacing: -0.02em; }
 
 p { margin: 0; text-wrap: pretty; }
 
-a { color: var(--accent); text-underline-offset: 0.18em; text-decoration-thickness: 1px; text-decoration-color: rgb(84 50 31 / 0.45); }
-.band-dark a { text-decoration-color: rgb(255 244 199 / 0.6); }
+a { color: var(--accent); text-underline-offset: 0.18em; text-decoration-thickness: 1px; text-decoration-color: var(--salsa); }
+.band-dark a { text-decoration-color: var(--rose); }
 a:hover { text-decoration-thickness: 2px; }
 
 :focus-visible {
@@ -185,16 +185,16 @@ a:hover { text-decoration-thickness: 2px; }
   border-radius: var(--radius-pill);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
-.btn-primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
-.btn-primary:hover { background: #3b2316; border-color: #3b2316; color: var(--paper); }
+.btn-primary { background: var(--salsa); border-color: var(--salsa); color: var(--ink); }
+.btn-primary:hover { background: var(--ink); border-color: var(--ink); color: var(--paper); }
 .btn-ghost { color: var(--text); background: transparent; }
 .btn-ghost:hover { background: var(--text); color: var(--bg); }
 /* Book a call: a lighter Milk button, on light and dark sections */
-.btn-book { background: var(--greige); border-color: rgb(84 50 31 / 0.3); color: var(--ink); }
+.btn-book { background: var(--greige); border-color: var(--greige); color: var(--ink); }
 .band-dark .btn-book { border-color: var(--greige); }
 .btn-book:hover { background: var(--paper); border-color: var(--ink); color: var(--ink); }
 .band-dark .btn-book:hover { border-color: var(--paper); }
-.band-dark .btn-primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.band-dark .btn-primary { background: var(--salsa); border-color: var(--salsa); color: var(--ink); }
 .band-dark .btn-primary:hover { background: var(--paper); border-color: var(--paper); color: var(--ink); }
 
 /* Development placeholders: obvious on purpose so nothing ships by accident */
@@ -258,5 +258,4 @@ a:hover { text-decoration-thickness: 2px; }
 }
 
 /* Cool Blue sections: secondary text uses a Plum Noir tint, and Book a call turns Vanilla so it still stands out */
-.band-blue { --text-muted: rgb(84 50 31 / 0.85); background: var(--clay); }
-.band-blue .btn-book { background: var(--paper); }
+.band-blue { background: var(--clay); }

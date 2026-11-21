@@ -93,7 +93,7 @@ const skills = about.skills.map((s, i) => {
 </section>
 
 <style>
-  .skills { padding-block: var(--section); background: var(--blue); }
+  .skills { padding-block: var(--section); background: var(--blue); --text-muted: rgb(52 23 23 / 0.85); }
 
   .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
   @media (min-width: 40rem) { .cards { grid-template-columns: repeat(2, 1fr); } }
@@ -117,9 +117,9 @@ const skills = about.skills.map((s, i) => {
     width: min(100vw - 2rem, 36rem); max-height: calc(100vh - 2rem);
     padding: 0; border: 0; border-radius: var(--radius-media);
     background: var(--paper); color: var(--ink);
-    --text-muted: #7f6249; --line: rgb(84 50 31 / 0.15); --focus: var(--wine); --heading: var(--ink);
+    --text-muted: #715d58; --line: rgb(52 23 23 / 0.15); --focus: var(--wine); --heading: var(--ink);
   }
-  .details::backdrop { background: rgb(84 50 31 / 0.7); backdrop-filter: blur(3px); }
+  .details::backdrop { background: rgb(52 23 23 / 0.7); backdrop-filter: blur(3px); }
   .details[open] { animation: pop 0.25s ease; }
   @keyframes pop { from { opacity: 0; transform: translateY(8px); } }
   .details-inner { position: relative; display: grid; gap: 0.9rem; padding: clamp(1.5rem, 1rem + 2vw, 2.25rem); }
@@ -134,8 +134,8 @@ const skills = about.skills.map((s, i) => {
   .details .buttons { margin-top: 0.5rem; }
   .details .btn-ghost { color: var(--ink); }
   .details .btn-ghost:hover { background: var(--ink); color: var(--paper); }
-  .details .btn-primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
-  .details .btn-primary:hover { background: #3b2316; border-color: #3b2316; color: var(--paper); }
+  .details .btn-primary { background: var(--salsa); border-color: var(--salsa); color: var(--ink); }
+  .details .btn-primary:hover { background: var(--ink); border-color: var(--ink); color: var(--paper); }
   .close {
     position: absolute; top: 1rem; right: 1rem;
     width: 2.75rem; height: 2.75rem; border-radius: 50%;
