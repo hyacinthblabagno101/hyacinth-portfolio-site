@@ -1,65 +1,127 @@
 ---
 /**
- * Capabilities, shown inside About (About.astro renders this). Text: "skills" in src/data/about.json.
- * - Three main capabilities in one row with fine dividers, each with at most one quiet link to matching work.
- * - The other three (e-commerce, AI workflows, virtual assistance) in a smaller supporting row.
- * - Phones: a list of buttons (title and one line); tapping one opens the full description (aria-expanded).
- *   Wide screens show everything open.
- * No "Talk about a role" buttons: the Contact section handles that.
+ * What I do, shown inside About (About.astro renders this). Text: "skills" in src/data/about.json; tools: src/data/tools.json.
+ * - A 2x2 grid of cards: my three main skills, plus one card that groups e-commerce, AI workflows and virtual assistance.
+ *   Each title has one keyword underlined in orange; each card has "See related work" and "See details".
+ * - "See details" opens a panel: a cover image from my own work, where I can help (my own words from about.json),
+ *   a checklist of what I'll handle (split from the skill text), and the tools I use for it (from tools.json).
+ * Written for hiring managers: about a role on their team, not a service for sale.
  */
-import { about, showcase } from '../lib/data';
+import { about, showcase, tools } from '../lib/data';
+import { imageUrl, posterFor } from '../lib/cloudinary';
 
 const has = (key: string) => showcase.some((c) => c.key === key);
-/** One quiet link per main capability, only where matching work exists */
-const links: Record<string, { label: string; href: string } | undefined> = {
-  'Social Media & Design': has('statics') ? { label: 'See statics', href: '/?work=statics#work' } : undefined,
-  'Short-Form Video': has('reels') ? { label: 'See video reels', href: '/?work=reels#work' } : undefined,
-  'UGC & Influencer': { label: 'See the case studies', href: '/#case-studies' },
-};
-const MAIN = ['Social media management', 'Creative production', 'UGC and influencer coordination'];
+const items = showcase.flatMap((c) => c.items);
+const media = (id: string) => items.find((i) => i.id === id);
 
-const all = about.skills.map((s, i) => ({
-  ...s,
-  id: `cap-${i + 1}`,
-  // One line for the collapsed view: the text up to its first comma
-  line: s.text.split(/,|\./)[0].trim(),
-  link: s.category ? links[s.category] : undefined,
-}));
-const main = all.filter((s) => MAIN.includes(s.title));
-const support = all.filter((s) => !MAIN.includes(s.title));
+/** "A, B, and C. More sentences." becomes the list [A, B, C] plus the remaining sentences as a note. */
+function split(text: string) {
+  const [first, ...rest] = text.split(/(?<=\.)\s+/);
+  const parts = first
+    .replace(/\.$/, '')
+    .split(/,\s*(?:and\s+)?/i)
+    .map((p) => p.trim())
+    .filter((p) => p && !/^by /i.test(p))
+    .map((p) => p.charAt(0).toUpperCase() + p.slice(1));
+  return { parts, note: rest.join(' ') };
+}
+const toolNames = (groups: string[]) =>
+  tools.groups.filter((g) => groups.includes(g.name)).flatMap((g) => g.tools.map((t) => (typeof t === 'string' ? t : t.name)));
+const cover = (id: string, w = 900) => {
+  const i = media(id);
+  if (!i) return undefined;
+  return i.kind === 'video' ? posterFor({ id: i.media }, w, '16:9') : imageUrl(i.media, w, '16:9');
+};
+const skill = (title: string) => about.skills.find((s) => s.title === title)!;
+
+type Card = {
+  id: string; title: string; key: string; line: string; work?: { label: string; href: string }; cover?: string;
+  sections: { heading?: string; help?: string; parts: string[]; note?: string }[]; tools: string[];
+};
+const one = (title: string, key: string, work: Card['work'], coverId: string, toolGroups: string[]): Card => {
+  const s = skill(title);
+  const { parts, note } = split(s.text);
+  return {
+    // One short line for the card: the help text up to its colon or first comma-led list, at most one sentence
+    id: `skill-${key.toLowerCase()}`, title, key, line: (s.help ?? s.text).split(/:|(?<=\.)\s|, from /)[0].replace(/\.$/, '') + '.',
+    work, cover: cover(coverId), sections: [{ help: s.help, parts, note }], tools: toolNames(toolGroups),
+  };
+};
+const extra = ['E-commerce support', 'AI-assisted workflows', 'Virtual assistance'].map((t) => skill(t)).filter(Boolean);
+const cards: Card[] = [
+  one('Social media management', 'management', has('statics') ? { label: 'See related work', href: '/?work=statics#work' } : undefined, 'board-expertbiotics', ['Social platforms', 'Scheduling and analytics']),
+  one('Creative production', 'production', has('reels') ? { label: 'See related work', href: '/?work=reels#work' } : undefined, 'reel-ss-top-trends', ['Design and video', 'AI']),
+  one('UGC and influencer coordination', 'influencer', { label: 'See the case studies', href: '/#case-studies' }, 'reel-rb-unboxing', ['Influencer marketing', 'Project management']),
+  {
+    id: 'skill-support', title: 'E-commerce, AI and admin support', key: 'support',
+    line: 'Product listings and images, small AI-built tools, and the admin that keeps campaigns on schedule.',
+    work: has('ai') ? { label: 'See related work', href: '/?work=ai#work' } : undefined,
+    cover: cover('ai-uncle-scientist-talking'),
+    sections: extra.map((s) => ({ heading: s.title, help: s.help, ...split(s.text) })),
+    tools: toolNames(['E-commerce and email', 'AI', 'Automation and web', 'Google Workspace']),
+  },
+];
+const mark = (title: string, key: string) =>
+  title.replace(new RegExp(`(${key})`, 'i'), '<span class="mark">$1</span>');
 ---
 
-<div id="skills" class="caps reveal" aria-labelledby="caps-title">
-  <h3 id="caps-title" class="caps-title">What I do</h3>
+<div id="skills" class="caps" aria-labelledby="caps-title">
+  <div class="head-title reveal">
+    <p class="kicker">What I do</p>
+    <h3 id="caps-title" class="caps-title">How I can <em>help</em> your team</h3>
+  </div>
 
-  <ul class="main" role="list">
-    {main.map((s) => (
-      <li class="cap">
-        <button type="button" class="cap-toggle" aria-expanded="false" aria-controls={s.id} data-cap>
-          <span class="cap-name">{s.title}</span>
-          <span class="cap-line">{s.line}</span>
-          <span class="chev" aria-hidden="true"></span>
-        </button>
-        <div class="cap-body" id={s.id} data-cap-body>
-          <p>{s.text}</p>
-          {s.link && <a class="btn btn--link" href={s.link.href}>{s.link.label}</a>}
+  <ul class="grid" role="list">
+    {cards.map((c, n) => (
+      <li class="card lift reveal" style={`--delay: ${(n % 2) * 80}ms`}>
+        <h4 class="card-title" set:html={mark(c.title, c.key)} />
+        <p class="card-line">{c.line}</p>
+        <div class="card-actions">
+          {c.work && <a class="btn btn--ink" href={c.work.href}>{c.work.label}</a>}
+          <button type="button" class="btn btn--secondary" data-open={c.id} aria-haspopup="dialog">
+            See details <span class="visually-hidden">about {c.title}</span>
+          </button>
         </div>
-      </li>
-    ))}
-  </ul>
 
-  <p class="label support-title">Also</p>
-  <ul class="support" role="list">
-    {support.map((s) => (
-      <li class="cap small">
-        <button type="button" class="cap-toggle" aria-expanded="false" aria-controls={s.id} data-cap>
-          <span class="cap-name">{s.title}</span>
-          <span class="cap-line">{s.line}</span>
-          <span class="chev" aria-hidden="true"></span>
-        </button>
-        <div class="cap-body" id={s.id} data-cap-body>
-          <p>{s.text}</p>
-        </div>
+        <dialog class="details" id={c.id} aria-labelledby={`${c.id}-title`}>
+          <div class="details-cover">
+            {c.cover && <img src={c.cover} alt="" width="900" height="506" decoding="async" />}
+            <button type="button" class="x" data-close aria-label="Close">&times;</button>
+            <div class="float-card">
+              <h3 id={`${c.id}-title`} set:html={mark(c.title, c.key)} />
+              <a class="btn btn--primary" href="#contact" data-close data-service={c.title}>Talk about a role</a>
+            </div>
+          </div>
+          <div class="details-body">
+            {c.sections.map((sec) => (
+              <section class="block">
+                {sec.heading && <h4 class="block-head">{sec.heading}</h4>}
+                {sec.help && (
+                  <>
+                    <p class="label sub">Where I can help</p>
+                    <p class="help">{sec.help}</p>
+                  </>
+                )}
+                <div class="checks">
+                  <p class="checks-title">What I'll <span class="mark">handle</span></p>
+                  <ul role="list">
+                    {sec.parts.map((p) => <li>{p}</li>)}
+                  </ul>
+                  {sec.note && <p class="note">{sec.note}</p>}
+                </div>
+              </section>
+            ))}
+            {c.tools.length > 0 && (
+              <div class="tools-box">
+                <p class="tools-title">Tools I use for this</p>
+                <ul role="list">{c.tools.map((t) => <li>{t}</li>)}</ul>
+              </div>
+            )}
+            <div class="details-actions">
+              {c.work && <a class="btn btn--secondary" href={c.work.href} data-close>{c.work.label}</a>}
+            </div>
+          </div>
+        </dialog>
       </li>
     ))}
   </ul>
@@ -71,71 +133,94 @@ const support = all.filter((s) => !MAIN.includes(s.title));
     padding: clamp(1.25rem, 1rem + 1.5vw, 2.5rem);
     border-radius: var(--radius-panel); background: var(--surface);
   }
-  .caps-title { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem); letter-spacing: -0.02em; margin-bottom: 1.25rem; }
-  .main, .support { list-style: none; margin: 0; padding: 0; display: grid; }
-  .cap { border-top: 1px solid var(--rule); }
-  .cap-toggle {
-    width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.15rem 1rem; align-items: center;
-    min-height: 2.75rem; padding: 0.9rem 0; background: none; border: 0; text-align: left; cursor: pointer;
-    font: inherit; color: var(--ink);
-  }
-  .cap-toggle:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
-  .cap-name { grid-column: 1; font-size: var(--fs-h3); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
-  .small .cap-name { font-size: var(--fs-body); }
-  .cap-line { grid-column: 1; font-size: var(--fs-small); color: var(--muted); }
-  .chev { grid-column: 2; grid-row: 1 / span 2; width: 0.6rem; height: 0.6rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); transition: transform 180ms ease; }
-  .cap-toggle[aria-expanded='true'] .chev { transform: rotate(-135deg); }
-  .cap-body { display: grid; gap: 0.5rem; padding: 0 0 1rem; justify-items: start; }
-  .cap-body[hidden] { display: none; }
-  .cap-body p { color: var(--muted); font-size: var(--fs-small); }
-  .support-title { color: var(--muted); margin: 1.75rem 0 0.25rem; }
+  .caps-title { font-family: var(--font-serif); font-weight: 400; font-size: var(--fs-h2); letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 1.5rem; }
+  .caps-title :global(em) { font-family: var(--font-serif); font-style: italic; }
 
-  /* Wide screens: everything open; main capabilities in three columns with fine dividers, supporting ones smaller */
-  @media (min-width: 64rem) {
-    .main { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .support { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .cap { border-top: 0; border-left: 1px solid var(--rule); padding: 0 1.5rem; }
-    .cap:first-child { border-left: 0; padding-left: 0; }
-    .cap-toggle { cursor: default; padding-top: 0; }
-    .cap-line, .chev { display: none; }
-    .cap-body, .cap-body[hidden] { display: grid; }
-    .cap-body p { font-size: var(--fs-body); }
-    .small .cap-body p { font-size: var(--fs-small); }
-    /* Main skills: large serif titles; a thin line draws under the title on hover, and the link slides in */
-    .main .cap-name {
-      font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.5rem, 1.2rem + 0.8vw, 1.875rem); letter-spacing: -0.02em; line-height: 1.15;
-      padding-bottom: 0.2rem;
-      background: linear-gradient(var(--accent), var(--accent)) left bottom / 0 2px no-repeat;
-      transition: background-size var(--t-move) var(--ease);
-    }
-    .main .cap:hover .cap-name, .main .cap:focus-within .cap-name { background-size: 100% 2px; }
+  /* Orange marker under one keyword */
+  :global(.caps .mark), :global(.details .mark) {
+    background: linear-gradient(var(--accent), var(--accent)) left 92% / 100% 0.14em no-repeat;
+    padding-bottom: 0.05em;
   }
-  @media (min-width: 64rem) and (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .main .cap-body .btn--link { opacity: 0.55; transform: translateX(-8px); transition: opacity var(--t-ui) var(--ease), transform var(--t-move) var(--ease); }
-    .main .cap:hover .btn--link, .main .cap:focus-within .btn--link { opacity: 1; transform: none; }
+
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+  @media (min-width: 48rem) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .card {
+    display: grid; grid-template-rows: auto 1fr auto; gap: 0.75rem;
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem); border-radius: var(--radius-panel);
+    background: var(--paper); border: 1px solid var(--rule);
   }
+  .card-title { font-size: var(--fs-h3); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; margin: 0; }
+  .card-line { color: var(--muted); font-size: var(--fs-small); }
+  .card-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+  .card-actions .btn { min-height: 2.75rem; padding: 0.55rem 1.1rem; }
+  :global(.btn--ink) { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  :global(.btn--ink:hover) { background: var(--accent); border-color: var(--accent); color: var(--ink); }
+
+  /* Details panel: a cover image with a floating title card, then the lists */
+  .details {
+    width: min(100vw - 1.5rem, 44rem); max-height: calc(100dvh - 1.5rem);
+    padding: 0; border: 0; border-radius: var(--radius-panel); background: var(--paper); color: var(--ink);
+    --muted: #715d58; --rule: #e3dccf; --focus: var(--ink); --heading: var(--ink); --text: var(--ink); --bg: var(--paper);
+  }
+  .details::backdrop { background: rgb(52 23 23 / 0.72); backdrop-filter: blur(3px); }
+  @media (prefers-reduced-motion: no-preference) {
+    .details[open] { animation: details-in var(--t-move) var(--ease); }
+    @keyframes details-in { from { opacity: 0; transform: translateY(14px); } }
+  }
+  .details-cover { position: relative; height: clamp(9rem, 6rem + 12vw, 13rem); background: var(--surface); }
+  .details-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .float-card {
+    position: absolute; right: clamp(0.75rem, 0.5rem + 1.5vw, 1.5rem); bottom: -2.75rem; z-index: 2;
+    display: grid; gap: 0.75rem; width: min(20rem, calc(100% - 1.5rem)); padding: 1rem 1.1rem;
+    border-radius: var(--radius-media); background: var(--paper); box-shadow: 0 18px 36px -18px rgb(52 23 23 / 0.5);
+  }
+  .float-card h3 { font-size: var(--fs-h3); font-weight: 600; margin: 0; }
+  .float-card .btn { width: 100%; }
+  .x {
+    position: absolute; top: 0.75rem; left: 0.75rem; z-index: 2;
+    width: 2.75rem; height: 2.75rem; border-radius: 50%; border: 0; background: var(--paper); color: var(--ink);
+    font-size: 1.5rem; line-height: 1; cursor: pointer; box-shadow: 0 4px 12px -4px rgb(52 23 23 / 0.5);
+  }
+  .x:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .details-body { display: grid; gap: 1.25rem; padding: 4rem clamp(1.25rem, 1rem + 1.5vw, 2rem) clamp(1.25rem, 1rem + 1.5vw, 2rem); }
+  .block { display: grid; gap: 0.6rem; }
+  .block-head { font-size: var(--fs-h3); font-weight: 600; margin: 0.5rem 0 0; }
+  .sub { color: var(--muted); }
+  .help { color: var(--ink); max-width: 62ch; }
+  .checks { display: grid; gap: 0.6rem; padding: 1rem 1.1rem; border: 1px solid var(--rule); border-radius: var(--radius-media); }
+  .checks-title { font-weight: 600; }
+  .checks ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+  .checks li { position: relative; padding-left: 1.75rem; font-size: var(--fs-small); }
+  .checks li::before {
+    content: ''; position: absolute; left: 0; top: 0.1rem; width: 1.1rem; height: 1.1rem; border-radius: 4px;
+    background: var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23341717' stroke-width='3'/%3E%3C/svg%3E") center / 75% no-repeat;
+  }
+  .note { font-size: var(--fs-small); color: var(--muted); }
+  /* Tools box: an orange panel, like the reference's bonus box */
+  .tools-box { padding: 1rem 1.1rem; border-radius: var(--radius-media); background: var(--accent); color: var(--ink); }
+  .tools-title { font-weight: 700; margin-bottom: 0.5rem; }
+  .tools-box ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tools-box li { padding: 0.2rem 0.6rem; border-radius: var(--radius-pill); background: rgb(255 255 240 / 0.85); font-size: var(--fs-small); font-weight: 600; }
+  .details-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 </style>
 
 <script>
-  // Phones: each capability opens with a tap (one line until then). Wide screens: all open.
-  const caps = [...document.querySelectorAll<HTMLButtonElement>('[data-cap]')];
-  const wide = window.matchMedia('(min-width: 64rem)');
-  const setAll = () => caps.forEach((b) => {
-    const body = document.getElementById(b.getAttribute('aria-controls')!);
-    if (!body) return;
-    body.hidden = !wide.matches && b.getAttribute('aria-expanded') !== 'true';
-    if (wide.matches) b.setAttribute('aria-expanded', 'true');
+  // "See details" opens that skill's panel; X, Escape or a click outside closes it; focus returns to the button.
+  // Links inside the panel close it and go where they point.
+  document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((btn) => {
+    const dialog = document.getElementById(btn.dataset.open!) as HTMLDialogElement | null;
+    if (!dialog) return;
+    btn.addEventListener('click', () => dialog.showModal());
+    dialog.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      if (t === dialog || t.closest('[data-close]')) {
+        if (t.closest('a')) dialog.dataset.leaving = '1';
+        dialog.close();
+      }
+    });
+    dialog.addEventListener('close', () => {
+      if (!dialog.dataset.leaving) btn.focus();
+      delete dialog.dataset.leaving;
+    });
   });
-  caps.forEach((b) => b.addEventListener('click', () => {
-    if (wide.matches) return;
-    const open = b.getAttribute('aria-expanded') !== 'true';
-    b.setAttribute('aria-expanded', String(open));
-    const body = document.getElementById(b.getAttribute('aria-controls')!);
-    if (body) body.hidden = !open;
-  }));
-  wide.addEventListener('change', () => {
-    if (!wide.matches) caps.forEach((b) => b.setAttribute('aria-expanded', 'false'));
-    setAll();
-  });
-  setAll();
 </script>

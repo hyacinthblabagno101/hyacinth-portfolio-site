@@ -8,6 +8,7 @@ import Showcase from '../components/Showcase.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Experience from '../components/Experience.astro';
 import Contact from '../components/Contact.astro';
+import Hiring from '../components/Hiring.astro';
 import { showAbout, showExperience } from '../lib/data';
 ---
 
@@ -19,6 +20,7 @@ import { showAbout, showExperience } from '../lib/data';
   {showExperience && <Experience />}
   <Testimonials />
   {showAbout && <About />}
+  <Hiring />
   <Contact />
   <CaseStudies />
 </Base>

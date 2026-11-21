@@ -1,0 +1,60 @@
+---
+/**
+ * "If you're hiring, this might be you": a short panel before Contact, modelled on a "POV, this is you" block.
+ * My phone-call photo on one side; on the other, a checklist drawn from my own skill and bio text (no new claims),
+ * then Let's talk and Book a call. Written for someone hiring for a role, not buying a service.
+ */
+import { Picture } from 'astro:assets';
+import callPhoto from '../assets/portrait-call-cutout.png';
+import { bookingUrl } from '../lib/data';
+
+// Each line restates something already on this page (What I do, About)
+const checks = [
+  'You need someone to take day-to-day ownership of your social accounts.',
+  'You want static posts, carousels and short-form video made in-house, from brief and script to the final edit.',
+  'You run creator or UGC campaigns and need someone to handle outreach, briefs and deliverables.',
+  'You sell online and need product images and listings that are clear and accurate.',
+  'You are hiring remotely, full-time, part-time or on contract.',
+];
+---
+
+<section class="hiring" aria-labelledby="hiring-title">
+  <div class="wrap grid">
+    <figure class="photo reveal">
+      <Picture src={callPhoto} alt="Hyacinth Blabagno in a brown suit, on a phone call while working on a laptop" widths={[400, 640, 900]} sizes="(min-width: 64rem) 28rem, 80vw" formats={['avif', 'webp']} loading="lazy" />
+    </figure>
+    <div class="copy reveal" style="--delay: 80ms">
+      <p class="kicker">Hiring?</p>
+      <h2 id="hiring-title">This might be <em>you</em></h2>
+      <ul class="checks" role="list">
+        {checks.map((c) => <li>{c}</li>)}
+      </ul>
+      <div class="actions">
+        <a class="btn btn--primary" href="#contact">Let's talk</a>
+        {bookingUrl && (
+          <a class="btn btn--secondary" href={bookingUrl} target="_blank" rel="noopener">Book a call <span class="visually-hidden">(opens Calendly in a new tab)</span></a>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hiring { padding-block: var(--section) 0; }
+  .grid { display: grid; gap: clamp(1.5rem, 1rem + 2vw, 3.5rem); align-items: end; }
+  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); } }
+  /* The photo stands on the panel's bottom edge, on a soft orange block */
+  .photo { position: relative; margin: 0; justify-self: center; width: min(100%, 26rem); isolation: isolate; order: 2; }
+  @media (min-width: 64rem) { .photo { order: 0; } }
+  .photo::before { content: ''; position: absolute; z-index: -1; inset: 18% 4% 0 4%; border-radius: var(--radius-panel) var(--radius-panel) 0 0; background: rgb(252 113 64 / 0.18); }
+  .photo :global(picture), .photo :global(img) { display: block; width: 100%; height: auto; }
+  .copy { display: grid; gap: 1rem; align-content: center; padding-bottom: var(--section); }
+  @media (max-width: 63.99rem) { .copy { padding-bottom: 0; } }
+  .checks { list-style: none; margin: 0.5rem 0; padding: 0; display: grid; gap: 0.75rem; }
+  .checks li { position: relative; padding-left: 2rem; max-width: 56ch; }
+  .checks li::before {
+    content: ''; position: absolute; left: 0; top: 0.15rem; width: 1.25rem; height: 1.25rem; border-radius: 5px;
+    background: var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23341717' stroke-width='3'/%3E%3C/svg%3E") center / 75% no-repeat;
+  }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+</style>
