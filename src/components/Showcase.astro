@@ -132,7 +132,8 @@ const tabs = showcase.map((c) => {
 
     {
       tabs.map((t, n) => (
-        <div class="panel" role="tabpanel" id={`panel-${t.key}`} aria-labelledby={`tab-${t.key}`} data-panel={t.key} hidden={n !== 0}>
+        <div class="panel" role="tabpanel" id={`panel-${t.key}`} aria-labelledby={`tab-${t.key}`} data-panel={t.key} data-active={n === 0 ? '' : undefined}>
+          <h4 class="nojs-title">{t.label}</h4>
           <ul class:list={['grid', t.aspect === '4:5' ? 'grid-feed' : 'grid-tall']} role="list" data-viewer-list>
             {t.tiles.map((i, k) => (
               <li class:list={['tile', { extra: !t.grouped && k >= INITIAL }]} style={`--i: ${k % INITIAL}`}>
@@ -253,7 +254,14 @@ const tabs = showcase.map((c) => {
   }
   @media (min-width: 64rem) { .grid { gap: 1.25rem; } }
 
-  .tile.extra { display: none; }
+  :global(html.js) .tile.extra { display: none; }
+  /* Without JavaScript: no tabs; every format shows, one after another, under its own heading */
+  .nojs-title { display: none; }
+  :global(html:not(.js)) .nojs-title { display: block; margin: 2rem 0 1rem; font-size: var(--fs-h3); font-weight: 600; }
+  :global(html:not(.js)) .tabs { display: none; }
+  /* With JavaScript, only the active format shows, from the first paint (no layout jump) */
+  :global(html.js) .panel:not([data-active]) { display: none; }
+  :global(html:not(.js)) .more { display: none; }
   .panel[data-expanded] .tile.extra { display: block; }
 
   .tile-link { display: block; color: inherit; text-decoration: none; border-radius: var(--radius-media); }
@@ -337,6 +345,7 @@ const tabs = showcase.map((c) => {
     panels.forEach((p) => {
       const on = p.dataset.panel === tab.dataset.tab;
       p.hidden = !on;
+      p.toggleAttribute('data-active', on);
       if (on) {
         p.classList.remove('animate');
         void p.offsetWidth; // restart the fade-in
@@ -363,8 +372,9 @@ const tabs = showcase.map((c) => {
   // #work?filter=reels also works.
   const preset = new URLSearchParams(location.search).get('work') ?? new URLSearchParams(location.hash.split('?')[1] ?? '').get('filter');
   const presetTab = tabs.find((t) => t.dataset.tab === preset);
+  // Panels are all visible without JavaScript; with it, only the selected format shows
+  select(presetTab ?? tabs[0]);
   if (presetTab) {
-    select(presetTab);
     // "#work?filter=..." isn't a real anchor, so scroll to the section once the page has laid out
     if (location.hash.startsWith('#work?')) {
       const go = () => document.getElementById('work')?.scrollIntoView({ behavior: 'instant' });

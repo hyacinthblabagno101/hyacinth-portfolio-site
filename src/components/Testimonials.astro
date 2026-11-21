@@ -1,16 +1,26 @@
 ---
 /**
- * Client feedback, word for word. Text lives in "testimonials" in src/data/proof.json.
- * A slider: 3 cards at a time on wide screens (2 on tablets, 1 on phones). It moves on by one card every few
- * seconds (pausing on hover or focus), the arrows move one card, the dots show where you are, and you can swipe. Reorder proof.json to change the first 3.
- * - Every card is the same size: quotes show their first 6 lines, and "Read more" (only when a quote is longer)
- *   opens the rest.
- * - A quote with a url is verified on Upwork and gets a small badge linking there. No ratings.
+ * Client feedback, word for word. Text lives in "testimonials" in src/data/proof.json (order there = order here).
+ * - Desktop: a fixed grid of 3 reviews with matching card heights; "Show more reviews" adds the rest (no auto-carousel).
+ *   Phones: the same cards stacked.
+ * - Each card shows an excerpt that ends at a sentence boundary; "Read more" (aria-expanded) shows the full quote.
+ * - The name and role sit directly under each quote.
+ * - "Verified on Upwork" shows only on reviews that link to their Upwork source (a "url" in proof.json).
+ *   TODO(hyacinth): confirm which reviews are Upwork reviews; only add a url for those.
  */
 import { proof } from '../lib/data';
 
+const SHOWN = 3;
+const LIMIT = 190; // characters; the excerpt takes whole sentences up to about this length
 
-const quotes = proof.testimonials.map((t, i) => ({ ...t, id: `quote-${i + 1}` }));
+const quotes = proof.testimonials.map((t, i) => {
+  const sentences = t.quote.split(/(?<=[.!?])\s+/);
+  let excerpt = sentences[0];
+  let k = 1;
+  while (k < sentences.length && (excerpt + ' ' + sentences[k]).length <= LIMIT) excerpt += ' ' + sentences[k++];
+  const rest = sentences.slice(k).join(' ');
+  return { ...t, id: `quote-${i + 1}`, excerpt, rest, extra: i >= SHOWN };
+});
 ---
 
 <section id="feedback" class="feedback band-dark" aria-labelledby="feedback-title">
@@ -20,203 +30,106 @@ const quotes = proof.testimonials.map((t, i) => ({ ...t, id: `quote-${i + 1}` })
       <p class="lede">A few words from brands I've worked with directly.</p>
     </header>
 
-    <div class="slider" data-slider>
-      <ul class="cards" role="list" aria-label="Client feedback" tabindex="0" data-track>
-        {quotes.map((t, i) => (
-          <li class="reveal" style={`--delay: ${(i % 3) * 90}ms`} aria-label={`${i + 1} of ${quotes.length}`}>
-            <figure class="card">
-              <span class="mark" aria-hidden="true">&ldquo;</span>
-              <blockquote id={t.id} class="quote folded">
-                <p>{t.quote}</p>
-              </blockquote>
-              <button type="button" class="more" aria-expanded="false" aria-controls={t.id} data-more-quote>
-                Read more
+    <ul class="cards" role="list" data-cards>
+      {quotes.map((t) => (
+        <li class:list={['reveal', { extra: t.extra }]}>
+          <figure class="card">
+            <blockquote class="quote">
+              <p>
+                <span class="mark" aria-hidden="true">&ldquo;</span>{t.excerpt}
+                {t.rest && <span id={t.id} class="rest" data-rest> {t.rest}</span>}
+              </p>
+            </blockquote>
+            {t.rest && (
+              <button type="button" class="btn btn--link more" aria-expanded="false" aria-controls={t.id} data-more-quote>
+                Read more <span class="visually-hidden">from {t.name}</span>
               </button>
-              <figcaption>
-                <strong>{t.name}</strong>
-                <span>{t.role}</span>
-                {t.url && (
-                  <a class="verified" href={t.url} target="_blank" rel="noopener">
-                    <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="3" /></svg>
-                    Verified on Upwork <span class="visually-hidden">(opens in a new tab)</span>
-                  </a>
-                )}
-              </figcaption>
-            </figure>
-          </li>
-        ))}
-      </ul>
-      <div class="controls">
-        <p class="dots" aria-hidden="true" data-dots></p>
-        <p class="visually-hidden" aria-live="polite" data-status></p>
-        <div class="arrows">
-          <button type="button" class="arrow" data-prev aria-label="Previous feedback">
-            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
-          </button>
-          <button type="button" class="arrow" data-next aria-label="Next feedback">
-            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
-          </button>
-        </div>
-      </div>
-    </div>
+            )}
+            <figcaption>
+              <strong>{t.name}</strong>
+              <span>{t.role}</span>
+              {t.url && (
+                <a class="verified" href={t.url} target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="3" /></svg>
+                  Verified on Upwork <span class="visually-hidden">(opens in a new tab)</span>
+                </a>
+              )}
+            </figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
+    {quotes.length > SHOWN && (
+      <button type="button" class="btn btn--secondary show-more" aria-expanded="false" data-more-quotes>
+        Show {quotes.length - SHOWN} more reviews
+      </button>
+    )}
   </div>
 </section>
 
 <style>
-  /* A Chocopie band with Ivory cards */
-  .feedback { padding-block: var(--section); background: var(--ink); }
+  .feedback { padding-block: var(--section); }
 
-  /* Slider track: native horizontal scroll with snapping, so it swipes on touch screens */
-  .cards {
-    --per: 1; --gap: 1.25rem;
-    list-style: none; margin: 0; padding: 0.75rem 0.25rem 1.5rem; display: flex; gap: var(--gap); align-items: stretch;
-    overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain;
-  }
-  .cards::-webkit-scrollbar { display: none; }
-  .cards:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
-  @media (min-width: 48rem) { .cards { --per: 2; } }
-  @media (min-width: 64rem) { .cards { --per: 3; } }
-  .cards > li { flex: 0 0 calc((100% - (var(--per) - 1) * var(--gap)) / var(--per)); display: flex; scroll-snap-align: start; }
-
-  .controls { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 0.75rem; }
-  .dots { display: flex; gap: 0.4rem; }
-  .dots :global(i) { width: 0.5rem; height: 0.5rem; border-radius: var(--radius-pill); background: rgb(255 255 240 / 0.3); transition: width 0.35s ease, background 0.35s ease; }
-  .dots :global(i.on) { width: 1.75rem; background: var(--paper); }
-  .arrows { display: flex; gap: 0.5rem; }
-  .arrow {
-    display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%;
-    border: 1px solid rgb(255 255 240 / 0.6); background: transparent; color: var(--paper); cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
-  }
-  .arrow:hover { background: var(--paper); border-color: var(--paper); color: var(--ink); }
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; align-items: stretch; }
+  @media (min-width: 48rem) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 64rem) { .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; } }
+  .cards > li { display: flex; }
+  /* Without JavaScript every review and every full quote shows */
+  :global(html.js) .cards > li.extra { display: none; }
+  :global(html.js) .cards.all > li.extra { display: flex; }
+  :global(html:not(.js)) .more, :global(html:not(.js)) .show-more { display: none; }
 
   figure { margin: 0; }
+  /* Light cards on the dark band: they use the light-section colors */
   .card {
-    flex: 1; display: flex; flex-direction: column; gap: 1rem;
-    padding: clamp(1.5rem, 1.2rem + 1vw, 2rem);
-    border-radius: var(--radius-panel); background: var(--paper); border: 1px solid transparent;
-    color: var(--ink); --muted: #715d58; --rule: #e3dccf; --focus: var(--ink);
-    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s ease, border-color 0.3s ease;
+    flex: 1; display: flex; flex-direction: column; gap: 0.75rem;
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    border-radius: var(--radius-panel); background: var(--paper); color: var(--ink);
+    --muted: #715d58; --rule: #e3dccf; --focus: var(--ink); --link: var(--ink); --text: var(--ink); --bg: var(--paper);
   }
-  @media (hover: hover) {
-    .card:hover { transform: translateY(-6px); border-color: var(--paper); box-shadow: 0 24px 44px -24px rgb(0 0 0 / 0.6); }
-    .card:hover .mark { transform: translateY(-3px) rotate(-6deg); }
-  }
-  .mark {
-    font-family: var(--font-serif); font-size: 3.5rem; line-height: 0.6; height: 1.5rem;
-    color: var(--ink); transition: transform 0.35s ease; transform-origin: left bottom;
-  }
-
   blockquote { margin: 0; }
-  .quote p { margin: 0; color: var(--ink); line-height: 1.6; }
-  /* Every quote starts at 6 lines so the cards match; "Read more" opens the rest */
-  .quote.folded {
-    height: calc(1.6em * 6); overflow: hidden; position: relative;
-    transition: height 0.5s ease;
-  }
-  .quote.folded::after {
-    content: ''; position: absolute; inset: auto 0 0 0; height: 2.5em;
-    background: linear-gradient(to bottom, rgb(255 255 240 / 0), var(--paper));
-    transition: opacity 0.3s ease;
-  }
-  .quote.fits::after, .quote.open::after { opacity: 0; }
-  .more {
-    align-self: flex-start; min-height: 2.75rem; margin-top: -0.5rem; padding: 0;
-    background: none; border: 0; cursor: pointer;
-    font: inherit; font-size: var(--fs-small); font-weight: 600; color: var(--ink);
-    text-decoration: underline; text-underline-offset: 0.2em;
-  }
-  .more[hidden] { display: block; visibility: hidden; }
+  .quote p { margin: 0; color: var(--ink); line-height: 1.6; max-width: none; }
+  .mark { font-family: var(--font-serif); font-size: 1.6em; line-height: 0; vertical-align: -0.3em; margin-right: 0.15em; color: var(--ink); }
+  .more { align-self: flex-start; }
 
   figcaption {
     display: grid; gap: 0.15rem; margin-top: auto; padding-top: 1rem;
     border-top: 1px solid var(--rule); font-size: var(--fs-small);
   }
-  figcaption strong { font-weight: 700; color: var(--ink); }
+  figcaption strong { font-weight: 600; color: var(--ink); }
   figcaption span { color: var(--muted); }
-  figcaption a { color: var(--ink); }
   .verified {
-    justify-self: start; width: fit-content; display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.35rem;
+    justify-self: start; display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.4rem;
     padding: 0.2rem 0.6rem; border-radius: var(--radius-pill); background: var(--surface); color: var(--ink);
-    font-size: var(--fs-label); font-weight: 700; text-decoration: none;
+    font-size: var(--fs-label); font-weight: 600; text-decoration: none;
   }
+  .verified:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .show-more { display: flex; width: fit-content; margin: 2rem auto 0; }
 </style>
 
 <script>
-  // Slider: shows 3 at a time (2 on tablets, 1 on phones) and moves one card at a time, on its own every few
-  // seconds. It pauses while you hover, focus, or touch it, and while it's off screen; it never auto-plays with
-  // reduced motion. The arrows and arrow keys move one card; the dots show where you are.
-  const slider = document.querySelector<HTMLElement>('[data-slider]');
-  const track = slider?.querySelector<HTMLElement>('[data-track]');
-  if (slider && track) {
-    const prev = slider.querySelector<HTMLButtonElement>('[data-prev]')!;
-    const next = slider.querySelector<HTMLButtonElement>('[data-next]')!;
-    const dots = slider.querySelector<HTMLElement>('[data-dots]')!;
-    const status = slider.querySelector<HTMLElement>('[data-status]')!;
-    const items = [...track.children] as HTMLElement[];
-    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const per = () => Number(getComputedStyle(track).getPropertyValue('--per')) || 1;
-    const last = () => Math.max(0, items.length - per());
-    const step = () => (items[1] ? items[1].offsetLeft - items[0].offsetLeft : track.clientWidth);
-    const index = () => Math.min(last(), Math.round(track.scrollLeft / step()));
-    const go = (k: number) => {
-      const i = k > last() ? 0 : k < 0 ? last() : k; // wraps around at either end
-      track.scrollTo({ left: i * step(), behavior: calm ? 'auto' : 'smooth' });
-    };
-    const update = () => {
-      const i = index(), n = last() + 1;
-      if (dots.childElementCount !== n) dots.replaceChildren(...Array.from({ length: n }, () => document.createElement('i')));
-      [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
-      const p = per();
-      status.textContent = `Showing feedback ${i + 1}${p > 1 ? ` to ${Math.min(items.length, i + p)}` : ''} of ${items.length}`;
-    };
-    prev.addEventListener('click', () => { go(index() - 1); restart(); });
-    next.addEventListener('click', () => { go(index() + 1); restart(); });
-    track.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); go(index() + 1); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); go(index() - 1); }
-    });
-    let raf = 0;
-    track.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(update); }, { passive: true });
-    window.addEventListener('resize', update);
-    update();
-
-    // Auto-advance
-    let timer = 0, held = false, onScreen = false;
-    const tick = () => { if (!held && onScreen && !document.hidden) go(index() + 1); };
-    function restart() { window.clearInterval(timer); if (!calm) timer = window.setInterval(tick, 4500); }
-    const hold = (v: boolean) => () => { held = v; };
-    slider.addEventListener('mouseenter', hold(true));
-    slider.addEventListener('mouseleave', hold(false));
-    slider.addEventListener('focusin', hold(true));
-    slider.addEventListener('focusout', hold(false));
-    track.addEventListener('touchstart', () => { held = true; restart(); }, { passive: true });
-    track.addEventListener('touchend', () => { held = false; }, { passive: true });
-    new IntersectionObserver((e) => { onScreen = e[0].isIntersecting; }, { threshold: 0.3 }).observe(slider);
-    restart();
-  }
-
-  // "Read more" only shows on quotes longer than 6 lines; it animates the quote open to its full height
-  const quoteButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-more-quote]')];
-  const measure = () => quoteButtons.forEach((btn) => {
-    const quote = document.getElementById(btn.getAttribute('aria-controls')!);
-    if (!quote || quote.classList.contains('open')) return;
-    const fits = quote.scrollHeight <= quote.clientHeight + 2;
-    btn.hidden = fits;
-    quote.classList.toggle('fits', fits);
-  });
-  quoteButtons.forEach((btn) => {
-    const quote = document.getElementById(btn.getAttribute('aria-controls')!);
+  // Quotes start as excerpts once JavaScript runs; "Read more" shows the rest
+  document.querySelectorAll<HTMLElement>('[data-rest]').forEach((r) => (r.hidden = true));
+  document.querySelectorAll<HTMLButtonElement>('[data-more-quote]').forEach((btn) => {
+    const rest = document.getElementById(btn.getAttribute('aria-controls')!);
     btn.addEventListener('click', () => {
-      if (!quote) return;
       const open = btn.getAttribute('aria-expanded') !== 'true';
       btn.setAttribute('aria-expanded', String(open));
-      btn.textContent = open ? 'Show less' : 'Read more';
-      quote.style.height = `${open ? quote.clientHeight : quote.scrollHeight}px`;
-      quote.classList.toggle('open', open);
-      requestAnimationFrame(() => { quote.style.height = open ? `${quote.scrollHeight}px` : ''; });
+      if (rest) rest.hidden = !open;
+      btn.firstChild!.textContent = open ? 'Show less ' : 'Read more ';
     });
   });
-  measure();
-  window.addEventListener('resize', measure);
+
+  // "Show more reviews" adds the rest of the cards and moves focus to the first new one
+  const moreQuotes = document.querySelector<HTMLButtonElement>('[data-more-quotes]');
+  moreQuotes?.addEventListener('click', () => {
+    const list = document.querySelector<HTMLElement>('[data-cards]');
+    if (!list) return;
+    const open = !list.classList.contains('all');
+    list.classList.toggle('all', open);
+    moreQuotes.setAttribute('aria-expanded', String(open));
+    moreQuotes.textContent = open ? 'Show fewer reviews' : `Show ${list.querySelectorAll('.extra').length} more reviews`;
+    if (open) list.querySelector<HTMLElement>('.extra .card')?.setAttribute('tabindex', '-1');
+    if (open) list.querySelector<HTMLElement>('.extra .card')?.focus();
+  });
 </script>

@@ -1,9 +1,9 @@
 ---
 /**
  * Experience, in three parts. All text: src/data/experience.json (from my Nov 2026 experience files).
- * 1. Professional experience: a list of roles on the left; hovering, focusing, or tapping one shows its history
+ * 1. Featured roles: a list of roles on the left; clicking, tapping or arrow keys select one and show its history
  *    (overview, what I did, brands) in the panel on the right. On phones each role opens in place.
- * 2. Two panels side by side: Additional experience & projects (Blue) and Business background (Chocopie).
+ * 2. Two light cards side by side (1px border): Additional experience & projects and Business background.
  *    Each shows a preview of names and opens a pop-up: the full list of projects (no dates), or the businesses
  * with the skills that carry over. Both pop-ups share one format (intro, then a grid of cards).
  */
@@ -16,12 +16,13 @@ const { professional, additional, businesses } = experience;
   <div class="wrap">
     <header class="section-head">
       <h2 id="experience-title">Experience</h2>
-      <p class="lede">Hover or tap a role to see what I did there.</p>
+      <p class="lede">Select a role to see what I did there.</p>
     </header>
 
-    <h3 class="group-title">Professional experience</h3>
+    {/* Not in date order, so labelled "Featured roles". TODO(hyacinth): confirm the order and the "Nov 2026" end date. */}
+    <h3 class="group-title" id="roles-title">Featured roles</h3>
     <div class="pro" data-pro>
-      <ol class="roles" role="list">
+      <ol class="roles" role="list" aria-labelledby="roles-title">
         {professional.map((r, i) => (
           <li>
             <button type="button" class:list={['role', { active: i === 0 }]} data-role={i} aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`role-${i}`}>
@@ -30,7 +31,7 @@ const { professional, additional, businesses } = experience;
               <span class="title">{r.role}</span>
               <span class="arrow" aria-hidden="true">&rarr;</span>
             </button>
-            <div class="detail" id={`role-${i}`} data-detail={i} hidden={i !== 0}>
+            <div class="detail" id={`role-${i}`} data-detail={i}>
               <p class="meta">{r.type} &middot; {r.industry}</p>
               <p class="summary">{r.summary}</p>
               <ul class="points">{r.points.map((p) => <li>{p}</li>)}</ul>
@@ -121,18 +122,26 @@ const { professional, additional, businesses } = experience;
   .roles > li { border-bottom: 1px solid var(--rule); }
   .role {
     width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.2rem 1rem; align-items: center;
-    padding: 1.1rem 0.75rem; background: none; border: 0; border-radius: var(--radius-media);
+    padding: 1.1rem 1rem; background: none; border: 0; border-radius: var(--radius-media);
     font: inherit; color: var(--ink); text-align: left; cursor: pointer;
-    transition: background 0.25s ease, padding 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+    box-shadow: inset 3px 0 0 transparent;
+    transition: background-color 180ms ease, box-shadow 180ms ease;
   }
-  .role:hover, .role.active { background: rgb(52 23 23 / 0.05); padding-left: 1.1rem; }
+  /* Same padding in every state, so nothing shifts: only the background and the left bar change */
+  .role:hover { background: var(--surface); }
+  .role.active { background: var(--surface); box-shadow: inset 3px 0 0 var(--accent); }
+  .role:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
   .role .dates { grid-column: 1; font-size: var(--fs-small); color: var(--muted); }
   .role .name { grid-column: 1; font-size: var(--fs-h3); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
   .role .title { grid-column: 1; font-size: var(--fs-small); font-weight: 600; color: var(--ink); }
-  .role .arrow { grid-column: 2; grid-row: 1 / span 3; font-size: 1.25rem; color: var(--ink); opacity: 0; transform: translateX(-6px); transition: opacity 0.25s ease, transform 0.25s ease; }
-  .role:hover .arrow, .role.active .arrow { opacity: 1; transform: none; }
+  .role .arrow { grid-column: 2; grid-row: 1 / span 3; font-size: 1.25rem; color: var(--ink); opacity: 0; transition: opacity 180ms ease; }
+  .role.active .arrow { opacity: 1; }
+  @media (max-width: 63.99rem) {
+    .role .arrow { opacity: 1; transition: transform 180ms ease; }
+    .role[aria-expanded='true'] .arrow { transform: rotate(90deg); }
+  }
 
-  .detail { display: grid; gap: 0.75rem; padding: 0.25rem 0.75rem 1.5rem; }
+  .detail { display: grid; gap: 0.75rem; padding: 0.25rem 1rem 1.5rem; }
   .detail[hidden] { display: none; }
   .meta { font-size: var(--fs-small); color: var(--muted); }
   .summary { font-size: var(--fs-lead); line-height: 1.45; }
@@ -141,10 +150,11 @@ const { professional, additional, businesses } = experience;
   .brands span { font-weight: 700; color: var(--ink); margin-right: 0.35rem; }
 
   /* Wide screens: details show in the panel on the right instead of under each row */
+  /* Without JavaScript every role's details show in place; with it, wide screens use the panel on the right */
   .panel { display: none; }
   @media (min-width: 64rem) {
-    .roles .detail { display: none; }
-    .panel {
+    :global(html.js) .roles .detail { display: none; }
+    :global(html.js) .panel {
       display: block; position: sticky; top: 6rem;
       padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem); border-radius: var(--radius-panel);
       background: var(--ink); color: var(--paper);
@@ -155,7 +165,7 @@ const { professional, additional, businesses } = experience;
     .panel :global(.points) { color: rgb(255 255 240 / 0.85); }
   }
 
-  /* Two panels side by side: Additional (Blue) and Business background (Chocopie); each opens a pop-up */
+  /* Two light cards side by side; each opens a pop-up */
   .more { display: grid; gap: 1rem; margin-top: clamp(2.5rem, 2rem + 2vw, 3.5rem); }
   @media (min-width: 48rem) { .more { grid-template-columns: 1fr 1fr; } }
   .tile {
@@ -165,15 +175,15 @@ const { professional, additional, businesses } = experience;
   .tile h3 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem); letter-spacing: -0.02em; line-height: 1.15; color: inherit; }
   .tile > p { max-width: 46ch; }
   .tile .btn { margin-top: auto; }
-  .tile-extra { background: var(--surface); color: var(--ink); }
+  .tile-extra { background: var(--surface); color: var(--ink); border: 1px solid var(--rule); }
   .tile-extra > p { color: var(--muted); }
-  .tile-biz { background: var(--ink); color: var(--paper); }
-  .tile-biz > p { color: rgb(255 255 240 / 0.8); }
+  .tile-biz { background: var(--paper); color: var(--ink); border: 1px solid var(--rule); }
+  .tile-biz > p { color: var(--muted); }
   .names { list-style: none; margin: 0 0 0.5rem; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
   .names li { padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); font-size: var(--fs-label); font-weight: 600; }
   .tile-extra .names li { background: var(--paper); }
   .tile-extra .names .rest { background: transparent; border: 1px dashed rgb(52 23 23 / 0.35); }
-  .tile-biz .names li { background: rgb(255 255 240 / 0.12); color: var(--paper); }
+  .tile-biz .names li { background: var(--surface); color: var(--ink); }
 
   /* Pop-ups */
   .exp-pop {
@@ -210,17 +220,22 @@ const { professional, additional, businesses } = experience;
 </style>
 
 <script>
-  // Professional roles: hover or focus (wide screens) or tap (any screen) shows that role's history
+  // Professional roles: click, tap or keyboard selects a role (no hover).
+  // Wide screens: the selected role's history shows in the panel on the right, one role always selected.
+  // Phones: each role opens in place, right under it; one open at a time, tap again to close.
+  // Up/Down arrows, Home and End move between roles.
   const pro = document.querySelector<HTMLElement>('[data-pro]');
   if (pro) {
     const buttons = [...pro.querySelectorAll<HTMLButtonElement>('[data-role]')];
     const details = [...pro.querySelectorAll<HTMLElement>('[data-detail]')];
     const panel = pro.querySelector<HTMLElement>('[data-panel]');
     const wide = window.matchMedia('(min-width: 64rem)');
+    let current = 0;
     const show = (i: number) => {
+      current = i;
       buttons.forEach((b, k) => { b.classList.toggle('active', k === i); b.setAttribute('aria-expanded', String(k === i)); });
       details.forEach((d, k) => (d.hidden = k !== i));
-      if (panel) {
+      if (panel && i >= 0) {
         const copy = details[i].cloneNode(true) as HTMLElement;
         copy.removeAttribute('id');
         copy.hidden = false;
@@ -228,10 +243,21 @@ const { professional, additional, businesses } = experience;
       }
     };
     buttons.forEach((b, i) => {
-      b.addEventListener('click', () => show(i));
-      b.addEventListener('mouseenter', () => wide.matches && show(i));
-      b.addEventListener('focus', () => wide.matches && show(i));
+      b.addEventListener('click', () => {
+        // On phones, tapping the open role closes it
+        if (!wide.matches && current === i && b.getAttribute('aria-expanded') === 'true') show(-1);
+        else show(i);
+      });
+      b.addEventListener('keydown', (e) => {
+        const next = { ArrowDown: i + 1, ArrowUp: i - 1, Home: 0, End: buttons.length - 1 }[e.key];
+        if (next === undefined) return;
+        e.preventDefault();
+        const k = (next + buttons.length) % buttons.length;
+        buttons[k].focus();
+        if (wide.matches) show(k);
+      });
     });
+    wide.addEventListener('change', () => { if (wide.matches && current < 0) show(0); });
     show(0);
   }
 

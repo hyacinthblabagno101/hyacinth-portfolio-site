@@ -120,7 +120,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
       </div>
 
       <button class="btn btn--primary submit" type="submit">Send message</button>
-      <p class="form-status" role="status" aria-live="polite" data-form-status></p>
+      <p class="form-status" role="status" aria-live="polite" data-form-status data-email={publicEmail}></p>
     </form>
 
 
@@ -249,7 +249,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
       form.reset();
       if (formStatus) formStatus.textContent = "Thanks, your message was sent. I'll reply by email.";
     } catch {
-      if (formStatus) formStatus.textContent = "Sorry, that didn't send. Please email me directly instead.";
+      if (formStatus) formStatus.textContent = `The message didn't send. Check your connection and try again, or email ${formStatus.dataset.email ?? 'me'} directly.`;
     } finally {
       if (button) button.disabled = false;
     }

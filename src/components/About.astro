@@ -140,14 +140,16 @@ const certs = proof.certifications;
 
   /* Pop-ups */
   .pop {
-    width: min(100vw - 2rem, 46rem); max-height: calc(100vh - 2rem); padding: 0; border: 0;
+    width: min(100vw - 2rem, 46rem); max-height: calc(100dvh - 2rem); padding: 0; border: 0;
     border-radius: var(--radius-panel); background: var(--paper); color: var(--ink); overflow: hidden;
   }
   .pop-wide { width: min(100vw - 2rem, 60rem); }
   .pop::backdrop { background: rgb(52 23 23 / 0.75); backdrop-filter: blur(3px); }
   .pop[open] { animation: pop-in 0.3s cubic-bezier(0.2, 0.7, 0.2, 1); }
   @keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(0.98); } }
-  .pop-inner { display: grid; grid-template-rows: auto 1fr auto; max-height: calc(100vh - 2rem); }
+  .pop-inner { display: grid; grid-template-rows: auto 1fr auto; max-height: calc(100dvh - 2rem); }
+  /* The middle scrolls; the header (with Close) and the footer stay in view */
+  .pop-inner > :nth-child(2) { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
   .pop-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--rule); }
   .pop-head h3 { font-size: var(--fs-h3); }
   .x {

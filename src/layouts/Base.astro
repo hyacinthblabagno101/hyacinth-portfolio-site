@@ -49,10 +49,16 @@ const ogUrl = new URL(ogImage, Astro.site);
     <script is:inline>document.documentElement.classList.add('js');</script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/* Fonts load without blocking the first paint: text shows in the fallback font, then swaps (display=swap) */}
     <link
-      rel="stylesheet"
+      rel="preload"
+      as="style"
       href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400..800&family=Libre+Baskerville:ital@0;1&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400..800&family=Libre+Baskerville:ital@0;1&display=swap" />
+    </noscript>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
