@@ -5,7 +5,7 @@
  * - The wall is three columns that drift slowly in opposite directions. One reel per column plays a short
  *   silent preview; the rest are still frames. Selecting a reel opens it in the viewer (Viewer.astro).
  * - With reduced motion turned on, the wall stands still and nothing plays.
- * - On phones and tablets the wall becomes one row of reels you can swipe, under the text.
+ * - On phones and tablets the wall becomes two rows of reels under the text that drift in opposite directions.
  * Text comes from "hero" in src/data/site.json. "Schedule a call" uses bookingUrl when it's set, otherwise the form.
  */
 import { site, filled, showUnconfirmed, showcase, bookingUrl } from '../lib/data';
@@ -182,7 +182,7 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
   .tag {
     position: absolute; left: 0.5rem; bottom: 0.5rem; z-index: 1;
     padding: 0.2rem 0.55rem; border-radius: var(--radius-pill);
-    background: rgb(53 30 40 / 0.6); color: var(--paper); backdrop-filter: blur(4px);
+    background: rgb(84 50 31 / 0.6); color: var(--paper); backdrop-filter: blur(4px);
     font-size: var(--fs-label); font-weight: 600;
     max-width: calc(100% - 1rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
@@ -199,19 +199,29 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
   }
   @media (prefers-reduced-motion: reduce) { .copy-track { display: none; } }
 
-  /* Phones and tablets: one row of reels to swipe through, under the text */
+  /* Phones and tablets: two rows of reels under the text, drifting in opposite directions (still with reduced motion) */
   @media (max-width: 63.99rem) {
     .wall {
-      display: flex; height: auto; gap: 0.6rem;
-      overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
-      margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter);
-      -webkit-mask-image: none; mask-image: none;
+      display: grid; grid-template-columns: none; gap: 0.6rem; height: auto;
+      margin-inline: calc(var(--gutter) * -1); overflow: hidden;
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+      mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
     }
-    .wall::-webkit-scrollbar { display: none; }
-    .col, .track { display: contents; }
+    .col { flex-direction: row; gap: 0.6rem; width: max-content; }
     .col-2 { margin: 0; }
-    .copy-track { display: none; }
-    .track li { flex: none; width: clamp(8rem, 5rem + 14vw, 11rem); scroll-snap-align: start; }
+    .col-3 { display: none; }
+    .track { flex-direction: row; gap: 0.6rem; }
+    .track li { flex: none; width: clamp(6.5rem, 4rem + 10vw, 9rem); }
+  }
+  @media (max-width: 63.99rem) and (prefers-reduced-motion: no-preference) {
+    .col-1 { animation: drift-left 40s linear infinite; }
+    .col-2 { animation: drift-right 46s linear infinite; }
+    .wall:active .col { animation-play-state: paused; }
+    @keyframes drift-left { to { transform: translateX(calc(-50% - 0.3rem)); } }
+    @keyframes drift-right { from { transform: translateX(calc(-50% - 0.3rem)); } to { transform: translateX(0); } }
+  }
+  @media (max-width: 63.99rem) and (prefers-reduced-motion: reduce) {
+    .wall { overflow-x: auto; }
   }
   /* Numbers bar */
   .stats { background: var(--wine); color: var(--paper); }
@@ -223,7 +233,7 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
   .stats li { display: grid; gap: 0.35rem; }
   .stats strong { font-family: var(--font-serif); font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.5rem); font-weight: 400; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums lining-nums; }
   .stats .suffix { color: var(--sage-light); }
-  .stats li > span { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: rgb(250 249 246 / 0.78); }
+  .stats li > span { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: rgb(255 244 199 / 0.78); }
 </style>
 
 <script>

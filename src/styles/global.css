@@ -1,37 +1,35 @@
 /*
  * Design tokens. Every color, type size and corner radius on the site comes from here.
- * Palette: Vanilla, Plum Noir, Persimmon, Cool Blue, Wasabi, Muted.
+ * Palette: Espresso and Milk Punch, plus tints of the two.
  * Contrast ratios are WCAG (AA body text needs 4.5:1).
  */
 :root {
   /*
-   * Palette (Pinterest 2026, without Jade). No other colors; only tints of these.
-   * Vanilla ~60% (page) · Cool Blue and Plum Noir ~30% (sections, cards) · Persimmon and Wasabi ~10% (accents).
-   * Text pairs: Plum Noir on Vanilla, Cool Blue, Persimmon or Wasabi; Vanilla or Wasabi on Plum Noir.
-   * Persimmon is never small text on light backgrounds (2.9:1); Wasabi is never text on light backgrounds.
-   * One bright accent per section: Persimmon on light sections, Wasabi on Plum Noir sections.
+   * Palette: Espresso and Milk Punch. No other colors, only tints of these two.
+   * Milk Punch = page background and text on dark bands · Espresso = all text, buttons, dark bands.
+   * Espresso on Milk Punch is 10.3:1.
    */
-  --paper: #faf9f6;        /* Off-white: page background (used in place of Vanilla) */
-  --clay: #d7efff;         /* Cool Blue: section backgrounds, cards, the lighter Book a call button */
+  --paper: #fff4c7;        /* Milk Punch: page background */
+  --clay: #eee1b6;         /* Espresso at 10% on Milk Punch: second light band, cards (Espresso text 8.6:1) */
   --blue: var(--clay);
-  --greige: #d7efff;       /* Cool Blue: Book a call buttons and chips */
-  --greige-soft: #eeece9;  /* Plum Noir at 6% on off-white: hover backgrounds, image placeholders */
-  --salsa: #ff5c34;        /* Persimmon: main buttons, key highlights (fills, not small text) */
-  --wine: #351e28;         /* Plum Noir: dark sections, footer */
-  --ink: #351e28;          /* Plum Noir: all text and headlines (14.2:1 on Vanilla, 12.9:1 on Cool Blue) */
-  --rose: #e9f056;         /* Wasabi: small highlights on Plum Noir (12.5:1) */
-  --sage: #ff5c34;         /* Persimmon dot for "Open to work" */
-  --sage-light: #e9f056;   /* Wasabi: small accents on Plum Noir */
-  --green: #351e28;        /* "Open to work" text */
-  --green-soft: rgb(255 92 52 / 0.15); /* Persimmon at 15% */
+  --greige: #eee1b6;       /* Book a call buttons and chips */
+  --greige-soft: #f6eabf;  /* Espresso at 5%: hover backgrounds, image placeholders */
+  --salsa: #54321f;        /* Espresso: main buttons */
+  --wine: #54321f;         /* Espresso: dark bands and the footer */
+  --ink: #54321f;          /* Espresso: all text and headlines */
+  --rose: #fff4c7;         /* Milk Punch: accents on Espresso */
+  --sage: #54321f;         /* "Open to work" dot */
+  --sage-light: #fff4c7;   /* Milk Punch: small accents on Espresso */
+  --green: #54321f;        /* "Open to work" text */
+  --green-soft: #eee1b6;
 
   /* Roles (light sections); dark sections swap these in .band-dark */
   --bg: var(--paper);
   --text: var(--ink);
-  --text-muted: #7a6870;   /* Muted: captions and secondary text on off-white (4.9:1) */
+  --text-muted: #7f6249;   /* Espresso at 75%: captions and secondary text (5.1:1) */
   --heading: var(--ink);
   --accent: var(--ink);    /* links are Plum Noir with a Persimmon underline */
-  --line: rgb(53 30 40 / 0.14);
+  --line: rgb(84 50 31 / 0.18);
   --rule: var(--ink);
   --focus: var(--ink);
 
@@ -64,18 +62,17 @@
 
 /*
  * Section color rhythm, top to bottom:
- * Hero Vanilla, numbers Plum Noir, About Vanilla, brands Plum Noir, What I do Cool Blue, Selected work Vanilla,
- * Feedback Plum Noir, Experience Vanilla, Contact Cool Blue, footer Plum Noir.
- * On Cool Blue sections, secondary text is a Plum Noir tint (the Muted color is too light there).
+ * Hero Milk Punch, numbers Espresso, About Milk Punch, brands Espresso, What I do light Espresso wash,
+ * Selected work Milk Punch, Feedback Espresso, Experience Milk Punch, Contact light wash, footer Espresso.
  * Dark band: put class="band-dark" on any section.
  */
 .band-dark {
   --bg: var(--wine);
   --text: var(--paper);              /* 16:1 */
-  --text-muted: rgb(250 249 246 / 0.78); /* Vanilla tint on Plum Noir */
+  --text-muted: rgb(255 244 199 / 0.8); /* Milk Punch tint on Espresso */
   --heading: var(--paper);
   --accent: var(--rose);            /* Wasabi */
-  --line: rgb(250 249 246 / 0.18);
+  --line: rgb(255 244 199 / 0.2);
   --rule: var(--paper);
   --focus: var(--rose);
   background: var(--bg);
@@ -143,8 +140,8 @@ h3 { font-size: var(--fs-h3); line-height: 1.1; letter-spacing: -0.02em; }
 
 p { margin: 0; text-wrap: pretty; }
 
-a { color: var(--accent); text-underline-offset: 0.18em; text-decoration-thickness: 1px; text-decoration-color: var(--salsa); }
-.band-dark a { text-decoration-color: var(--rose); }
+a { color: var(--accent); text-underline-offset: 0.18em; text-decoration-thickness: 1px; text-decoration-color: rgb(84 50 31 / 0.45); }
+.band-dark a { text-decoration-color: rgb(255 244 199 / 0.6); }
 a:hover { text-decoration-thickness: 2px; }
 
 :focus-visible {
@@ -188,16 +185,16 @@ a:hover { text-decoration-thickness: 2px; }
   border-radius: var(--radius-pill);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
-.btn-primary { background: var(--salsa); border-color: var(--salsa); color: var(--ink); }
-.btn-primary:hover { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.btn-primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.btn-primary:hover { background: #3b2316; border-color: #3b2316; color: var(--paper); }
 .btn-ghost { color: var(--text); background: transparent; }
 .btn-ghost:hover { background: var(--text); color: var(--bg); }
 /* Book a call: a lighter Milk button, on light and dark sections */
-.btn-book { background: var(--greige); border-color: rgb(53 30 40 / 0.22); color: var(--ink); }
+.btn-book { background: var(--greige); border-color: rgb(84 50 31 / 0.3); color: var(--ink); }
 .band-dark .btn-book { border-color: var(--greige); }
 .btn-book:hover { background: var(--paper); border-color: var(--ink); color: var(--ink); }
 .band-dark .btn-book:hover { border-color: var(--paper); }
-.band-dark .btn-primary { background: var(--salsa); border-color: var(--salsa); color: var(--ink); }
+.band-dark .btn-primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
 .band-dark .btn-primary:hover { background: var(--paper); border-color: var(--paper); color: var(--ink); }
 
 /* Development placeholders: obvious on purpose so nothing ships by accident */
@@ -261,5 +258,5 @@ a:hover { text-decoration-thickness: 2px; }
 }
 
 /* Cool Blue sections: secondary text uses a Plum Noir tint, and Book a call turns Vanilla so it still stands out */
-.band-blue { --text-muted: rgb(53 30 40 / 0.8); background: var(--clay); }
+.band-blue { --text-muted: rgb(84 50 31 / 0.85); background: var(--clay); }
 .band-blue .btn-book { background: var(--paper); }

@@ -125,7 +125,7 @@ const { professional, additional, businesses } = experience;
     font: inherit; color: var(--ink); text-align: left; cursor: pointer;
     transition: background 0.25s ease, padding 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .role:hover, .role.active { background: rgb(53 30 40 / 0.05); padding-left: 1.1rem; }
+  .role:hover, .role.active { background: rgb(84 50 31 / 0.05); padding-left: 1.1rem; }
   .role .dates { grid-column: 1; font-size: var(--fs-small); color: var(--text-muted); }
   .role .name { grid-column: 1; font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
   .role .title { grid-column: 1; font-size: var(--fs-small); font-weight: 600; color: var(--wine); }
@@ -148,11 +148,11 @@ const { professional, additional, businesses } = experience;
       display: block; position: sticky; top: 6rem;
       padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem); border-radius: var(--radius-panel);
       background: var(--wine); color: var(--paper);
-      --text-muted: rgb(250 249 246 / 0.78); --ink: var(--paper);
+      --text-muted: rgb(255 244 199 / 0.78); --ink: var(--paper);
     }
     .panel :global(.detail) { display: grid !important; padding: 0; animation: swap 0.35s ease; }
     @keyframes swap { from { opacity: 0; transform: translateY(8px); } }
-    .panel :global(.points) { color: rgb(250 249 246 / 0.85); }
+    .panel :global(.points) { color: rgb(255 244 199 / 0.85); }
   }
 
   /* Two panels side by side: Additional (Blue) and Business background (Chocopie); each opens a pop-up */
@@ -165,15 +165,15 @@ const { professional, additional, businesses } = experience;
   .tile h3 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem); letter-spacing: -0.02em; line-height: 1.15; color: inherit; }
   .tile > p { max-width: 46ch; }
   .tile .btn { margin-top: auto; }
-  .tile-extra { background: var(--blue); color: var(--ink); --text-muted: rgb(53 30 40 / 0.8); }
+  .tile-extra { background: var(--blue); color: var(--ink); --text-muted: rgb(84 50 31 / 0.8); }
   .tile-extra > p { color: var(--text-muted); }
   .tile-biz { background: var(--wine); color: var(--paper); }
-  .tile-biz > p { color: rgb(250 249 246 / 0.8); }
+  .tile-biz > p { color: rgb(255 244 199 / 0.8); }
   .names { list-style: none; margin: 0 0 0.5rem; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
   .names li { padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); font-size: var(--fs-label); font-weight: 600; }
   .tile-extra .names li { background: var(--paper); }
-  .tile-extra .names .rest { background: transparent; border: 1px dashed rgb(53 30 40 / 0.35); }
-  .tile-biz .names li { background: rgb(250 249 246 / 0.12); color: var(--paper); }
+  .tile-extra .names .rest { background: transparent; border: 1px dashed rgb(84 50 31 / 0.35); }
+  .tile-biz .names li { background: rgb(255 244 199 / 0.12); color: var(--paper); }
 
   /* Pop-ups */
   .exp-pop {
@@ -182,7 +182,7 @@ const { professional, additional, businesses } = experience;
   }
   .exp-pop[open] { animation: exp-pop-in 0.3s cubic-bezier(0.2, 0.7, 0.2, 1); }
   @keyframes exp-pop-in { from { opacity: 0; transform: translateY(14px); } }
-  .exp-pop::backdrop { background: rgb(53 30 40 / 0.72); backdrop-filter: blur(3px); }
+  .exp-pop::backdrop { background: rgb(84 50 31 / 0.72); backdrop-filter: blur(3px); }
   .exp-head {
     position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
     padding: 1rem clamp(1.25rem, 1rem + 1vw, 2rem); background: var(--paper); border-bottom: 1px solid var(--line);
