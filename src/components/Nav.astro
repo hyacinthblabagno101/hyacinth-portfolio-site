@@ -15,7 +15,7 @@ const links = [
 
 <header class="site-header">
   <div class="wrap bar">
-    <a class="brand" href="/">{site.name} <span aria-hidden="true">|</span> <span class="tag">Portfolio</span></a>
+    <a class="brand" href="/">{site.name}</a>
 
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
       <span class="menu-label">Menu</span>
@@ -59,13 +59,6 @@ const links = [
     white-space: nowrap;
     display: inline-flex; align-items: center; min-height: 2.75rem;
   }
-  .brand [aria-hidden] { display: none; }
-  .brand .tag {
-    margin-left: 0.35rem;
-    font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: var(--fs-small); letter-spacing: 0; text-transform: none;
-    color: var(--ink);
-  }
-  @media (max-width: 22rem) { .brand .tag { display: none; } }
 
   .menu-toggle {
     display: inline-flex;
