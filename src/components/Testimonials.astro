@@ -134,9 +134,11 @@ const quotes = proof.testimonials.map((t, i) => {
   @keyframes fill { to { transform: scaleX(1); } }
   @media (prefers-reduced-motion: reduce) { .progress { display: none; } }
 
-  .dots { display: flex; gap: 0.4rem; }
-  .dots :global(button) { width: 0.5rem; height: 0.5rem; padding: 0; border: 0; border-radius: var(--radius-pill); background: rgb(255 255 240 / 0.3); cursor: pointer; transition: width var(--t-move) var(--ease), background var(--t-move) var(--ease); }
-  .dots :global(button.on) { width: 1.75rem; background: var(--paper); }
+  /* Each dot is a 24px tap area with the small visible dot inside it */
+  .dots { display: flex; gap: 0; }
+  .dots :global(button) { display: grid; place-items: center; min-width: 24px; height: 24px; padding: 0 0.2rem; border: 0; background: none; cursor: pointer; border-radius: var(--radius-pill); }
+  .dots :global(button)::before { content: ''; display: block; width: 0.5rem; height: 0.5rem; border-radius: var(--radius-pill); background: rgb(255 255 240 / 0.3); transition: width var(--t-move) var(--ease), background var(--t-move) var(--ease); }
+  .dots :global(button.on)::before { width: 1.75rem; background: var(--paper); }
   .arrows { display: flex; gap: 0.5rem; align-items: center; }
   .arrows .motion-toggle { background: transparent; color: var(--paper); border-color: rgb(255 255 240 / 0.3); }
   .arrows .motion-toggle:hover { background: rgb(255 255 240 / 0.1); }
