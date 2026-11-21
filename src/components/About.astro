@@ -25,12 +25,15 @@ const everyTool = tools.groups.flatMap((g) => g.tools.map((t) => (typeof t === '
 const firstTools = ['Canva', 'CapCut', 'Adobe Photoshop', 'Adobe Lightroom Classic', 'Meta Business Suite', 'Instagram', 'TikTok', 'Later', 'Metricool', 'Insense', 'ChatGPT', 'Shopify'].filter((n) => everyTool.includes(n));
 const allTools = [...firstTools, ...everyTool.filter((n) => !firstTools.includes(n))];
 const TOP = firstTools.length;
+// Tools pop-up: three drifting rows, the role-relevant tools first in the top row
+const rest = allTools.slice(TOP);
+const rows = [firstTools, rest.filter((_, i) => i % 2 === 0), rest.filter((_, i) => i % 2 === 1)];
 const certs = proof.certifications;
 ---
 
 <section id="about" class="about" aria-labelledby="about-title">
   <div class="wrap grid">
-    <figure class="photo reveal">
+    <figure class="photo reveal" data-parallax>
       <Picture
         src={cutout}
         alt={about.portraitAlt}
@@ -55,10 +58,20 @@ const certs = proof.certifications;
         )}
         <a class="btn btn--primary" href="#contact">Let's talk</a>
       </div>
-      <p class="more-links">
-        <button type="button" class="btn btn--link" data-pop="certs" aria-haspopup="dialog">Certifications ({certs.length})</button>
-        <button type="button" class="btn btn--link" data-pop="tools" aria-haspopup="dialog">Tools I use</button>
-      </p>
+      <div class="cards">
+        <button type="button" class="pop-card lift" data-pop="certs" aria-haspopup="dialog">
+          <span class="fan" aria-hidden="true">
+            {certs.slice(0, 3).map((c, i) => <img src={jpgUrl(c.image, 240)} alt="" width="120" height="90" loading="lazy" style={`--i: ${i}`} />)}
+          </span>
+          <span class="pop-text"><strong>Certifications</strong><span>{certs.length} courses completed</span></span>
+        </button>
+        <button type="button" class="pop-card lift" data-pop="tools" aria-haspopup="dialog">
+          <span class="fan tools-fan" aria-hidden="true">
+            {allTools.slice(0, 5).map((n, i) => <img src={logos[n]} alt="" width="40" height="40" loading="lazy" style={`--i: ${i}`} />)}
+          </span>
+          <span class="pop-text"><strong>Tools I use</strong><span>{allTools.length} tools I work with</span></span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -98,13 +111,24 @@ const certs = proof.certifications;
         <h3 id="pop-tools-title">Tools I use</h3>
         <button type="button" class="x" data-pop-close aria-label="Close">&times;</button>
       </header>
-      <ul class="tool-grid" role="list" data-tool-grid>
-        {allTools.map((n, i) => (
-          <li class:list={{ 'tool-more': i >= TOP }}><img src={logos[n]} alt="" width="40" height="40" loading="lazy" /><span>{n}</span></li>
-        ))}
-      </ul>
+      <div class="tool-body" data-tool-body>
+        <div class="marquees" aria-hidden="true">
+          {rows.map((row, r) => (
+            <div class:list={['marquee', r % 2 ? 'right' : 'left']}>
+              {[0, 1].map(() => (
+                <ul role="list">
+                  {row.map((n) => <li><img src={logos[n]} alt="" width="40" height="40" loading="lazy" /><span>{n}</span></li>)}
+                </ul>
+              ))}
+            </div>
+          ))}
+        </div>
+        <ul class="tool-grid" role="list" data-tool-grid>
+          {allTools.map((n) => <li><img src={logos[n]} alt="" width="40" height="40" loading="lazy" /><span>{n}</span></li>)}
+        </ul>
+      </div>
       <footer class="pop-foot">
-        {allTools.length > TOP && <button type="button" class="btn btn--link" aria-expanded="false" data-tools-more>Show all {allTools.length} tools</button>}
+        <button type="button" class="btn btn--link" aria-pressed="false" data-tools-view>View as list</button>
         <button type="button" class="btn btn--secondary" data-pop-switch="certs">View certifications</button>
       </footer>
     </div>
@@ -112,13 +136,19 @@ const certs = proof.certifications;
 </section>
 
 <style>
-  .about { padding-block: var(--section); }
-  .grid { display: grid; gap: clamp(1.5rem, 1rem + 2vw, 4rem); align-items: start; }
+  .about { padding-block: var(--section) clamp(2.5rem, 2rem + 2vw, 4rem); }
+  .grid { display: grid; gap: clamp(1.5rem, 1rem + 2vw, 3.5rem); align-items: center; }
   @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); } }
   .grid > * { min-width: 0; }
 
-  /* The portrait sits beside the copy, top-aligned with the heading. On phones it comes first, cropped to ~60% of the screen. */
-  .photo { margin: 0; width: 100%; max-width: 30rem; }
+  /* The portrait sits beside the copy, top-aligned with the heading, over a soft Sky block shifted down and left.
+     On wide screens it drifts very slightly as you scroll (at most 20px). On phones it comes first, cropped to ~60% of the screen. */
+  .photo { position: relative; margin: 0; width: 100%; max-width: 30rem; isolation: isolate; }
+  .photo::before {
+    content: ''; position: absolute; z-index: -1; inset: 12% 8% -4% -6%;
+    border-radius: var(--radius-panel); background: rgb(165 183 229 / 0.35);
+  }
+  .photo :global(img) { transform: translateY(var(--px, 0px)); }
   .photo :global(picture), .photo :global(img) { display: block; width: 100%; height: auto; }
   @media (max-width: 63.99rem) {
     .photo { justify-self: center; }
@@ -135,8 +165,29 @@ const certs = proof.certifications;
   .bio p { color: var(--muted); }
   .bio p:first-child { font-size: var(--fs-lead); line-height: 1.5; color: var(--ink); }
   .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-  /* Certifications and tools: two quiet links */
-  .more-links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; margin-top: 0.25rem; }
+  /* Cards that open the pop-ups: thumbnails fan out on hover or focus */
+  .cards { display: grid; gap: 0.75rem; width: 100%; max-width: 36rem; margin-top: 0.5rem; }
+  @media (min-width: 30rem) { .cards { grid-template-columns: 1fr 1fr; } }
+  .pop-card {
+    display: flex; align-items: center; gap: 0.9rem; min-height: 4.75rem; padding: 0.75rem 0.9rem;
+    border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--paper);
+    font: inherit; color: var(--ink); text-align: left; cursor: pointer;
+  }
+  .pop-card:hover, .pop-card:focus-visible { border-color: var(--ink); }
+  .pop-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .fan { position: relative; flex: none; width: 4.75rem; height: 3rem; }
+  .fan img {
+    position: absolute; top: 0.2rem; left: 0; width: 3.25rem; height: 2.4rem; object-fit: cover;
+    border-radius: 5px; border: 1px solid var(--rule); background: var(--paper);
+    transform: translateX(calc(var(--i) * 0.55rem)) rotate(calc((var(--i) - 1) * 4deg));
+    transition: transform 350ms var(--ease);
+  }
+  .pop-card:hover .fan img, .pop-card:focus-visible .fan img { transform: translateX(calc(var(--i) * 0.9rem)) rotate(calc((var(--i) - 1) * 9deg)); }
+  .tools-fan img { width: 2rem; height: 2rem; top: 0.5rem; object-fit: contain; padding: 0.25rem; border-radius: 8px; transform: translateX(calc(var(--i) * 0.5rem)); }
+  .pop-card:hover .tools-fan img, .pop-card:focus-visible .tools-fan img { transform: translateX(calc(var(--i) * 0.75rem)) translateY(calc((var(--i) % 2) * -5px)); }
+  .pop-text { display: grid; gap: 0.1rem; }
+  .pop-text strong { font-weight: 600; }
+  .pop-text span { font-size: var(--fs-small); color: var(--muted); }
 
   /* Pop-ups */
   .pop {
@@ -179,8 +230,32 @@ const certs = proof.certifications;
   .tool-grid { list-style: none; margin: 0; padding: 1.25rem; display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr)); }
   .tool-grid li { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.75rem; border: 1px solid var(--rule); border-radius: var(--radius-media); font-size: var(--fs-small); font-weight: 600; }
   .tool-grid img { width: 1.75rem; height: 1.75rem; object-fit: contain; flex: none; }
-  .tool-grid .tool-more { display: none; }
-  .tool-grid.all .tool-more { display: flex; }
+  /* Tools: drifting rows by default; "View as list" shows the full grid instead */
+  .tool-grid { display: none; }
+  .tool-body.as-list .tool-grid { display: grid; }
+  .tool-body.as-list .marquees { display: none; }
+  .marquees { display: grid; gap: 0.9rem; padding: 1.5rem 0; overflow: hidden; }
+  .marquee { display: flex; width: max-content; }
+  .marquee ul { list-style: none; margin: 0; padding: 0 0.4rem; display: flex; gap: 0.6rem; flex: none; }
+  .marquee li {
+    display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.5rem 0.95rem 0.5rem 0.55rem;
+    border: 1px solid var(--rule); border-radius: var(--radius-pill); background: var(--paper); white-space: nowrap;
+    font-size: var(--fs-small); font-weight: 600;
+  }
+  .marquee img { width: 1.75rem; height: 1.75rem; object-fit: contain; }
+  @media (prefers-reduced-motion: no-preference) {
+    .pop[open] .marquee.left { animation: tools-left 60s linear infinite; }
+    .pop[open] .marquee.right { animation: tools-right 70s linear infinite; }
+    .marquees:hover .marquee { animation-play-state: paused; }
+    @keyframes tools-left { to { transform: translateX(-50%); } }
+    @keyframes tools-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+  }
+  /* Reduced motion: the full list instead of moving rows */
+  @media (prefers-reduced-motion: reduce) {
+    .tool-body .marquees { display: none; }
+    .tool-body .tool-grid { display: grid; }
+    [data-tools-view] { display: none; }
+  }
   @media (prefers-reduced-motion: no-preference) {
   }
   @media (prefers-reduced-motion: reduce) {
@@ -209,15 +284,31 @@ const certs = proof.certifications;
     });
   });
 
-  // Tools: show the full list on demand
-  const moreTools = document.querySelector<HTMLButtonElement>('[data-tools-more]');
-  moreTools?.addEventListener('click', () => {
-    const grid = document.querySelector('[data-tool-grid]');
-    const open = !grid?.classList.contains('all');
-    grid?.classList.toggle('all', open);
-    moreTools.setAttribute('aria-expanded', String(open));
-    moreTools.textContent = open ? 'Show fewer tools' : `Show all ${grid?.children.length ?? ''} tools`;
+  // Tools: switch between the drifting rows and a plain list
+  const view = document.querySelector<HTMLButtonElement>('[data-tools-view]');
+  view?.addEventListener('click', () => {
+    const body = document.querySelector('[data-tool-body]');
+    const list = !body?.classList.contains('as-list');
+    body?.classList.toggle('as-list', list);
+    view.setAttribute('aria-pressed', String(list));
+    view.textContent = list ? 'View as moving rows' : 'View as list';
   });
+
+  // Portrait: a very small drift as you scroll (wide screens, motion allowed; at most 20px)
+  const photo = document.querySelector<HTMLElement>('[data-parallax]');
+  const wideScreen = window.matchMedia('(min-width: 64rem)');
+  if (photo && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      if (!wideScreen.matches) { photo.style.removeProperty('--px'); return; }
+      const r = photo.getBoundingClientRect();
+      const p = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; // -1..1 around the middle of the screen
+      photo.style.setProperty('--px', `${Math.max(-20, Math.min(20, p * -24)).toFixed(1)}px`);
+    };
+    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    update();
+  }
 
   // Certificates: one at a time
   const slides = [...document.querySelectorAll<HTMLElement>('[data-cert]')];

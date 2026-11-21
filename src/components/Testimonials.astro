@@ -1,101 +1,101 @@
 ---
 /**
  * Client feedback, word for word. Text lives in "testimonials" in src/data/proof.json (order there = order here).
- * - Desktop: a fixed grid of 3 reviews with matching card heights; "Show more reviews" adds the rest (no auto-carousel).
- *   Phones: the same cards stacked.
- * - Each card shows an excerpt that ends at a sentence boundary; "Read more" (aria-expanded) shows the full quote.
- * - The name and role sit directly under each quote.
+ * - A slider: one lead quote set large in Libre Baskerville, with the next two smaller beside it (desktop).
+ *   Phones show the lead quote only. Arrows, swipe, and the dots move between quotes.
+ * - It moves on by itself every 6 seconds; a thin bar shows the time left. It pauses on hover, keyboard focus,
+ *   or touch, and has a Pause button. With reduced motion it never moves on its own.
+ * - The lead quote starts as an excerpt that ends at a sentence boundary; "Read more" (aria-expanded) shows the rest.
+ * - Without JavaScript every review shows in full, stacked.
  * - "Verified on Upwork" shows only on reviews that link to their Upwork source (a "url" in proof.json).
  *   TODO(hyacinth): confirm which reviews are Upwork reviews; only add a url for those.
  */
 import { proof } from '../lib/data';
 
-const SHOWN = 3;
 const LIMIT = 190; // characters; the excerpt takes whole sentences up to about this length
-
 const quotes = proof.testimonials.map((t, i) => {
   const sentences = t.quote.split(/(?<=[.!?])\s+/);
   let excerpt = sentences[0];
   let k = 1;
   while (k < sentences.length && (excerpt + ' ' + sentences[k]).length <= LIMIT) excerpt += ' ' + sentences[k++];
-  const rest = sentences.slice(k).join(' ');
-  return { ...t, id: `quote-${i + 1}`, excerpt, rest, extra: i >= SHOWN };
+  return { ...t, id: `quote-${i + 1}`, excerpt, rest: sentences.slice(k).join(' ') };
 });
 ---
 
-<section id="feedback" class="feedback band-dark" aria-labelledby="feedback-title">
+<section id="feedback" class="feedback band-dark" aria-labelledby="feedback-title" aria-roledescription="carousel" data-feedback>
   <div class="wrap">
     <header class="section-head reveal">
       <h2 id="feedback-title">Client <em>feedback</em></h2>
       <p class="lede">A few words from brands I've worked with directly.</p>
     </header>
 
-    <ul class="cards" role="list" data-cards>
-      {quotes.map((t) => (
-        <li class:list={['reveal', { extra: t.extra }]}>
-          <figure class="card">
-            <blockquote class="quote">
-              <p>
-                <span class="mark" aria-hidden="true">&ldquo;</span>{t.excerpt}
-                {t.rest && <span id={t.id} class="rest" data-rest> {t.rest}</span>}
-              </p>
-            </blockquote>
-            {t.rest && (
-              <button type="button" class="btn btn--link more" aria-expanded="false" aria-controls={t.id} data-more-quote>
-                Read more <span class="visually-hidden">from {t.name}</span>
-              </button>
+    <div class="stage" data-stage>
+      {quotes.map((t, i) => (
+        <figure class="q" data-q={i} aria-roledescription="slide" aria-label={`${i + 1} of ${quotes.length}`}>
+          <blockquote class="quote">
+            <p>
+              <span class="mark" aria-hidden="true">&ldquo;</span>{t.excerpt}
+              {t.rest && <span id={t.id} class="rest" data-rest> {t.rest}</span>}
+            </p>
+          </blockquote>
+          {t.rest && (
+            <button type="button" class="btn btn--link more" aria-expanded="false" aria-controls={t.id} data-more-quote>
+              Read more <span class="visually-hidden">from {t.name}</span>
+            </button>
+          )}
+          <figcaption>
+            <strong>{t.name}</strong>
+            <span>{t.role}</span>
+            {t.url && (
+              <a class="verified" href={t.url} target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="3" /></svg>
+                Verified on Upwork <span class="visually-hidden">(opens in a new tab)</span>
+              </a>
             )}
-            <figcaption>
-              <strong>{t.name}</strong>
-              <span>{t.role}</span>
-              {t.url && (
-                <a class="verified" href={t.url} target="_blank" rel="noopener">
-                  <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="3" /></svg>
-                  Verified on Upwork <span class="visually-hidden">(opens in a new tab)</span>
-                </a>
-              )}
-            </figcaption>
-          </figure>
-        </li>
+          </figcaption>
+        </figure>
       ))}
-    </ul>
-    {quotes.length > SHOWN && (
-      <button type="button" class="btn btn--secondary show-more" aria-expanded="false" data-more-quotes>
-        Show {quotes.length - SHOWN} more reviews
-      </button>
-    )}
+    </div>
+
+    <div class="controls">
+      <div class="progress" aria-hidden="true"><i data-progress></i></div>
+      <p class="dots" aria-hidden="true" data-dots></p>
+      <p class="visually-hidden" aria-live="polite" data-status></p>
+      <div class="arrows">
+        <button type="button" class="motion-toggle" aria-pressed="false" data-feedback-toggle>
+          <span class="when-playing"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor" /></svg> Pause</span>
+          <span class="when-paused"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" /></svg> Play</span>
+          <span class="visually-hidden"> the moving reviews</span>
+        </button>
+        <button type="button" class="arrow" data-prev aria-label="Previous review">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+        </button>
+        <button type="button" class="arrow" data-next aria-label="Next review">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+        </button>
+      </div>
+    </div>
   </div>
 </section>
 
 <style>
   .feedback { padding-block: var(--section); }
 
-  .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; align-items: stretch; }
-  @media (min-width: 48rem) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (min-width: 64rem) { .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; } }
-  .cards > li { display: flex; }
-  /* Without JavaScript every review and every full quote shows */
-  :global(html.js) .cards > li.extra { display: none; }
-  :global(html.js) .cards.all > li.extra { display: flex; }
-  :global(html:not(.js)) .more, :global(html:not(.js)) .show-more { display: none; }
+  /* Without JavaScript: every review stacked in full */
+  .stage { display: grid; gap: 1rem; }
+  @media (min-width: 48rem) { .stage { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
-  figure { margin: 0; }
-  /* Light cards on the dark band: they use the light-section colors */
-  .card {
-    flex: 1; display: flex; flex-direction: column; gap: 0.75rem;
-    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
-    border-radius: var(--radius-panel); background: var(--paper); color: var(--ink);
+  .q {
+    margin: 0; display: flex; flex-direction: column; gap: 0.75rem;
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem); border-radius: var(--radius-panel);
+    background: var(--paper); color: var(--ink);
     --muted: #715d58; --rule: #e3dccf; --focus: var(--ink); --link: var(--ink); --text: var(--ink); --bg: var(--paper);
   }
   blockquote { margin: 0; }
   .quote p { margin: 0; color: var(--ink); line-height: 1.6; max-width: none; }
-  .mark { font-family: var(--font-serif); font-size: 1.6em; line-height: 0; vertical-align: -0.3em; margin-right: 0.15em; color: var(--ink); }
+  .mark { font-family: var(--font-serif); font-size: 1.6em; line-height: 0; vertical-align: -0.3em; margin-right: 0.15em; color: var(--accent); }
   .more { align-self: flex-start; }
-
-  figcaption {
-    display: grid; gap: 0.15rem; margin-top: auto; padding-top: 1rem;
-    border-top: 1px solid var(--rule); font-size: var(--fs-small);
-  }
+  figcaption { display: grid; gap: 0.15rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: var(--fs-small); }
   figcaption strong { font-weight: 600; color: var(--ink); }
   figcaption span { color: var(--muted); }
   .verified {
@@ -103,33 +103,147 @@ const quotes = proof.testimonials.map((t, i) => {
     padding: 0.2rem 0.6rem; border-radius: var(--radius-pill); background: var(--surface); color: var(--ink);
     font-size: var(--fs-label); font-weight: 600; text-decoration: none;
   }
-  .verified:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
-  .show-more { display: flex; width: fit-content; margin: 2rem auto 0; }
+
+  /* With JavaScript: the slider. Lead quote large on the left, the next two smaller on the right */
+  .controls { display: none; }
+  :global(html.js) .controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1.5rem; }
+  :global(html.js) .stage { grid-template-columns: minmax(0, 1fr); grid-auto-flow: dense; }
+  :global(html.js) .q { display: none; }
+  :global(html.js) .q.lead, :global(html.js) .q.next { display: flex; }
+  @media (max-width: 63.99rem) { :global(html.js) .q.next { display: none; } }
+  @media (min-width: 64rem) {
+    :global(html.js) .stage { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); grid-template-rows: auto auto; gap: 1.25rem; }
+    :global(html.js) .q.lead { grid-column: 1; grid-row: 1 / span 2; }
+    :global(html.js) .q.next { grid-column: 2; }
+  }
+  .q.lead .quote p { font-family: var(--font-serif); font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem); line-height: 1.45; letter-spacing: -0.01em; }
+  .q.next .quote p { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; font-size: var(--fs-small); color: var(--muted); }
+  .q.next .more { display: none; }
+  .q.next { cursor: pointer; }
+  @media (prefers-reduced-motion: no-preference) {
+    .q.enter { animation: q-in var(--t-move) var(--ease) backwards; }
+    .q.next.enter { animation-delay: 80ms; }
+    @keyframes q-in { from { opacity: 0; transform: translateY(12px); } }
+  }
+
+  /* Progress bar: fills over 6 seconds, then the next review */
+  .progress { flex: 1 1 100%; height: 2px; background: rgb(255 255 240 / 0.18); border-radius: 2px; overflow: hidden; }
+  .progress i { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); }
+  .progress i.run { animation: fill 6s linear forwards; }
+  .feedback[data-held] .progress i.run { animation-play-state: paused; }
+  @keyframes fill { to { transform: scaleX(1); } }
+  @media (prefers-reduced-motion: reduce) { .progress { display: none; } }
+
+  .dots { display: flex; gap: 0.4rem; }
+  .dots :global(button) { width: 0.5rem; height: 0.5rem; padding: 0; border: 0; border-radius: var(--radius-pill); background: rgb(255 255 240 / 0.3); cursor: pointer; transition: width var(--t-move) var(--ease), background var(--t-move) var(--ease); }
+  .dots :global(button.on) { width: 1.75rem; background: var(--paper); }
+  .arrows { display: flex; gap: 0.5rem; align-items: center; }
+  .arrows .motion-toggle { background: transparent; color: var(--paper); border-color: rgb(255 255 240 / 0.3); }
+  .arrows .motion-toggle:hover { background: rgb(255 255 240 / 0.1); }
+  .arrow {
+    display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%;
+    border: 1px solid rgb(255 255 240 / 0.6); background: transparent; color: var(--paper); cursor: pointer;
+    transition: background-color var(--t-ui) var(--ease), color var(--t-ui) var(--ease);
+  }
+  .arrow:hover { background: var(--paper); color: var(--ink); }
+  .arrow:focus-visible, .dots :global(button:focus-visible) { outline: 3px solid var(--paper); outline-offset: 3px; }
 </style>
 
 <script>
-  // Quotes start as excerpts once JavaScript runs; "Read more" shows the rest
-  document.querySelectorAll<HTMLElement>('[data-rest]').forEach((r) => (r.hidden = true));
-  document.querySelectorAll<HTMLButtonElement>('[data-more-quote]').forEach((btn) => {
-    const rest = document.getElementById(btn.getAttribute('aria-controls')!);
-    btn.addEventListener('click', () => {
-      const open = btn.getAttribute('aria-expanded') !== 'true';
-      btn.setAttribute('aria-expanded', String(open));
-      if (rest) rest.hidden = !open;
-      btn.firstChild!.textContent = open ? 'Show less ' : 'Read more ';
-    });
-  });
+  const root = document.querySelector<HTMLElement>('[data-feedback]');
+  const slides = [...document.querySelectorAll<HTMLElement>('[data-q]')];
+  if (root && slides.length) {
+    const n = slides.length;
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const bar = root.querySelector<HTMLElement>('[data-progress]')!;
+    const dots = root.querySelector<HTMLElement>('[data-dots]')!;
+    const status = root.querySelector<HTMLElement>('[data-status]')!;
+    const toggle = root.querySelector<HTMLButtonElement>('[data-feedback-toggle]');
+    let lead = 0;
+    let timer = 0;
+    let held = 0; // hover, focus or touch
+    let paused = calm;
+    let onScreen = false;
 
-  // "Show more reviews" adds the rest of the cards and moves focus to the first new one
-  const moreQuotes = document.querySelector<HTMLButtonElement>('[data-more-quotes]');
-  moreQuotes?.addEventListener('click', () => {
-    const list = document.querySelector<HTMLElement>('[data-cards]');
-    if (!list) return;
-    const open = !list.classList.contains('all');
-    list.classList.toggle('all', open);
-    moreQuotes.setAttribute('aria-expanded', String(open));
-    moreQuotes.textContent = open ? 'Show fewer reviews' : `Show ${list.querySelectorAll('.extra').length} more reviews`;
-    if (open) list.querySelector<HTMLElement>('.extra .card')?.setAttribute('tabindex', '-1');
-    if (open) list.querySelector<HTMLElement>('.extra .card')?.focus();
-  });
+    // Quotes start as excerpts; "Read more" shows the rest
+    root.querySelectorAll<HTMLElement>('[data-rest]').forEach((r) => (r.hidden = true));
+    root.querySelectorAll<HTMLButtonElement>('[data-more-quote]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const open = btn.getAttribute('aria-expanded') !== 'true';
+        btn.setAttribute('aria-expanded', String(open));
+        const rest = document.getElementById(btn.getAttribute('aria-controls')!);
+        if (rest) rest.hidden = !open;
+        btn.firstChild!.textContent = open ? 'Show less ' : 'Read more ';
+        hold(open ? 1 : -1); // reading a full quote stops the auto-advance
+      });
+    });
+
+    dots.replaceChildren(...slides.map((_, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', `Show review ${i + 1}`);
+      b.addEventListener('click', () => go(i));
+      return b;
+    }));
+    dots.removeAttribute('aria-hidden');
+
+    function render(animate = true) {
+      slides.forEach((s, i) => {
+        const isLead = i === lead;
+        const isNext = i === (lead + 1) % n || i === (lead + 2) % n;
+        s.classList.toggle('lead', isLead);
+        s.classList.toggle('next', isNext && !isLead);
+        s.classList.remove('enter');
+        if (animate && (isLead || isNext)) { void s.offsetWidth; s.classList.add('enter'); }
+        s.style.order = String(isLead ? 0 : i === (lead + 1) % n ? 1 : 2);
+        s.setAttribute('aria-hidden', String(!isLead));
+        s.querySelectorAll<HTMLElement>('a, button').forEach((el) => (el.tabIndex = isLead ? 0 : -1));
+        // Collapse any open quote when it leaves the lead spot
+        if (!isLead) {
+          const btn = s.querySelector<HTMLButtonElement>('[data-more-quote]');
+          if (btn?.getAttribute('aria-expanded') === 'true') btn.click();
+        }
+      });
+      [...dots.children].forEach((d, i) => d.classList.toggle('on', i === lead));
+      status.textContent = `Review ${lead + 1} of ${n}`;
+      restart();
+    }
+    function go(i: number) { lead = (i + n) % n; render(); }
+    function restart() {
+      window.clearTimeout(timer);
+      bar.classList.remove('run');
+      if (paused || !onScreen) return;
+      void bar.offsetWidth;
+      bar.classList.add('run');
+    }
+    bar.addEventListener('animationend', () => { if (!paused && !held) go(lead + 1); });
+    function hold(d: number) { held = Math.max(0, held + d); root!.toggleAttribute('data-held', held > 0); }
+
+    root.querySelector('[data-prev]')?.addEventListener('click', () => go(lead - 1));
+    root.querySelector('[data-next]')?.addEventListener('click', () => go(lead + 1));
+    // Clicking one of the smaller quotes brings it to the lead spot
+    slides.forEach((s, i) => s.addEventListener('click', (e) => {
+      if (s.classList.contains('next') && !(e.target as HTMLElement).closest('a')) go(i);
+    }));
+    const stage = root.querySelector<HTMLElement>('[data-stage]')!;
+    stage.addEventListener('mouseenter', () => hold(1));
+    stage.addEventListener('mouseleave', () => hold(-1));
+    root.addEventListener('focusin', () => hold(1));
+    root.addEventListener('focusout', () => hold(-1));
+    // Swipe on touch screens
+    let x0 = 0;
+    stage.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; hold(1); }, { passive: true });
+    stage.addEventListener('touchend', (e) => {
+      hold(-1);
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 40) go(lead + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+    toggle?.addEventListener('click', () => {
+      paused = toggle.getAttribute('aria-pressed') !== 'true';
+      toggle.setAttribute('aria-pressed', String(paused));
+      restart();
+    });
+    new IntersectionObserver((e) => { onScreen = e[0].isIntersecting; restart(); }, { threshold: 0.3 }).observe(root);
+    render(false);
+  }
 </script>

@@ -101,6 +101,18 @@ const support = all.filter((s) => !MAIN.includes(s.title));
     .cap-body, .cap-body[hidden] { display: grid; }
     .cap-body p { font-size: var(--fs-body); }
     .small .cap-body p { font-size: var(--fs-small); }
+    /* Main skills: large serif titles; a thin line draws under the title on hover, and the link slides in */
+    .main .cap-name {
+      font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.5rem, 1.2rem + 0.8vw, 1.875rem); letter-spacing: -0.02em; line-height: 1.15;
+      padding-bottom: 0.2rem;
+      background: linear-gradient(var(--accent), var(--accent)) left bottom / 0 2px no-repeat;
+      transition: background-size var(--t-move) var(--ease);
+    }
+    .main .cap:hover .cap-name, .main .cap:focus-within .cap-name { background-size: 100% 2px; }
+  }
+  @media (min-width: 64rem) and (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .main .cap-body .btn--link { opacity: 0.55; transform: translateX(-8px); transition: opacity var(--t-ui) var(--ease), transform var(--t-move) var(--ease); }
+    .main .cap:hover .btn--link, .main .cap:focus-within .btn--link { opacity: 1; transform: none; }
   }
 </style>
 

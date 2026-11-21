@@ -1,43 +1,49 @@
 ---
 /**
- * Proof band: the numbers on top and a small, still row of brand logos below, in one dark band.
- * - The numbers are in the HTML at their final values (no count-up), so they read correctly on first paint and without JavaScript.
+ * Proof band: the numbers on top, a thin line that draws across, and a slow looping band of brand logos below.
+ * - Numbers are in the HTML at their final values. When the band first comes into view they count up once,
+ *   from about 60% to the final value in 0.9s, so they never show 0 (and never move with reduced motion or no JavaScript).
  *   Numbers come from "stats" in src/data/site.json.
- * - Logos: a fixed selection, one height and one opacity. A logo links to its experience entry or to the work where one exists.
- *   Files live in public/logos (white, trimmed WebP); sizes in src/lib/logos.ts.
+ * - Logos: every brand with a logo file, one height (28px), one opacity (0.85). The band loops slowly, pauses on hover
+ *   or focus, and has a Pause button. With reduced motion it's a still, wrapping row.
+ *   A logo links to its experience entry or to the work where one exists. Files: public/logos; sizes: src/lib/logos.ts.
  */
 import { site } from '../lib/data';
 import { logos } from '../lib/logos';
 
-// Brands in the order they appear, with where each one links (only where there's a matching entry on this page)
-const picks: { name: string; href?: string }[] = [
-  { name: 'Winnie & Co.', href: '#experience' },
-  { name: 'Style State', href: '#experience' },
-  { name: 'Proper Ecom', href: '#experience' },
-  { name: 'Rabble', href: '#experience' },
-  { name: 'Epic Tales', href: '#experience' },
-  { name: 'T-James Sporty Bar', href: '/?work=reels#work' },
-  { name: 'Hair Solution Nails and Spa', href: '/?work=reels#work' },
-  { name: 'iLuxe Aesthetic Center' },
-];
-const row = picks
-  .filter((p) => logos[p.name])
-  .map((p) => ({ ...p, src: `/logos/${logos[p.name].file}.webp`, ratio: logos[p.name].w / logos[p.name].h }));
+const links: Record<string, string> = {
+  'Winnie & Co.': '#experience', 'Style State': '#experience', 'Proper Ecom': '#experience', 'Expert Biotics': '#experience',
+  'Uncle Scientist': '#experience', 'Stacked Science': '#experience', 'Rabble': '#experience', 'Epic Tales': '#experience',
+  'T-James Sporty Bar': '/?work=reels#work', 'Hair Solution Nails and Spa': '/?work=reels#work',
+};
+const order = ['Winnie & Co.', 'Style State', 'Proper Ecom', 'Rabble', 'Epic Tales', 'T-James Sporty Bar', 'Hair Solution Nails and Spa', 'iLuxe Aesthetic Center', 'Expert Biotics', 'Uncle Scientist', 'Stacked Science', 'Suezicu', 'Hyacinth Gadgets'];
+const row = order.filter((n) => logos[n]).map((name) => ({ name, href: links[name], src: `/logos/${logos[name].file}.webp`, ratio: logos[name].w / logos[name].h }));
 ---
 
-<section class="proof band-dark" aria-labelledby="proof-title">
+<section class="proof band-dark" aria-labelledby="proof-title" data-proof>
   <div class="wrap">
     <h2 id="proof-title" class="visually-hidden">At a glance</h2>
     <ul class="stats" role="list">
       {site.stats.map((s) => (
         <li>
-          <strong>{s.value.toLocaleString('en-US')}<span class="suffix">{s.suffix}</span></strong>
+          {/* The animated digits are hidden from screen readers; the real value is always in the text next to them */}
+          <strong><span aria-hidden="true"><span data-count={s.value}>{s.value.toLocaleString('en-US')}</span><span class="suffix">{s.suffix}</span></span><span class="visually-hidden">{s.value.toLocaleString('en-US')}{s.suffix}</span></strong>
           <span>{s.label}</span>
         </li>
       ))}
     </ul>
+    <span class="draw-line" aria-hidden="true"></span>
+    <div class="brands-head">
+      <h3 class="label brands-title">Brands I've made content for</h3>
+      <button type="button" class="motion-toggle" aria-pressed="false" data-logo-toggle>
+        <span class="when-playing"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor" /></svg> Pause</span>
+        <span class="when-paused"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" /></svg> Play</span>
+        <span class="visually-hidden"> the moving logos</span>
+      </button>
+    </div>
+  </div>
 
-    <h3 class="label brands-title">Brands I've made content for</h3>
+  <div class="marquee" data-marquee>
     <ul class="logos" role="list">
       {row.map((b) => (
         <li>
@@ -49,28 +55,95 @@ const row = picks
         </li>
       ))}
     </ul>
+    {/* A copy so the band loops without a gap; hidden from screen readers and keyboard */}
+    <ul class="logos copy" role="list" aria-hidden="true">
+      {row.map((b) => <li><img src={b.src} alt="" height="28" width={Math.round(28 * b.ratio)} loading="lazy" decoding="async" /></li>)}
+    </ul>
   </div>
 </section>
 
 <style>
-  .proof { padding-block: clamp(2.5rem, 2rem + 2.5vw, 4rem); }
-  .stats {
-    list-style: none; margin: 0; padding: 0;
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem 1rem;
-  }
+  .proof { padding-block: clamp(2.5rem, 2rem + 2.5vw, 4rem); overflow: hidden; }
+  .stats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem 1rem; }
   @media (min-width: 48rem) { .stats { grid-template-columns: repeat(4, 1fr); } }
   .stats li { display: grid; gap: 0.3rem; }
   .stats strong {
     font-family: var(--font-serif); font-weight: 400; line-height: 1; letter-spacing: -0.03em;
-    font-size: clamp(2.25rem, 1.75rem + 2vw, 3.25rem); font-variant-numeric: lining-nums;
+    font-size: clamp(2.25rem, 1.75rem + 2vw, 3.5rem); font-variant-numeric: tabular-nums lining-nums;
   }
   .stats .suffix { color: var(--accent); }
   .stats li > span { font-size: var(--fs-small); color: var(--muted); }
 
-  .brands-title { margin: clamp(2rem, 1.5rem + 2vw, 3rem) 0 1rem; padding-top: clamp(1.5rem, 1rem + 1.5vw, 2rem); border-top: 1px solid var(--rule); color: var(--muted); }
-  .logos { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem clamp(1.75rem, 1rem + 3vw, 3.25rem); }
-  .logos img { display: block; height: 28px; width: auto; max-width: 9rem; object-fit: contain; opacity: 0.85; transition: opacity 0.2s ease; }
+  /* A thin line that draws across when the band comes into view */
+  .draw-line { display: block; height: 1px; margin: clamp(2rem, 1.5rem + 2vw, 3rem) 0 1.5rem; background: var(--rule); transform-origin: left; }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .proof:not([data-seen]) .draw-line { transform: scaleX(0); }
+    .proof[data-seen] .draw-line { transform: scaleX(1); transition: transform var(--t-moment) var(--ease) 200ms; }
+  }
+  .brands-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+  .brands-title { color: var(--muted); }
+  .brands-head .motion-toggle { background: transparent; color: var(--paper); border-color: rgb(255 255 240 / 0.3); }
+  .brands-head .motion-toggle:hover { background: rgb(255 255 240 / 0.1); }
+
+  /* The loop: two copies side by side, moving left by exactly one copy */
+  .marquee {
+    display: flex; width: max-content;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  }
+  .logos { list-style: none; margin: 0; padding: 0 clamp(1.75rem, 1rem + 3vw, 3.5rem) 0 0; display: flex; align-items: center; gap: clamp(1.75rem, 1rem + 3vw, 3.5rem); flex: none; }
+  .logos img { display: block; height: 28px; width: auto; max-width: 10rem; object-fit: contain; opacity: 0.85; transition: opacity var(--t-ui) var(--ease); }
   .logos a { display: inline-flex; align-items: center; min-height: 2.75rem; border-radius: 4px; }
   .logos a:hover img, .logos a:focus-visible img { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .marquee { animation: logo-loop 90s linear infinite; }
+    .marquee:hover, .marquee:focus-within, .proof[data-paused] .marquee { animation-play-state: paused; }
+    @keyframes logo-loop { to { transform: translateX(-50%); } }
+  }
+  /* Reduced motion, and no JavaScript: one still row that wraps */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee { width: auto; flex-wrap: wrap; -webkit-mask-image: none; mask-image: none; padding-inline: var(--gutter); }
+    .logos { flex-wrap: wrap; padding: 0; row-gap: 1.25rem; }
+    .logos.copy { display: none; }
+  }
   @media (max-width: 40rem) { .logos img { height: 22px; } }
 </style>
+
+<script>
+  // Count-up (once, from ~60% to the final value in 0.9s) and the line draw, when the band first comes into view
+  const proof = document.querySelector<HTMLElement>('[data-proof]');
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const counters = [...(proof?.querySelectorAll<HTMLElement>('[data-count]') ?? [])];
+  const setAt = (p: number) => counters.forEach((el) => (el.textContent = Math.round(Number(el.dataset.count) * p).toLocaleString('en-US')));
+  // If the band starts off screen, hold the numbers at 60% until it comes into view and counts up
+  if (proof && !calm) {
+    const r = proof.getBoundingClientRect();
+    if (r.top > innerHeight || r.bottom < 0) setAt(0.6);
+  }
+  if (proof) {
+    new IntersectionObserver((entries, obs) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      obs.disconnect();
+      proof.dataset.seen = '';
+      if (calm) return;
+      const start = performance.now();
+      const step = (now: number) => {
+        const t = Math.min(1, (now - start) / 900);
+        const eased = 1 - Math.pow(1 - t, 3);
+        counters.forEach((el) => {
+          const end = Number(el.dataset.count);
+          el.textContent = Math.round(end * (0.6 + 0.4 * eased)).toLocaleString('en-US');
+        });
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, { threshold: 0.4 }).observe(proof);
+  }
+  // Pause/play for the logo band
+  const logoToggle = document.querySelector<HTMLButtonElement>('[data-logo-toggle]');
+  logoToggle?.addEventListener('click', () => {
+    const paused = logoToggle.getAttribute('aria-pressed') !== 'true';
+    logoToggle.setAttribute('aria-pressed', String(paused));
+    proof?.toggleAttribute('data-paused', paused);
+  });
+</script>

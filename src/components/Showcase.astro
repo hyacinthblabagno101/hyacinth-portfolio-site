@@ -89,22 +89,22 @@ const tabs = showcase.map((c) => {
       <div class="featured reveal" aria-labelledby="featured-title">
         <h3 id="featured-title" class="label">Featured</h3>
         <ul class="feat-grid" role="list" data-viewer-list>
-          {featured.map((f) => (
-            <li class="feat">
-              <a class="tile-link" href={f.entry.full} data-id={f.item.id} data-preview={f.media.preview}>
+          {featured.map((f, k) => (
+            <li class="feat" style={`--tone: var(--tone-${k % 3})`}>
+              <a class="tile-link feat-media lift" href={f.entry.full} data-id={f.item.id} data-preview={f.media.preview} data-play-label>
                 <span class="frame" style={`aspect-ratio: ${f.item.aspect.replace(':', ' / ')}`}>
                   <img src={f.media.src} srcset={f.media.srcset} sizes="(min-width: 64rem) 18rem, 46vw" width={f.media.width} height={f.media.height} alt={f.item.alt} loading="lazy" decoding="async" />
                   {f.item.kind === 'video' && (
                     <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M8 5v14l11-7z" fill="currentColor" /></svg></span>
                   )}
+                  <span class="feat-over" aria-hidden="true">
+                    {f.item.brand && <span class="feat-brand">{f.item.brand}</span>}
+                    <span class="feat-title">{f.item.title}</span>
+                  </span>
                 </span>
-                <span class="visually-hidden">{f.item.kind === 'video' ? 'Play video' : 'View image'}: {f.item.title}</span>
+                <span class="visually-hidden">{f.item.kind === 'video' ? 'Play video' : 'View image'}: {f.item.title}{f.item.brand ? `, ${f.item.brand}` : ''}</span>
               </a>
-              <div class="feat-text">
-                {f.item.brand && <p class="feat-brand">{f.item.brand}</p>}
-                <h4 class="feat-title">{f.item.title}</h4>
-                {f.role && <p class="feat-role">{f.role}</p>}
-              </div>
+              {f.role && <p class="feat-role">{f.role}</p>}
             </li>
           ))}
         </ul>
@@ -138,7 +138,7 @@ const tabs = showcase.map((c) => {
             {t.tiles.map((i, k) => (
               <li class:list={['tile', { extra: !t.grouped && k >= INITIAL }]} style={`--i: ${k % INITIAL}`}>
                 <a
-                  class:list={['tile-link', { collection: !!i.items }]}
+                  class:list={['tile-link', 'lift', { collection: !!i.items }]}
                   href={i.entry.full}
                   data-id={i.items ? undefined : i.key}
                   data-preview={i.media.preview}
@@ -233,16 +233,32 @@ const tabs = showcase.map((c) => {
   .tabs button[aria-selected='true'] { color: var(--ink); }
   .tabs button[aria-selected='true']::after { transform: scaleX(1); }
 
-  /* Featured row */
-  .featured { margin-bottom: clamp(2.5rem, 2rem + 2vw, 3.5rem); }
+  /* Featured row: each piece sits on its own color panel (Papaya, Sky, Saguaro tints, rotating) */
+  .featured { margin-bottom: clamp(2.5rem, 2rem + 2vw, 3.5rem); --tone-0: rgb(252 113 64 / 0.16); --tone-1: rgb(165 183 229 / 0.3); --tone-2: rgb(209 210 117 / 0.32); }
   .featured .label { color: var(--muted); margin-bottom: 1rem; }
   .feat-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.5rem 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   @media (min-width: 64rem) { .feat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; } }
-  .feat { display: grid; gap: 0.75rem; align-content: start; }
-  .feat-text { display: grid; gap: 0.2rem; }
-  .feat-brand { font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
-  .feat-title { font-family: var(--font-sans); font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem); font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
-  .feat-role { font-size: var(--fs-small); color: var(--muted); max-width: 40ch; }
+  .feat { display: grid; gap: 0.75rem; align-content: start; padding: clamp(0.6rem, 0.4rem + 0.6vw, 0.9rem); border-radius: var(--radius-panel); background: var(--tone); }
+  .feat-media { border-radius: var(--radius-media); }
+  /* Brand and title sit on the media, over a soft dark gradient */
+  .feat-over {
+    position: absolute; inset: auto 0 0 0; z-index: 2; display: grid; gap: 0.15rem;
+    padding: 3rem 0.85rem 0.85rem; color: var(--paper);
+    background: linear-gradient(to top, rgb(52 23 23 / 0.85), rgb(52 23 23 / 0));
+  }
+  .feat-brand { font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; }
+  .feat-title { font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
+  .feat-role { font-size: var(--fs-small); color: var(--ink); max-width: 40ch; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  /* Play label that follows the cursor over videos (desktop, motion allowed) */
+  :global(.play-cursor) {
+    position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none;
+    display: grid; place-items: center; width: 4.25rem; height: 4.25rem; border-radius: 50%;
+    background: var(--accent); color: var(--ink); font-size: var(--fs-small); font-weight: 700;
+    opacity: 0; transform: translate(-50%, -50%) scale(0.6);
+    transition: opacity var(--t-ui) var(--ease), transform var(--t-ui) var(--ease);
+  }
+  :global(.play-cursor.on) { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   .all-title { color: var(--muted); margin-bottom: 0.25rem; }
 
   .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
@@ -396,6 +412,24 @@ const tabs = showcase.map((c) => {
       panel.querySelector<HTMLElement>('.tile.extra .tile-link')?.focus({ preventScroll: true });
     });
   });
+
+  // Play label that follows the pointer over video tiles (fine pointers only, never with reduced motion)
+  if (canHover.matches && !reduce.matches) {
+    const label = document.createElement('span');
+    label.className = 'play-cursor';
+    label.setAttribute('aria-hidden', 'true');
+    label.textContent = 'Play';
+    document.body.append(label);
+    let raf = 0;
+    document.querySelectorAll<HTMLAnchorElement>('a.tile-link[data-preview]').forEach((a) => {
+      a.addEventListener('pointerenter', () => label.classList.add('on'));
+      a.addEventListener('pointerleave', () => label.classList.remove('on'));
+      a.addEventListener('pointermove', (e) => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => { label.style.left = `${e.clientX}px`; label.style.top = `${e.clientY}px`; });
+      });
+    });
+  }
 
   // Hover previews: a short silent loop, loaded only when the pointer arrives (any tile on the page)
   document.querySelectorAll<HTMLAnchorElement>('a.tile-link[data-preview]').forEach((link) => {

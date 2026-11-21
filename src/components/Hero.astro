@@ -4,7 +4,9 @@
  * (See my work filled, Book a call outlined). Beside it, a wall of 9 reels from different brands (at most 2 each).
  * - Desktop: three columns drift slowly in opposite directions. Hover or focus pauses them, and a visible
  *   pause/play button stops them for good. One reel per column plays a short silent preview.
- * - Phones, tablets and reduced motion: one still row of posters you can swipe.
+ * - Phones and tablets: two rows of reels drifting in opposite directions, with the same pause/play button.
+ * - Reduced motion: one still row of posters you can swipe.
+ * - On load the headline rises word by word, then the wall starts moving.
  * Text comes from "hero" in src/data/site.json; the reels are picked by id below.
  */
 import { site, filled, showUnconfirmed, showcase, bookingUrl } from '../lib/data';
@@ -16,7 +18,11 @@ const availability = filled(site.availability);
 const shortRole = site.role.split('|')[0].trim();
 const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 // "scrolling" is set in the italic accent
-const headlineHtml = escape(hero.headline).replace(/scrolling/i, (m) => `<em>${m}</em>`);
+// Each word rises in turn on load (the page's one signature moment); "scrolling" is the italic accent word
+const headlineHtml = escape(hero.headline)
+  .split(' ')
+  .map((w, i) => `<span class="word" style="--i: ${i}">${/scrolling/i.test(w) ? w.replace(/scrolling/i, (m) => `<em>${m}</em>`) : w}</span>`)
+  .join(' ');
 
 // Reel wall: 9 reels, at most 2 per brand, opening with a mix of brands. One column per row of 3 ids.
 const wallIds = [
@@ -49,7 +55,7 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
         <span>{site.name}, remote, based in the {site.location}</span>
       </p>
 
-      <h1 id="hero-title" class="rise" style="--delay: 0.06s">
+      <h1 id="hero-title">
         <span class="visually-hidden">{site.name}, {shortRole}. </span>
         <span set:html={headlineHtml} />
       </h1>
@@ -102,6 +108,17 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
             </ul>
             {/* A copy of the column so the drift loops without a gap; hidden from screen readers and the viewer */}
             <ul class="track copy-track" role="list" aria-hidden="true">
+              {col.map((r) => (
+                <li>
+                  <span class="reel">
+                    <img src={r.poster} width="360" height="640" alt="" loading="lazy" decoding="async" />
+                    {r.entry.brand && <span class="tag">{r.entry.brand}</span>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {/* A third copy, used only on phones and tablets where a row can be narrower than the screen */}
+            <ul class="track copy-track copy2" role="list" aria-hidden="true">
               {col.map((r) => (
                 <li>
                   <span class="reel">
@@ -208,10 +225,44 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
     @keyframes drift-down { from { transform: translateY(calc(-50% - 0.375rem)); } to { transform: translateY(0); } }
   }
 
-  /* Phones, tablets and reduced motion: one still row of posters you can swipe */
-  @media (max-width: 63.99rem), (prefers-reduced-motion: reduce) {
+  /* Headline: each word rises in turn on load */
+  :global(.word) { display: inline-block; }
+  @media (prefers-reduced-motion: no-preference) {
+    h1 :global(.word) { animation: word-rise 700ms var(--ease) backwards; animation-delay: calc(120ms + var(--i) * 70ms); }
+    @keyframes word-rise { from { opacity: 0; transform: translateY(0.35em); } }
+  }
+
+  /* Phones and tablets: two rows of reels under the text, drifting in opposite directions */
+  @media (max-width: 63.99rem) {
     .wall {
-      display: flex; gap: 0.6rem; height: auto;
+      display: grid; grid-template-columns: none; gap: 0.6rem; height: auto;
+      margin-inline: calc(var(--gutter) * -1); overflow: hidden;
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+      mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+    }
+    .col { flex-direction: row; gap: 0.6rem; width: max-content; }
+    .col-2 { margin: 0; }
+    .col-3 { display: none; }
+    .track { flex-direction: row; gap: 0.6rem; }
+    .track li { flex: none; width: clamp(6.5rem, 4rem + 10vw, 9rem); }
+  }
+  .copy2 { display: none; }
+  @media (max-width: 63.99rem) and (prefers-reduced-motion: no-preference) {
+    .copy2 { display: flex; }
+    .wall-toggle { display: inline-flex; right: 0; bottom: 0; top: auto; }
+    .wall-wrap { padding-bottom: 3.25rem; }
+    .col-1 { animation: drift-left 70s linear infinite; }
+    .col-2 { animation: drift-right 80s linear infinite; }
+    .wall[data-paused] .col, .wall:focus-within .col { animation-play-state: paused; }
+    /* Each row holds three copies and moves by exactly one, so it always fills the screen */
+    @keyframes drift-left { to { transform: translateX(calc(-100% / 3 - 0.2rem)); } }
+    @keyframes drift-right { from { transform: translateX(calc(-100% / 3 - 0.2rem)); } to { transform: translateX(0); } }
+  }
+
+  /* Reduced motion (any width): one still row of posters you can swipe */
+  @media (prefers-reduced-motion: reduce) {
+    .wall {
+      display: flex; gap: 0.6rem; height: auto; margin-inline: 0;
       overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
       -webkit-mask-image: none; mask-image: none;
     }

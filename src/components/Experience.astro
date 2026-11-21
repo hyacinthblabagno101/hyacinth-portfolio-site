@@ -22,6 +22,8 @@ const { professional, additional, businesses } = experience;
     {/* Not in date order, so labelled "Featured roles". TODO(hyacinth): confirm the order and the "Nov 2026" end date. */}
     <h3 class="group-title" id="roles-title">Featured roles</h3>
     <div class="pro" data-pro>
+      <div class="roles-wrap">
+      <span class="indicator" aria-hidden="true" data-indicator></span>
       <ol class="roles" role="list" aria-labelledby="roles-title">
         {professional.map((r, i) => (
           <li>
@@ -40,11 +42,12 @@ const { professional, additional, businesses } = experience;
           </li>
         ))}
       </ol>
+      </div>
       <div class="panel" aria-live="polite" data-panel></div>
     </div>
 
     <div class="more">
-      <article class="tile tile-extra" aria-labelledby="extra-title">
+      <article class="tile tile-extra lift" aria-labelledby="extra-title">
         <h3 id="extra-title">Additional experience &amp; projects</h3>
         <p>{additional.length} more brands and projects I've supported.</p>
         <ul class="names" role="list">
@@ -53,7 +56,7 @@ const { professional, additional, businesses } = experience;
         </ul>
         <button type="button" class="btn btn--secondary" data-exp-open="exp-extra" aria-haspopup="dialog">View all {additional.length}</button>
       </article>
-      <article class="tile tile-biz" aria-labelledby="biz-title">
+      <article class="tile tile-biz lift" aria-labelledby="biz-title">
         <h3 id="biz-title">Business background</h3>
         <p>{businesses.intro}</p>
         <ul class="names" role="list">
@@ -129,7 +132,14 @@ const { professional, additional, businesses } = experience;
   }
   /* Same padding in every state, so nothing shifts: only the background and the left bar change */
   .role:hover { background: var(--surface); }
-  .role.active { background: var(--surface); box-shadow: inset 3px 0 0 var(--accent); }
+  .role.active { background: var(--surface); }
+  /* The orange bar that marks the selected role slides between roles */
+  .roles-wrap { position: relative; }
+  .indicator {
+    position: absolute; left: 0; top: 0; z-index: 1; width: 3px; height: 0; border-radius: 2px; background: var(--accent);
+    opacity: 0; pointer-events: none;
+    transition: transform var(--t-move) var(--ease), height var(--t-move) var(--ease), opacity var(--t-ui) var(--ease);
+  }
   .role:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
   .role .dates { grid-column: 1; font-size: var(--fs-small); color: var(--muted); }
   .role .name { grid-column: 1; font-size: var(--fs-h3); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
@@ -160,7 +170,7 @@ const { professional, additional, businesses } = experience;
       background: var(--ink); color: var(--paper);
       --muted: rgb(255 255 240 / 0.78); --ink: var(--paper);
     }
-    .panel :global(.detail) { display: grid !important; padding: 0; animation: swap 0.35s ease; }
+    .panel :global(.detail) { display: grid !important; padding: 0; animation: swap var(--t-move) var(--ease); }
     @keyframes swap { from { opacity: 0; transform: translateY(8px); } }
     .panel :global(.points) { color: rgb(255 255 240 / 0.85); }
   }
@@ -175,15 +185,15 @@ const { professional, additional, businesses } = experience;
   .tile h3 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem); letter-spacing: -0.02em; line-height: 1.15; color: inherit; }
   .tile > p { max-width: 46ch; }
   .tile .btn { margin-top: auto; }
-  .tile-extra { background: var(--surface); color: var(--ink); border: 1px solid var(--rule); }
+  .tile-extra { background: rgb(165 183 229 / 0.3); color: var(--ink); }
   .tile-extra > p { color: var(--muted); }
-  .tile-biz { background: var(--paper); color: var(--ink); border: 1px solid var(--rule); }
+  .tile-biz { background: rgb(209 210 117 / 0.32); color: var(--ink); }
   .tile-biz > p { color: var(--muted); }
   .names { list-style: none; margin: 0 0 0.5rem; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
   .names li { padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); font-size: var(--fs-label); font-weight: 600; }
   .tile-extra .names li { background: var(--paper); }
   .tile-extra .names .rest { background: transparent; border: 1px dashed rgb(52 23 23 / 0.35); }
-  .tile-biz .names li { background: var(--surface); color: var(--ink); }
+  .tile-biz .names li { background: var(--paper); color: var(--ink); }
 
   /* Pop-ups */
   .exp-pop {
@@ -229,12 +239,23 @@ const { professional, additional, businesses } = experience;
     const buttons = [...pro.querySelectorAll<HTMLButtonElement>('[data-role]')];
     const details = [...pro.querySelectorAll<HTMLElement>('[data-detail]')];
     const panel = pro.querySelector<HTMLElement>('[data-panel]');
+    const indicator = pro.querySelector<HTMLElement>('[data-indicator]');
     const wide = window.matchMedia('(min-width: 64rem)');
     let current = 0;
+    window.addEventListener('resize', () => current >= 0 && show(current));
     const show = (i: number) => {
       current = i;
       buttons.forEach((b, k) => { b.classList.toggle('active', k === i); b.setAttribute('aria-expanded', String(k === i)); });
       details.forEach((d, k) => (d.hidden = k !== i));
+      // Slide the orange bar to the selected role
+      if (indicator) {
+        const b = buttons[i];
+        if (b) {
+          indicator.style.transform = `translateY(${b.offsetTop}px)`;
+          indicator.style.height = `${b.offsetHeight}px`;
+          indicator.style.opacity = '1';
+        } else indicator.style.opacity = '0';
+      }
       if (panel && i >= 0) {
         const copy = details[i].cloneNode(true) as HTMLElement;
         copy.removeAttribute('id');
