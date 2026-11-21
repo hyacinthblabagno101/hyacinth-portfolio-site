@@ -152,7 +152,7 @@ const { professional, additional, businesses } = experience;
   /* Same padding in every state, so nothing shifts: only the background and the left bar change */
   .role:hover { background: var(--surface); }
   .role.active { background: var(--surface); }
-  /* The orange bar that marks the selected role slides between roles */
+  /* The green bar that marks the selected role slides between roles */
   .roles-wrap { position: relative; }
   .indicator {
     position: absolute; left: 0; top: 0; z-index: 1; width: 3px; height: 0; border-radius: 2px; background: var(--accent);
@@ -204,19 +204,23 @@ const { professional, additional, businesses } = experience;
 
   /* Two light cards side by side; each opens a pop-up */
   .more { display: grid; gap: 1rem; margin-top: clamp(2.5rem, 2rem + 2vw, 3.5rem); }
-  @media (min-width: 48rem) { .more { grid-template-columns: 1fr 1fr; } }
   .tile {
-    display: flex; flex-direction: column; align-items: flex-start; gap: 1rem;
+    display: grid; grid-template-rows: auto auto 1fr auto; justify-items: start; gap: 1rem;
     padding: clamp(1.5rem, 1.1rem + 1.5vw, 2.25rem); border-radius: var(--radius-panel);
+  }
+  /* Side by side, the two boxes share rows (subgrid): titles, intros, name pills and buttons each start on the same line */
+  @media (min-width: 48rem) {
+    .more { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 1fr auto; column-gap: 1rem; row-gap: 0; }
+    .tile { grid-row: span 4; grid-template-rows: subgrid; row-gap: 1rem; }
   }
   .tile h3 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem); letter-spacing: -0.02em; line-height: 1.15; color: inherit; }
   .tile > p { max-width: 46ch; }
-  .tile .btn { margin-top: auto; }
-  .tile-extra { background: rgb(165 183 229 / 0.3); color: var(--ink); }
+  .tile .btn { align-self: end; }
+  .tile-extra { background: var(--blue-soft); color: var(--ink); }
   .tile-extra > p { color: var(--muted); }
-  .tile-biz { background: rgb(209 210 117 / 0.32); color: var(--ink); }
+  .tile-biz { background: var(--green-soft); color: var(--ink); }
   .tile-biz > p { color: var(--muted); }
-  .names { list-style: none; margin: 0 0 0.5rem; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .names { list-style: none; margin: 0 0 0.5rem; padding: 0; align-self: start; align-content: start; display: flex; flex-wrap: wrap; gap: 0.4rem; }
   .names li { padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); font-size: var(--fs-label); font-weight: 600; }
   .tile-extra .names li { background: var(--paper); }
   .tile-extra .names .rest { background: transparent; border: 1px dashed rgb(52 23 23 / 0.35); }
@@ -274,7 +278,7 @@ const { professional, additional, businesses } = experience;
       current = i;
       buttons.forEach((b, k) => { b.classList.toggle('active', k === i); b.setAttribute('aria-expanded', String(k === i)); });
       details.forEach((d, k) => (d.hidden = k !== i));
-      // Slide the orange bar to the selected role
+      // Slide the green bar to the selected role
       if (indicator) {
         const b = buttons[i];
         if (b) {

@@ -130,7 +130,7 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
     @keyframes ping { 0% { transform: scale(0.6); opacity: 0.8; } 100% { transform: scale(1.6); opacity: 0; } }
   }
 
-  h1 { font-size: var(--fs-display); line-height: 1; letter-spacing: -0.035em; max-width: 14ch; margin-inline: auto; }
+  h1 { font-size: var(--fs-display); line-height: 1; letter-spacing: -0.035em; max-width: 10.8em; margin-inline: auto; } /* em, not ch: ch changes with the font, so the line breaks would change when the web font arrives */
   :global(.word) { display: inline-block; }
   @media (prefers-reduced-motion: no-preference) {
     h1 :global(.word) { animation: word-rise 700ms var(--ease) backwards; animation-delay: calc(120ms + var(--i) * 70ms); }
