@@ -285,9 +285,14 @@ html:not(.js) .motion-toggle, html:not(.js) .wall-toggle { display: none !import
 /*
  * Sections as rounded panels on a soft off-white canvas (paper panels; the proof band and client feedback are dark panels).
  */
-main { display: grid; gap: clamp(0.5rem, 0.3rem + 0.6vw, 0.9rem); padding: clamp(0.5rem, 0.3rem + 0.6vw, 0.9rem); }
+/* The whole page is one centered column (the 1240px container), so panels never stretch across wide screens */
+:root { --page-pad: clamp(0.5rem, 0.3rem + 0.6vw, 0.9rem); --panel-radius: clamp(16px, 1rem + 0.6vw, 28px); }
+main {
+  display: grid; gap: var(--page-pad);
+  max-width: calc(var(--max) + 2 * var(--page-pad)); margin-inline: auto; padding: var(--page-pad);
+}
 main > section {
-  border-radius: clamp(16px, 1rem + 0.6vw, 28px);
+  border-radius: var(--panel-radius);
   background: var(--paper);
   overflow: hidden;
 }

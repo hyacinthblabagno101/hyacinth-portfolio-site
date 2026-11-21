@@ -8,11 +8,9 @@
  * - Other tabs show the first 8 items (two rows of 4), with a button to show the rest.
  * Without JavaScript, every tile is a plain link to the full media file.
  * Selecting a tile opens the viewer (Viewer.astro, on every page).
- * Above the tabs, a Featured row of 3 to 4 pieces (ids in showcase.json "spotlight"), each with the brand, the title and
- * what I did shown as text under the media. TODO(hyacinth): confirm the picks; unbranded picks show no brand line.
  * Link to one format with ?work=<tab> (e.g. /?work=reels#work).
  */
-import { showcase, groupedTabs, roleFor, groupOf, spotlight } from '../lib/data';
+import { showcase, groupedTabs, groupOf } from '../lib/data';
 import { viewerEntry, tileMedia } from '../lib/showcaseMedia';
 
 const INITIAL = 8; // two rows of 4
@@ -33,8 +31,6 @@ type Tile = {
   items?: string;
   count?: number;
 };
-
-const featured = spotlight.map((i) => ({ item: i, media: tileMedia(i, i.aspect === '16:9' ? '16:9' : i.aspect), entry: viewerEntry(i), role: roleFor(i.brand) }));
 
 const tabs = showcase.map((c) => {
   const aspect = tileAspect(c.key);
@@ -85,35 +81,7 @@ const tabs = showcase.map((c) => {
       <p class="lede">Every piece, by format. Select anything to see it in full, with my role on it.</p>
     </header>
 
-    {featured.length > 0 && (
-      <div class="featured reveal" aria-labelledby="featured-title">
-        <h3 id="featured-title" class="label">Featured</h3>
-        <ul class="feat-grid" role="list" data-viewer-list>
-          {featured.map((f, k) => (
-            <li class="feat" style={`--tone: var(--tone-${k % 3})`}>
-              <a class="tile-link feat-media lift" href={f.entry.full} data-id={f.item.id} data-preview={f.media.preview} data-play-label>
-                <span class="frame" style={`aspect-ratio: ${f.item.aspect.replace(':', ' / ')}`}>
-                  <img src={f.media.src} srcset={f.media.srcset} sizes="(min-width: 64rem) 18rem, 46vw" width={f.media.width} height={f.media.height} alt={f.item.alt} loading="lazy" decoding="async" />
-                  <span class="icons" aria-hidden="true">
-                      {f.item.kind === 'video' && <span class="ico"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M8 5v14l11-7z" fill="currentColor" /></svg></span>}
-                      <span class="ico"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M8 16 16 8M9 8h7v7" fill="none" stroke="currentColor" stroke-width="2.2" /></svg></span>
-                    </span>
-                  <span class="feat-over" aria-hidden="true">
-                    {f.item.brand && <span class="feat-brand">{f.item.brand}</span>}
-                    <span class="feat-title">{f.item.title}</span>
-                  </span>
-                </span>
-                <span class="visually-hidden">{f.item.kind === 'video' ? 'Play video' : 'View image'}: {f.item.title}{f.item.brand ? `, ${f.item.brand}` : ''}</span>
-              </a>
-              {f.role && <p class="feat-role">{f.role}</p>}
-            </li>
-          ))}
-        </ul>
-      </div>
-    )}
-
     <div class="all-head">
-    <h3 class="label all-title">All work by format</h3>
     <div class="tabs reveal" role="tablist" aria-label="Type of work" data-tabs>
       {
         tabs.map((t, n) => (
@@ -160,7 +128,6 @@ const tabs = showcase.map((c) => {
                     />
                     <span class="icons" aria-hidden="true">
                       {i.kind === 'video' && <span class="ico"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M8 5v14l11-7z" fill="currentColor" /></svg></span>}
-                      <span class="ico"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M8 16 16 8M9 8h7v7" fill="none" stroke="currentColor" stroke-width="2.2" /></svg></span>
                     </span>
                     {i.count && (
                       <span class="stack" aria-hidden="true">
@@ -235,23 +202,6 @@ const tabs = showcase.map((c) => {
   .tabs button[aria-selected='true'] { color: var(--ink); }
   .tabs button[aria-selected='true']::after { transform: scaleX(1); }
 
-  /* Featured row: each piece sits on its own color panel (Papaya, Sky, Saguaro tints, rotating) */
-  .featured { margin-bottom: clamp(2.5rem, 2rem + 2vw, 3.5rem); --tone-0: rgb(252 113 64 / 0.16); --tone-1: rgb(165 183 229 / 0.3); --tone-2: rgb(209 210 117 / 0.32); }
-  .featured .label { color: var(--muted); margin-bottom: 1rem; }
-  .feat-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.5rem 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  @media (min-width: 64rem) { .feat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; } }
-  .feat { display: grid; gap: 0.75rem; align-content: start; padding: clamp(0.6rem, 0.4rem + 0.6vw, 0.9rem); border-radius: var(--radius-panel); background: var(--tone); }
-  .feat-media { border-radius: var(--radius-media); }
-  /* Brand and title sit on the media, over a soft dark gradient */
-  .feat-over {
-    position: absolute; inset: auto 0 0 0; z-index: 2; display: grid; gap: 0.15rem;
-    padding: 3rem 0.85rem 0.85rem; color: var(--paper);
-    background: linear-gradient(to top, rgb(52 23 23 / 0.85), rgb(52 23 23 / 0));
-  }
-  .feat-brand { font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; }
-  .feat-title { font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
-  .feat-role { font-size: var(--fs-small); color: var(--ink); max-width: 40ch; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
   /* Play label that follows the cursor over videos (desktop, motion allowed) */
   :global(.play-cursor) {
     position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none;
@@ -261,10 +211,9 @@ const tabs = showcase.map((c) => {
     transition: opacity var(--t-ui) var(--ease), transform var(--t-ui) var(--ease);
   }
   :global(.play-cursor.on) { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  /* "All work by format" on the left, the format tabs on the right (wrapping below on phones) */
+  /* Format tabs above the grid */
   .all-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 0.5rem 2rem; border-bottom: 1px solid var(--rule); margin-bottom: 2rem; }
   .all-head .tabs { border-bottom: 0; margin-bottom: 0; }
-  .all-title { color: var(--muted); padding-bottom: 0.75rem; }
 
   .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
   .grid-tall { grid-template-columns: repeat(2, 1fr); }
@@ -299,7 +248,7 @@ const tabs = showcase.map((c) => {
   .frame :global(video) { opacity: 0; transition: opacity 0.35s ease; }
   .frame :global(video.playing) { opacity: 1; }
 
-  /* Play and open icons in the corner of every tile, like small round buttons */
+  /* Play icon in the corner of video tiles */
   .icons { position: absolute; top: 0.55rem; right: 0.55rem; z-index: 2; display: flex; gap: 0.3rem; }
   .ico {
     display: grid; place-items: center; width: 1.85rem; height: 1.85rem; border-radius: 50%;
@@ -308,7 +257,6 @@ const tabs = showcase.map((c) => {
     transition: transform var(--t-ui) var(--ease), background-color var(--t-ui) var(--ease);
   }
   .tile-link:hover .ico, .tile-link:focus-visible .ico { transform: scale(1.08); }
-  .tile-link:hover .ico:last-child, .tile-link:focus-visible .ico:last-child { background: var(--accent); }
   .stack {
     position: absolute; top: 0.6rem; left: 0.6rem; z-index: 2;
     display: inline-flex; align-items: center; gap: 0.3rem;

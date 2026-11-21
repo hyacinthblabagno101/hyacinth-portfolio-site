@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import About from '../components/About.astro';
 import Proof from '../components/Proof.astro';
+import Brands from '../components/Brands.astro';
 import CaseStudies from '../components/CaseStudies.astro';
 import Showcase from '../components/Showcase.astro';
 import Testimonials from '../components/Testimonials.astro';
@@ -13,8 +14,9 @@ import { showAbout, showExperience } from '../lib/data';
 ---
 
 <Base>
-  {/* Proof first: hero, the work, then the numbers and brands, then roles and what clients said */}
+  {/* Hero, the brands I've worked with, the work, the numbers, then roles and what clients said */}
   <Hero />
+  <Brands />
   <Showcase />
   <Proof />
   {showExperience && <Experience />}
