@@ -23,7 +23,11 @@ const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => 
       <div class="viewer-text">
         <p class="viewer-brand"><span data-viewer-brand></span> <span class="viewer-pos" data-viewer-pos></span></p>
         <p id="viewer-title" class="viewer-title" data-viewer-title></p>
-        <p class="viewer-role" data-viewer-role></p>
+        <dl class="viewer-facts">
+          <div data-viewer-fact="brief" hidden><dt>Brief</dt><dd></dd></div>
+          <div data-viewer-fact="role" hidden><dt>My contribution</dt><dd></dd></div>
+          <div data-viewer-fact="outcome" hidden><dt>Outcome</dt><dd></dd></div>
+        </dl>
       </div>
       <div class="viewer-nav">
         <button type="button" data-viewer-prev aria-label="Previous">&larr;</button>
@@ -57,7 +61,13 @@ const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => 
   .viewer-text { margin: 0; display: grid; gap: 0.1rem; min-width: 0; }
   .viewer-text p { margin: 0; }
   .viewer-pos { margin-left: 0.5rem; color: var(--greige); font-weight: 400; letter-spacing: 0.04em; }
-  .viewer-role { font-size: var(--fs-small); color: var(--greige); max-width: 60ch; }
+  /* Brief, my contribution and outcome: each shows only when it has text */
+  .viewer-facts { margin: 0.2rem 0 0; display: grid; gap: 0.15rem; font-size: var(--fs-small); max-width: 60ch; }
+  .viewer-facts div { display: flex; gap: 0.4rem; }
+  .viewer-facts div[hidden] { display: none; }
+  .viewer-facts dt { font-weight: 600; color: var(--paper); flex: none; }
+  .viewer-facts dt::after { content: ':'; }
+  .viewer-facts dd { margin: 0; color: rgb(255 255 240 / 0.8); }
   .viewer-brand { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: var(--paper); }
   .viewer-title { font-size: var(--fs-body); font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; }
   .viewer-nav { display: flex; gap: 0.4rem; flex-shrink: 0; }
@@ -78,19 +88,19 @@ const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => 
     .viewer-nav { margin-left: auto; }
     .viewer { width: min(100vw - 2rem, calc((100vh - 15rem) * var(--ar, 1.7778))); }
     .viewer-media :global(img), .viewer-media :global(video) { max-height: calc(100vh - 15rem); }
-    .viewer-role { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .viewer-facts dd { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   }
 </style>
 
 <script>
   // Viewer: shows one item at a time from a list (a tab's tiles, a brand collection, or the hero strip)
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  type Entry = { kind: string; full: string; poster?: string; title?: string; brand?: string; alt?: string; role?: string; aspect?: string };
+  type Entry = { kind: string; full: string; poster?: string; title?: string; brand?: string; alt?: string; role?: string; brief?: string; outcome?: string; aspect?: string };
   const viewer = document.querySelector<HTMLDialogElement>('[data-viewer]');
   const media = viewer?.querySelector<HTMLElement>('[data-viewer-media]');
   const titleEl = viewer?.querySelector<HTMLElement>('[data-viewer-title]');
   const brandEl = viewer?.querySelector<HTMLElement>('[data-viewer-brand]');
-  const roleEl = viewer?.querySelector<HTMLElement>('[data-viewer-role]');
+  const facts = [...(viewer?.querySelectorAll<HTMLElement>('[data-viewer-fact]') ?? [])];
   const posEl = viewer?.querySelector<HTMLElement>('[data-viewer-pos]');
   const prevBtn = viewer?.querySelector<HTMLButtonElement>('[data-viewer-prev]');
   const nextBtn = viewer?.querySelector<HTMLButtonElement>('[data-viewer-next]');
@@ -103,7 +113,7 @@ const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => 
   const entryOf = (a: HTMLElement): Entry => (a.dataset.id && registry[a.dataset.id]) || ({ ...(a.dataset as unknown as Entry) });
 
   function show(i: number) {
-    if (!media || !titleEl || !brandEl || !roleEl || !posEl) return;
+    if (!media || !titleEl || !brandEl || !posEl) return;
     index = (i + list.length) % list.length;
     const d = list[index];
     media.replaceChildren();
@@ -128,7 +138,12 @@ const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => 
     }
     titleEl.textContent = d.title ?? '';
     brandEl.textContent = d.brand ?? '';
-    roleEl.textContent = d.role ? `My role: ${d.role}` : '';
+    // Empty fields stay hidden rather than showing a blank label
+    facts.forEach((f) => {
+      const text = d[f.dataset.viewerFact as 'brief' | 'role' | 'outcome'];
+      f.hidden = !text;
+      f.querySelector('dd')!.textContent = text ?? '';
+    });
     posEl.textContent = list.length > 1 ? `${index + 1} / ${list.length}` : '';
     if (prevBtn && nextBtn) prevBtn.hidden = nextBtn.hidden = list.length < 2;
   }

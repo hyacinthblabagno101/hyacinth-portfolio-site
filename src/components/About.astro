@@ -17,7 +17,7 @@ import cutout from '../assets/portrait-about-cutout.png';
 import toolLogos from '../data/tool-logos.json';
 
 const logos = toolLogos as Record<string, string>;
-const availability = filled(site.availability);
+
 
 const allTools = tools.groups.flatMap((g) => g.tools.map((t) => (typeof t === 'string' ? t : t.name))).filter((n) => logos[n]);
 // Three rows for the tools pop-up, drifting in alternating directions
@@ -40,7 +40,6 @@ const certs = proof.certifications;
 
     <div class="copy reveal">
       <h2 id="about-title">About me</h2>
-      {availability && <p class="status"><i aria-hidden="true" />{availability}</p>}
       <div class="bio">
         {about.bio.map((p) => <p>{p}</p>)}
       </div>

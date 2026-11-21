@@ -81,6 +81,9 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* Section links land below the sticky header */
+section[id], [id].anchor { scroll-margin-top: 5rem; }
+
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
@@ -157,12 +160,12 @@ a:hover { text-decoration-thickness: 2px; }
   padding-inline: var(--gutter);
 }
 
-.eyebrow {
+.label, .eyebrow {
   font-family: var(--font-sans);
-  font-size: var(--fs-label);
+  font-size: 0.8125rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
- 
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   line-height: 1.4;
 }
 
@@ -240,22 +243,21 @@ a:hover { text-decoration-thickness: 2px; }
   @keyframes rise { from { transform: translateY(12px); } to { transform: none; } }
 }
 /*
- * Scroll reveal: sections fade up gently as they come into view.
- * Only runs when JavaScript is on (html.js) and motion is allowed, so content is never stuck hidden.
+ * Scroll reveal: content is visible by default (no JavaScript, reduced motion, or already on screen).
+ * The script adds .will-reveal only to items still below the fold, then .in as they arrive:
+ * opacity 0 to 1 and 8px up, 400ms.
  */
 @media (prefers-reduced-motion: no-preference) {
-  html.js .reveal {
-    opacity: 0;
-    transform: translateY(18px);
-    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  .reveal.will-reveal { opacity: 0; transform: translateY(8px); }
+  .reveal.will-reveal.in {
+    opacity: 1; transform: none;
+    transition: opacity 400ms cubic-bezier(0.2, 0.7, 0.2, 1), transform 400ms cubic-bezier(0.2, 0.7, 0.2, 1);
     transition-delay: var(--delay, 0s);
   }
-  html.js .reveal.in { opacity: 1; transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
 
-/* Cool Blue sections: secondary text uses a Plum Noir tint, and Book a call turns Vanilla so it still stands out */
 .band-blue { background: var(--clay); }

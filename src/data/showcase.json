@@ -1,5 +1,12 @@
 {
   "_note": "Showcase items. Copied from the Cinfluence site's curated list (cinfluence-portfolio/src/data/work.json). Media IDs are Cloudinary public IDs in cloud ktee3ije. Set \"hidden\": true on an item to leave it off the site. Featured items show first in their tab. Tabs listed in \"grouped\" show one cover per brand that opens the whole collection. \"roles\" is the short line about my part, shown for every item from that brand; brands without a line show none.",
+  "_spotlight_note": "Featured row above the gallery. Items can carry optional 'brief' and 'outcome' text (shown in the viewer only when filled). TODO(hyacinth): confirm these four picks, add a brand to reel-five-things if it has one, and add brief/outcome text you can verify.",
+  "spotlight": [
+    "reel-five-things",
+    "reel-ss-top-trends",
+    "reel-tj-food-dancing",
+    "ai-uncle-scientist-talking"
+  ],
   "categories": [
     {
       "key": "reels",

@@ -127,6 +127,8 @@ const showcaseData = parse(
   z.object({
     categories: z.array(z.object({ key: z.string(), label: z.string() })),
     grouped: z.array(z.string()),
+    /** Ids for the Featured row above the gallery, in order. */
+    spotlight: z.array(z.string()).optional(),
     roles: z.record(z.string(), z.string()),
     /** Brands I handled through an agency or client, shown together under that client (e.g. Proper Ecom). */
     groups: z.record(z.string(), z.object({ brands: z.array(z.string()), note: z.string() })).optional(),
@@ -143,6 +145,9 @@ const showcaseData = parse(
         board: z.boolean().optional(),
         featured: z.boolean().optional(),
         hidden: z.boolean().optional(),
+        /** Optional, shown in the viewer only when filled: what the brief was, and a verified outcome. */
+        brief: z.string().optional(),
+        outcome: z.string().optional(),
       }),
     ),
   }),
@@ -158,6 +163,10 @@ export const groupOf = (brand?: string) =>
   brand ? Object.keys(brandGroups).find((g) => brandGroups[g].brands.includes(brand)) : undefined;
 export const roleFor = (brand?: string) =>
   brand ? showcaseData.roles[brand] ?? showcaseData.roles[groupOf(brand) ?? ''] : undefined;
+/** The Featured row: items picked by id in showcase.json "spotlight", in that order. */
+export const spotlight = (showcaseData.spotlight ?? [])
+  .map((id) => showcaseData.items.find((i) => i.id === id && !i.hidden))
+  .filter((i): i is ShowcaseItem => !!i);
 /** Categories that have at least one visible item, each with its items (featured first). */
 export const showcase = showcaseData.categories
   .map((c) => ({

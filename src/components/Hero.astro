@@ -1,12 +1,11 @@
 ---
 /**
- * Hero: my name, role and "Open to work" (in green), a short headline and intro, two buttons, and a wall of my
- * real reels. Below it, the numbers bar ("stats" in src/data/site.json) counts up when it comes into view.
- * - The wall is three columns that drift slowly in opposite directions. One reel per column plays a short
- *   silent preview; the rest are still frames. Selecting a reel opens it in the viewer (Viewer.astro).
- * - With reduced motion turned on, the wall stands still and nothing plays.
- * - On phones and tablets the wall becomes two rows of reels under the text that drift in opposite directions.
- * Text comes from "hero" in src/data/site.json. "Schedule a call" uses bookingUrl when it's set, otherwise the form.
+ * Hero: "Open to work", the headline, my role on its own line, a two-sentence intro, and two buttons
+ * (See my work filled, Book a call outlined). Beside it, a wall of 9 reels from different brands (at most 2 each).
+ * - Desktop: three columns drift slowly in opposite directions. Hover or focus pauses them, and a visible
+ *   pause/play button stops them for good. One reel per column plays a short silent preview.
+ * - Phones, tablets and reduced motion: one still row of posters you can swipe.
+ * Text comes from "hero" in src/data/site.json; the reels are picked by id below.
  */
 import { site, filled, showUnconfirmed, showcase, bookingUrl } from '../lib/data';
 import { viewerEntry } from '../lib/showcaseMedia';
@@ -19,14 +18,17 @@ const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 // "scrolling" is set in the italic accent
 const headlineHtml = escape(hero.headline).replace(/scrolling/i, (m) => `<em>${m}</em>`);
 
-// Reel wall: branded reels first, then featured ones, 12 in all, split into 3 columns
-const reels = (showcase.find((c) => c.key === 'reels')?.items ?? [])
-  .slice()
-  .sort((a, b) => Number(!!b.brand) - Number(!!a.brand) || Number(!!b.featured) - Number(!!a.featured))
-  .slice(0, 12);
-const columns = [0, 1, 2].map((c) =>
-  reels
-    .filter((_, i) => i % 3 === c)
+// Reel wall: 9 reels, at most 2 per brand, opening with a mix of brands. One column per row of 3 ids.
+const wallIds = [
+  ['reel-wc-founder-bags', 'reel-tj-food-dancing', 'reel-rb-patches'],
+  ['reel-ss-top-trends', 'reel-hs-bills', 'reel-tj-acoustic'],
+  ['reel-rb-unboxing', 'reel-ss-olive-rack', 'reel-five-things'],
+];
+const allReels = showcase.find((c) => c.key === 'reels')?.items ?? [];
+const columns = wallIds.map((ids) =>
+  ids
+    .map((id) => allReels.find((r) => r.id === id))
+    .filter((r): r is (typeof allReels)[number] => !!r)
     .map((r, i) => ({
       entry: viewerEntry(r),
       poster: posterFor({ id: r.media }, 360, '9:16'),
@@ -43,23 +45,21 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
   <div class="wrap grid">
     <div class="copy">
       <p class="meta rise">
-        <span class="who"><strong>{site.name}</strong> <span aria-hidden="true">/</span> {shortRole}</span>
-        <span class="right">
-          <span>Remote, based in the {site.location}</span>
-          {availability ? <span class="status"><i aria-hidden="true" />{availability}</span> : showUnconfirmed && <span class="placeholder">{site.availability}</span>}
-        </span>
+        {availability ? <span class="status"><i aria-hidden="true" />{availability}</span> : showUnconfirmed && <span class="placeholder">{site.availability}</span>}
+        <span>{site.name}, remote, based in the {site.location}</span>
       </p>
 
       <h1 id="hero-title" class="rise" style="--delay: 0.06s">
         <span class="visually-hidden">{site.name}, {shortRole}. </span>
         <span set:html={headlineHtml} />
       </h1>
+      <p class="role rise" style="--delay: 0.09s">{shortRole}</p>
 
       <p class="intro rise" style="--delay: 0.12s">{hero.intro}</p>
 
       <div class="actions rise" style="--delay: 0.18s">
         <a class="btn btn-primary" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
-        <a class="btn btn-book" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>
+        <a class="btn btn-ghost" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>
           {hero.secondaryCta.label}
           {book.external && <span class="visually-hidden">(opens in a new tab)</span>}
         </a>
@@ -67,7 +67,13 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
 
     </div>
 
-    <div class="wall rise" style="--delay: 0.15s" role="group" aria-label="Recent reels">
+    <div class="wall-wrap rise" style="--delay: 0.15s">
+    <button type="button" class="wall-toggle" aria-pressed="false" data-wall-toggle>
+      <span class="when-playing"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor" /></svg> Pause</span>
+      <span class="when-paused"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" /></svg> Play</span>
+      <span class="visually-hidden"> the moving reels</span>
+    </button>
+    <div class="wall" role="group" aria-label="Recent reels">
       {
         columns.map((col, c) => (
           <div class:list={['col', `col-${c + 1}`]}>
@@ -109,19 +115,10 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
         ))
       }
     </div>
+    </div>
   </div>
 </section>
 
-<section class="stats" aria-label="At a glance">
-  <ul class="wrap" role="list">
-    {site.stats.map((s) => (
-      <li>
-        <strong><span data-count={s.value}>{s.value.toLocaleString("en-US")}</span><span class="suffix">{s.suffix}</span></strong>
-        <span>{s.label}</span>
-      </li>
-    ))}
-  </ul>
-</section>
 
 <style>
   .hero { padding-block: clamp(1.5rem, 1rem + 2vw, 2.5rem) clamp(3rem, 2rem + 4vw, 5rem); overflow-x: clip; }
@@ -130,12 +127,9 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
   .grid > * { min-width: 0; }
 
   .copy { display: grid; gap: clamp(1.25rem, 1rem + 1vw, 1.75rem); align-content: center; }
-  .meta {
-    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1.5rem;
-    font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: var(--text-muted);
-  }
-  .meta .who strong { color: var(--ink); font-weight: 700; }
-  .meta .right { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; }
+  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; font-size: var(--fs-small); color: var(--text-muted); }
+  /* My role, on its own line under the headline */
+  .role { font-size: clamp(1.125rem, 1rem + 0.4vw, 1.25rem); font-weight: 600; letter-spacing: -0.01em; color: var(--ink); margin-top: -0.25rem; }
   .status {
     display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.85rem;
     border-radius: var(--radius-pill); background: var(--green-soft); color: var(--green);
@@ -180,62 +174,54 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
   .reel video { opacity: 0; transition: opacity 0.6s ease; }
   .reel :global(video.playing) { opacity: 1; }
   .tag {
-    position: absolute; left: 0.5rem; bottom: 0.5rem; z-index: 1;
-    padding: 0.2rem 0.55rem; border-radius: var(--radius-pill);
-    background: rgb(52 23 23 / 0.6); color: var(--paper); backdrop-filter: blur(4px);
-    font-size: var(--fs-label); font-weight: 600;
+    position: absolute; left: 0.45rem; bottom: 0.45rem; z-index: 1;
+    padding: 0.15rem 0.45rem; border-radius: var(--radius-pill);
+    background: rgb(52 23 23 / 0.42); color: var(--paper); backdrop-filter: blur(4px);
+    font-size: 12px; font-weight: 600;
     max-width: calc(100% - 1rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   a.reel:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
 
-  /* The drift: each column moves by exactly one copy of itself, then repeats. Hover or focus pauses it. */
+  .wall-wrap { position: relative; }
+  /* Pause/play: only shown where the wall actually moves (wide screens, motion allowed) */
+  .wall-toggle {
+    position: absolute; right: 0.5rem; bottom: 0.75rem; z-index: 3;
+    display: none; align-items: center; gap: 0.4rem; min-height: 2.75rem; padding: 0 0.9rem;
+    border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--paper); color: var(--ink);
+    font: inherit; font-size: var(--fs-small); font-weight: 600; cursor: pointer;
+    transition: background-color 0.18s ease;
+  }
+  .wall-toggle:hover { background: var(--greige-soft); }
+  .wall-toggle span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .wall-toggle .when-paused, .wall-toggle[aria-pressed='true'] .when-playing { display: none; }
+  .wall-toggle[aria-pressed='true'] .when-paused { display: inline-flex; }
+
+  /* The drift: each column moves by exactly one copy of itself, then repeats, at half the old speed.
+     Hover or focus pauses it; the button pauses it until pressed again. */
   @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
-    .col { animation: drift-up 48s linear infinite; }
-    .col-2 { animation-name: drift-down; animation-duration: 56s; }
-    .col-3 { animation-duration: 52s; }
-    .wall:hover .col, .wall:focus-within .col { animation-play-state: paused; }
+    .wall-toggle { display: inline-flex; }
+    .col { animation: drift-up 96s linear infinite; }
+    .col-2 { animation-name: drift-down; animation-duration: 112s; }
+    .col-3 { animation-duration: 104s; }
+    .wall:hover .col, .wall:focus-within .col, .wall[data-paused] .col { animation-play-state: paused; }
     @keyframes drift-up { to { transform: translateY(calc(-50% - 0.375rem)); } }
     @keyframes drift-down { from { transform: translateY(calc(-50% - 0.375rem)); } to { transform: translateY(0); } }
   }
-  @media (prefers-reduced-motion: reduce) { .copy-track { display: none; } }
 
-  /* Phones and tablets: two rows of reels under the text, drifting in opposite directions (still with reduced motion) */
-  @media (max-width: 63.99rem) {
+  /* Phones, tablets and reduced motion: one still row of posters you can swipe */
+  @media (max-width: 63.99rem), (prefers-reduced-motion: reduce) {
     .wall {
-      display: grid; grid-template-columns: none; gap: 0.6rem; height: auto;
-      margin-inline: calc(var(--gutter) * -1); overflow: hidden;
-      -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-      mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+      display: flex; gap: 0.6rem; height: auto;
+      overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+      -webkit-mask-image: none; mask-image: none;
     }
-    .col { flex-direction: row; gap: 0.6rem; width: max-content; }
+    .wall::-webkit-scrollbar { display: none; }
+    .col, .track { display: contents; }
     .col-2 { margin: 0; }
-    .col-3 { display: none; }
-    .track { flex-direction: row; gap: 0.6rem; }
-    .track li { flex: none; width: clamp(6.5rem, 4rem + 10vw, 9rem); }
+    .copy-track { display: none; }
+    .track li { flex: none; width: clamp(7rem, 5rem + 10vw, 10rem); scroll-snap-align: start; }
   }
-  @media (max-width: 63.99rem) and (prefers-reduced-motion: no-preference) {
-    .col-1 { animation: drift-left 40s linear infinite; }
-    .col-2 { animation: drift-right 46s linear infinite; }
-    .wall:active .col { animation-play-state: paused; }
-    @keyframes drift-left { to { transform: translateX(calc(-50% - 0.3rem)); } }
-    @keyframes drift-right { from { transform: translateX(calc(-50% - 0.3rem)); } to { transform: translateX(0); } }
-  }
-  @media (max-width: 63.99rem) and (prefers-reduced-motion: reduce) {
-    .wall { overflow-x: auto; }
-  }
-  /* Numbers bar */
-  .stats { background: var(--wine); color: var(--paper); }
-  .stats ul {
-    list-style: none; margin-block: 0; padding-block: clamp(1.75rem, 1.25rem + 2vw, 2.75rem);
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.75rem 1rem; text-align: center;
-  }
-  @media (min-width: 48rem) { .stats ul { grid-template-columns: repeat(4, 1fr); } }
-  .stats li { display: grid; gap: 0.35rem; }
-  .stats strong { font-family: var(--font-serif); font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.5rem); font-weight: 400; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums lining-nums; }
-  .stats .suffix { color: var(--sage-light); }
-  .stats li > span { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: rgb(255 255 240 / 0.78); }
 </style>
-
 <script>
   // Start the few wall previews once the wall is on screen; never with reduced motion or data saver
   const wall = document.querySelector<HTMLElement>('.hero .wall');
@@ -257,37 +243,11 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
     }).observe(wall);
   }
 
-  // Count the numbers up from zero whenever the bar comes into view (skipped with reduced motion).
-  // It waits for the page to finish loading, so a bar that is already on screen doesn't finish counting unseen.
-  const bar = document.querySelector<HTMLElement>('.stats');
-  const counters = [...document.querySelectorAll<HTMLElement>('[data-count]')];
-    if (bar && counters.length && !calm) {
-    let frame = 0;
-    const set = (p: number) => counters.forEach((el) => (el.textContent = Math.round(Number(el.dataset.count) * p).toLocaleString('en-US')));
-    const run = () => {
-      cancelAnimationFrame(frame);
-      const start = performance.now() + 250;
-      const step = (now: number) => {
-        const t = Math.max(0, Math.min(1, (now - start) / 2200));
-        set(1 - Math.pow(1 - t, 4));
-        if (t < 1) frame = requestAnimationFrame(step);
-      };
-      frame = requestAnimationFrame(step);
-    };
-    set(0);
-    let watching = false;
-    const watch = () => {
-      if (watching) return;
-      watching = true;
-      new IntersectionObserver((entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) run();
-          else { cancelAnimationFrame(frame); set(0); }
-        });
-      }, { threshold: 0.6 }).observe(bar);
-    };
-    // Start after the page has loaded, or after 1.2 seconds if loading is slow
-    if (document.readyState === 'complete') watch();
-    else { window.addEventListener('load', watch, { once: true }); window.setTimeout(watch, 1200); }
-  }
+  // Pause/play for the moving wall (the button only shows where the wall moves)
+  const toggle = document.querySelector<HTMLButtonElement>('[data-wall-toggle]');
+  toggle?.addEventListener('click', () => {
+    const paused = toggle.getAttribute('aria-pressed') !== 'true';
+    toggle.setAttribute('aria-pressed', String(paused));
+    wall?.toggleAttribute('data-paused', paused);
+  });
 </script>

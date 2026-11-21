@@ -1,0 +1,76 @@
+---
+/**
+ * Proof band: the numbers on top and a small, still row of brand logos below, in one dark band.
+ * - The numbers are in the HTML at their final values (no count-up), so they read correctly on first paint and without JavaScript.
+ *   Numbers come from "stats" in src/data/site.json.
+ * - Logos: a fixed selection, one height and one opacity. A logo links to its experience entry or to the work where one exists.
+ *   Files live in public/logos (white, trimmed WebP); sizes in src/lib/logos.ts.
+ */
+import { site } from '../lib/data';
+import { logos } from '../lib/logos';
+
+// Brands in the order they appear, with where each one links (only where there's a matching entry on this page)
+const picks: { name: string; href?: string }[] = [
+  { name: 'Winnie & Co.', href: '#experience' },
+  { name: 'Style State', href: '#experience' },
+  { name: 'Proper Ecom', href: '#experience' },
+  { name: 'Rabble', href: '#experience' },
+  { name: 'Epic Tales', href: '#experience' },
+  { name: 'T-James Sporty Bar', href: '/?work=reels#work' },
+  { name: 'Hair Solution Nails and Spa', href: '/?work=reels#work' },
+  { name: 'iLuxe Aesthetic Center' },
+];
+const row = picks
+  .filter((p) => logos[p.name])
+  .map((p) => ({ ...p, src: `/logos/${logos[p.name].file}.webp`, ratio: logos[p.name].w / logos[p.name].h }));
+---
+
+<section class="proof band-dark" aria-labelledby="proof-title">
+  <div class="wrap">
+    <h2 id="proof-title" class="visually-hidden">At a glance</h2>
+    <ul class="stats" role="list">
+      {site.stats.map((s) => (
+        <li>
+          <strong>{s.value.toLocaleString('en-US')}<span class="suffix">{s.suffix}</span></strong>
+          <span>{s.label}</span>
+        </li>
+      ))}
+    </ul>
+
+    <h3 class="label brands-title">Brands I've made content for</h3>
+    <ul class="logos" role="list">
+      {row.map((b) => (
+        <li>
+          {b.href ? (
+            <a href={b.href}><img src={b.src} alt={b.name} height="28" width={Math.round(28 * b.ratio)} loading="lazy" decoding="async" /></a>
+          ) : (
+            <img src={b.src} alt={b.name} height="28" width={Math.round(28 * b.ratio)} loading="lazy" decoding="async" />
+          )}
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .proof { padding-block: clamp(2.5rem, 2rem + 2.5vw, 4rem); }
+  .stats {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem 1rem;
+  }
+  @media (min-width: 48rem) { .stats { grid-template-columns: repeat(4, 1fr); } }
+  .stats li { display: grid; gap: 0.3rem; }
+  .stats strong {
+    font-family: var(--font-serif); font-weight: 400; line-height: 1; letter-spacing: -0.03em;
+    font-size: clamp(2.25rem, 1.75rem + 2vw, 3.25rem); font-variant-numeric: lining-nums;
+  }
+  .stats .suffix { color: var(--rose); }
+  .stats li > span { font-size: var(--fs-small); color: var(--text-muted); }
+
+  .brands-title { margin: clamp(2rem, 1.5rem + 2vw, 3rem) 0 1rem; padding-top: clamp(1.5rem, 1rem + 1.5vw, 2rem); border-top: 1px solid var(--line); color: var(--text-muted); }
+  .logos { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem clamp(1.75rem, 1rem + 3vw, 3.25rem); }
+  .logos img { display: block; height: 28px; width: auto; max-width: 9rem; object-fit: contain; opacity: 0.85; transition: opacity 0.2s ease; }
+  .logos a { display: inline-flex; align-items: center; min-height: 2.75rem; border-radius: 4px; }
+  .logos a:hover img, .logos a:focus-visible img { opacity: 1; }
+  @media (max-width: 40rem) { .logos img { height: 22px; } }
+</style>
