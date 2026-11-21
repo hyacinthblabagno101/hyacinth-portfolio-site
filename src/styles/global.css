@@ -17,12 +17,13 @@
   --ink:     #341717;   /* text, and the dark panels: brands, client feedback (16.6:1 on white) */
   --muted:   #715d58;   /* secondary text (6.1:1 on paper) */
   --rule:    #e5e2dd;   /* hairline dividers and borders */
-  --accent:  #7dbb83;   /* green: the action color (buttons, underlines, checks, label marks), always with ink text (7.5:1) */
-  --blue:    #8fb3e8;   /* blue: the second color (tools box, step numbers), with ink text (7.8:1) */
-  --status:  #cfe8c9;   /* pale green: the "Open to work" pill */
-  --tint:    #8fb3e840; /* one subtle selected/hover state */
-  --green-soft: rgb(125 187 131 / 0.22); /* soft blocks: Hiring photo, Business background */
-  --blue-soft:  rgb(143 179 232 / 0.3);  /* soft blocks: About photo, Additional experience */
+  --accent:  #fc7140;   /* orange: underlines, label marks, checks, quote marks (decoration, not text) */
+  --accent-strong: #c94a14; /* deeper orange: every button, always with white text (4.7:1) */
+  --status:  #d1d275;   /* the "Open to work" pill only */
+  --tint:    #a5b7e540; /* one subtle selected/hover state */
+  --soft-orange: rgb(252 113 64 / 0.18);  /* soft block behind the Hiring photo */
+  --soft-sky:    rgb(165 183 229 / 0.35); /* soft blocks: About photo, Additional experience */
+  --soft-olive:  rgb(209 210 117 / 0.32); /* soft block: Business background */
 
   /* Roles: light sections use these; .band-dark swaps them */
   --bg: var(--paper);
@@ -170,7 +171,7 @@ a:hover { text-decoration-thickness: 2px; }
 
 /*
  * Buttons: three kinds, used everywhere. One .btn--primary per section.
- * .btn--primary: accent fill, ink text, 48px tall. .btn--secondary: 1px ink outline. .btn--link: underlined text.
+ * .btn--primary: deeper orange fill, white text, 48px tall. .btn--secondary: 1px ink outline. .btn--link: underlined text.
  */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
@@ -180,7 +181,7 @@ a:hover { text-decoration-thickness: 2px; }
   border: 1px solid transparent; border-radius: var(--radius-pill);
   transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
 }
-.btn--primary { min-height: 3rem; background: var(--accent); border-color: var(--accent); color: var(--ink); }
+.btn--primary { min-height: 3rem; background: var(--accent-strong); border-color: var(--accent-strong); color: #ffffff; }
 .btn--primary:hover { background: var(--ink); border-color: var(--ink); color: var(--paper); }
 .btn--secondary { background: transparent; border-color: var(--text); color: var(--text); }
 .btn--secondary:hover { background: var(--text); color: var(--bg); }
@@ -250,7 +251,7 @@ a:hover { text-decoration-thickness: 2px; }
 }
 
 /*
- * The italic word in every heading gets a short green underline that draws in when the heading appears.
+ * The italic word in every heading gets a short orange underline that draws in when the heading appears.
  * Drawn by default; only headings still below the fold start undrawn.
  */
 h1 em, h2 em { position: relative; }
@@ -309,7 +310,7 @@ main > section {
 }
 main > section.band-dark { background: var(--ink); }
 
-/* Small label above each section heading: ink text with a green mark (green text would be too faint to read) */
+/* Small label above each section heading: ink text with an orange mark (orange text would be too faint to read) */
 .kicker {
   display: inline-flex; align-items: center; gap: 0.5rem; margin: 0 0 0.75rem;
   font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text);

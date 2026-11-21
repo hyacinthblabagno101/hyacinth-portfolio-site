@@ -3,7 +3,7 @@
  * What I do, shown inside About (About.astro renders this). Text: "skills" in src/data/about.json; tools: src/data/tools.json.
  * - A 2x2 grid of role cards (social media, creative production, UGC and influencer, e-commerce and AI), each with a
  *   cover image made for that role (AI-generated still lifes in Cloudinary, portfolio/what-i-do/*; not my client work),
- *   one keyword underlined in green, "See related work" and "See details".
+ *   one keyword underlined in orange, "See related work" and "See details".
  * - Below them, one wide card for remote virtual assistance (its details panel has a generated cover too, made in Canva): ad hoc tasks, easy to train, growing with the role, with
  *   three steps for how working together remotely goes.
  * - "See details" opens a panel: the cover, where I can help (my own words from about.json), a checklist of what I'll
@@ -176,7 +176,7 @@ const mark = (title: string, key: string) =>
   .caps-title { font-family: var(--font-serif); font-weight: 400; font-size: var(--fs-h2); letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 1.5rem; }
   .caps-title :global(em) { font-family: var(--font-serif); font-style: italic; }
 
-  /* Green marker under one keyword */
+  /* Orange marker under one keyword */
   :global(.caps .mark), :global(.details .mark) {
     background: linear-gradient(var(--accent), var(--accent)) left 92% / 100% 0.14em no-repeat;
     padding-bottom: 0.05em;
@@ -197,14 +197,14 @@ const mark = (title: string, key: string) =>
   .card-wide .card-title { color: var(--paper); font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem); letter-spacing: -0.02em; }
   .card-wide .card-line { color: rgb(255 255 255 / 0.8); font-size: var(--fs-body); max-width: 44ch; }
   .wide-copy { display: grid; gap: 0.75rem; justify-items: start; }
-  .card-wide .btn--ink { background: var(--accent); border-color: var(--accent); color: var(--ink); }
+  .card-wide .btn--ink { background: var(--accent-strong); border-color: var(--accent-strong); color: #ffffff; }
   .card-wide .btn--ink:hover { background: var(--paper); border-color: var(--paper); }
   .card-wide .btn--secondary { color: var(--paper); border-color: rgb(255 255 255 / 0.5); background: transparent; }
   .card-wide .btn--secondary:hover { background: var(--paper); color: var(--ink); }
   .card-wide .btn:focus-visible { outline: 3px solid var(--paper); outline-offset: 2px; }
   .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
   .steps li { display: grid; grid-template-columns: 2.25rem minmax(0, 1fr); column-gap: 0.85rem; row-gap: 0.15rem; padding: 0.9rem 1rem; border-radius: var(--radius-media); background: rgb(255 255 255 / 0.07); }
-  .step-n { grid-row: 1 / span 2; display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; background: var(--blue); color: var(--ink); font-weight: 700; }
+  .step-n { grid-row: 1 / span 2; display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; background: var(--accent-strong); color: #ffffff; font-weight: 700; }
   .steps strong { font-weight: 600; color: var(--paper); }
   .steps li > span:last-child { font-size: var(--fs-small); color: rgb(255 255 255 / 0.78); }
   .card-title { font-size: var(--fs-h3); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; margin: 0; }
@@ -212,7 +212,7 @@ const mark = (title: string, key: string) =>
   .card-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
   .card-actions .btn { min-height: 2.75rem; padding: 0.55rem 1.1rem; }
   :global(.btn--ink) { background: var(--ink); border-color: var(--ink); color: var(--paper); }
-  :global(.btn--ink:hover) { background: var(--accent); border-color: var(--accent); color: var(--ink); }
+  :global(.btn--ink:hover) { background: var(--accent-strong); border-color: var(--accent-strong); color: #ffffff; }
 
   /* Details panel: a cover image with a floating title card, then the lists */
   .details {
@@ -228,7 +228,7 @@ const mark = (title: string, key: string) =>
   .details-cover { position: relative; height: clamp(9rem, 6rem + 12vw, 13rem); background: var(--surface); }
   .details-cover img { width: 100%; height: 100%; object-fit: cover; }
   /* No photo (remote assistance): a plain tinted header instead */
-  .details-cover.plain { height: clamp(7rem, 5rem + 6vw, 9rem); background: var(--blue-soft); }
+  .details-cover.plain { height: clamp(7rem, 5rem + 6vw, 9rem); background: var(--soft-sky); }
   .float-card {
     position: absolute; right: clamp(0.75rem, 0.5rem + 1.5vw, 1.5rem); bottom: -2.75rem; z-index: 2;
     display: grid; gap: 0.75rem; width: min(20rem, calc(100% - 1.5rem)); padding: 1rem 1.1rem;
@@ -256,11 +256,11 @@ const mark = (title: string, key: string) =>
     background: var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23341717' stroke-width='3'/%3E%3C/svg%3E") center / 75% no-repeat;
   }
   .note { font-size: var(--fs-small); color: var(--muted); }
-  /* Tools box: a blue panel */
-  .tools-box { padding: 1rem 1.1rem; border-radius: var(--radius-media); background: var(--blue); color: var(--ink); }
+  /* Tools box: a deeper orange panel, white title, white tool chips */
+  .tools-box { padding: 1rem 1.1rem; border-radius: var(--radius-media); background: var(--accent-strong); color: #ffffff; }
   .tools-title { font-weight: 700; margin-bottom: 0.5rem; }
   .tools-box ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  .tools-box li { padding: 0.2rem 0.6rem; border-radius: var(--radius-pill); background: rgb(255 255 255 / 0.85); font-size: var(--fs-small); font-weight: 600; }
+  .tools-box li { padding: 0.2rem 0.6rem; border-radius: var(--radius-pill); background: rgb(255 255 255 / 0.92); color: var(--ink); font-size: var(--fs-small); font-weight: 600; }
   .details-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 </style>
 

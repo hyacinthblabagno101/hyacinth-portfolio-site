@@ -36,7 +36,7 @@ const siteSchema = z.object({
   seo: z.object({ title: z.string(), description: z.string().max(160), ogImage: z.string() }),
   hero: z.object({
     headline: z.string(),
-    accent: z.string().optional(), // one word of the headline, set in italics with the green underline
+    accent: z.string().optional(), // one word of the headline, set in italics with the orange underline
     intro: z.string(),
     primaryCta: link,
     secondaryCta: link,
