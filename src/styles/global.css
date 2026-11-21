@@ -3,6 +3,14 @@
  * Color split is about 60/30/10: paper 60%, ink (text and two dark bands) 30%, accent 10%.
  * Contrast ratios are WCAG (AA body text needs 4.5:1).
  */
+/*
+ * Fallback faces sized to match the web fonts' widths (measured), so text wraps the same before and after the fonts
+ * arrive. Without them the hero headline re-wrapped on font load and pushed the reels down (layout shift).
+ */
+@font-face { font-family: 'Libre Baskerville Fallback'; src: local('Times New Roman'), local('TimesNewRomanPSMT'); size-adjust: 127.6%; }
+@font-face { font-family: 'Libre Baskerville Fallback'; font-style: italic; src: local('Times New Roman Italic'), local('TimesNewRomanPS-ItalicMT'); size-adjust: 113.9%; }
+@font-face { font-family: 'Inter Tight Fallback'; src: local('Arial'), local('ArialMT'); size-adjust: 95.5%; }
+
 :root {
   --paper:   #ffffff;   /* white: every panel (sections sit on the off-white page) */
   --surface: #f3f2ef;   /* off-white: the page behind the panels, and soft cards (ink 15:1, muted 5.6:1) */
@@ -21,8 +29,8 @@
   --focus: var(--ink);  /* focus ring: 16.3:1 on paper */
 
   /* Type: Libre Baskerville for display headings; Inter Tight (loaded, weights 400 to 800) for everything else */
-  --font-serif: 'Libre Baskerville', Baskerville, 'Times New Roman', serif;
-  --font-sans: 'Inter Tight', system-ui, sans-serif;
+  --font-serif: 'Libre Baskerville', 'Libre Baskerville Fallback', Baskerville, 'Times New Roman', serif;
+  --font-sans: 'Inter Tight', 'Inter Tight Fallback', system-ui, sans-serif;
 
   /* Type scale: the only sizes used on the site */
   --fs-display: clamp(2.5rem, 1.6rem + 3.8vw, 5rem);      /* hero: 40px phone, 80px at 1440 */
