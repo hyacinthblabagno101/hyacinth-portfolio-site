@@ -1,9 +1,9 @@
 ---
 /**
  * Hero, centered: an "Open to work · Remote, Philippines" badge, the headline (rising word by word on load, with
- * "scrolling" as the italic accent word), my role, a two-sentence intro, then See my work (filled) and Book a call (outlined).
+ * hero.accent in site.json as the italic accent word), my role, a two-sentence intro, then See my work (filled) and Book a call (outlined).
  * Below it, one row of my reels as slightly tilted cards drifting sideways (9 reels, at most 2 per brand).
- * - The row pauses on hover or focus, and a visible Pause/Play button stops it.
+ * - The row pauses on hover or keyboard focus (no Pause button, by choice). With reduced motion it is still.
  * - A few reels play a short silent preview once the row is on screen.
  * - Reduced motion: the row stands still and you can swipe it. Without JavaScript the row still drifts (CSS only).
  * Text comes from "hero" in src/data/site.json; the reels are picked by id below.
@@ -16,10 +16,11 @@ const { hero } = site;
 const availability = filled(site.availability);
 const shortRole = site.role.split('|')[0].trim();
 const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-// Each word rises in turn on load (the page's one signature moment); "scrolling" is the italic accent word
+// Each word rises in turn on load (the page's one signature moment); hero.accent is the italic accent word
+const accent = hero.accent?.toLowerCase();
 const headlineHtml = escape(hero.headline)
   .split(' ')
-  .map((w, i) => `<span class="word" style="--i: ${i}">${/scrolling/i.test(w) ? w.replace(/scrolling/i, (m) => `<em>${m}</em>`) : w}</span>`)
+  .map((w, i) => `<span class="word" style="--i: ${i}">${accent && w.toLowerCase().replace(/[^a-z'-]/g, '') === accent ? `<em>${w}</em>` : w}</span>`)
   .join(' ');
 
 // The reel row: 9 reels, at most 2 per brand, opening with a mix of brands
@@ -107,13 +108,6 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
         ))}
       </div>
     </div>
-    <div class="wrap toggle-row">
-      <button type="button" class="wall-toggle motion-toggle" aria-pressed="false" data-wall-toggle>
-        <span class="when-playing"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor" /></svg> Pause</span>
-        <span class="when-paused"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" /></svg> Play</span>
-        <span class="visually-hidden"> the moving reels</span>
-      </button>
-    </div>
   </div>
 </section>
 
@@ -175,11 +169,10 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
     max-width: calc(100% - 1rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   a.reel:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
-  .toggle-row { display: flex; justify-content: center; margin-top: 0.5rem; }
 
   @media (prefers-reduced-motion: no-preference) {
     .belt { animation: belt 110s linear infinite; }
-    .reel-row:hover .belt, .reel-row:focus-within .belt, .reel-row[data-paused] .belt { animation-play-state: paused; }
+    .reel-row:hover .belt, .reel-row:focus-within .belt { animation-play-state: paused; }
     /* Three copies; move by exactly one */
     @keyframes belt { to { transform: translateX(calc(-100% / 3)); } }
   }
@@ -208,11 +201,4 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
       });
     }).observe(row);
   }
-  // Pause/play for the reel row
-  const toggle = document.querySelector<HTMLButtonElement>('[data-wall-toggle]');
-  toggle?.addEventListener('click', () => {
-    const paused = toggle.getAttribute('aria-pressed') !== 'true';
-    toggle.setAttribute('aria-pressed', String(paused));
-    row?.toggleAttribute('data-paused', paused);
-  });
 </script>

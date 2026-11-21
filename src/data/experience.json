@@ -44,7 +44,7 @@
       ]
     },
     {
-      "company": "Moname (Epic Tales & Rabble)",
+      "company": "Moname",
       "role": "Social Media & Influencer Marketing Manager",
       "dates": "Nov 2024 – Mar 2025",
       "type": "Freelance contract · Remote",
@@ -59,6 +59,26 @@
       "brands": [
         "Epic Tales",
         "Rabble"
+      ],
+      "brandNotes": [
+        {
+          "name": "Epic Tales",
+          "about": "A children's book brand."
+        },
+        {
+          "name": "Rabble",
+          "about": "Kids' clothing and bags with swappable Velcro patches, plus Rabble Wear for adults.",
+          "links": [
+            {
+              "label": "Rabble",
+              "url": "https://rabbleclothing.com/"
+            },
+            {
+              "label": "Rabble Wear (adults)",
+              "url": "https://rabbleclothing.com/collections/adult-preset-collection"
+            }
+          ]
+        }
       ]
     }
   ],

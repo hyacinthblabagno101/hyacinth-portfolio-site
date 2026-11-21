@@ -14,6 +14,7 @@ const checks = [
   'You want static posts, carousels and short-form video made in-house, from brief and script to the final edit.',
   'You run creator or UGC campaigns and need someone to handle outreach, briefs and deliverables.',
   'You sell online and need product images and listings that are clear and accurate.',
+  'You need a remote assistant for ad hoc tasks, someone easy to train who grows with the role.',
   'You are hiring remotely, full-time, part-time or on contract.',
 ];
 ---
@@ -21,7 +22,7 @@ const checks = [
 <section class="hiring" aria-labelledby="hiring-title">
   <div class="wrap grid">
     <figure class="photo reveal">
-      <Picture src={callPhoto} alt="Hyacinth Blabagno in a brown suit, on a phone call while working on a laptop" widths={[400, 640, 900]} sizes="(min-width: 64rem) 28rem, 80vw" formats={['avif', 'webp']} loading="lazy" />
+      <Picture src={callPhoto} alt="Hyacinth Blabagno in a brown suit, on a phone call while working on a laptop" widths={[480, 800, 1200]} sizes="(min-width: 64rem) 34rem, 90vw" formats={['avif', 'webp']} loading="lazy" />
     </figure>
     <div class="copy reveal" style="--delay: 80ms">
       <p class="kicker">Hiring?</p>
@@ -41,15 +42,16 @@ const checks = [
 
 <style>
   .hiring { padding-block: var(--section) 0; }
-  .grid { display: grid; gap: clamp(1.5rem, 1rem + 2vw, 3.5rem); align-items: end; }
-  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); } }
-  /* The photo stands on the panel's bottom edge, on a soft orange block */
-  .photo { position: relative; margin: 0; justify-self: center; width: min(100%, 26rem); isolation: isolate; order: 2; }
-  @media (min-width: 64rem) { .photo { order: 0; } }
-  .photo::before { content: ''; position: absolute; z-index: -1; inset: 18% 4% 0 4%; border-radius: var(--radius-panel) var(--radius-panel) 0 0; background: rgb(252 113 64 / 0.18); }
+  .grid { display: grid; gap: clamp(1.5rem, 1rem + 2vw, 3.5rem); align-items: center; }
+  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+  /* The photo stands on the panel's bottom edge, on a soft orange block that starts level with the heading.
+     The copy is centred on the block, so photo and text read as one level row. */
+  .photo { position: relative; margin: 0; justify-self: center; width: min(100%, 34rem); isolation: isolate; order: 2; }
+  @media (min-width: 64rem) { .photo { order: 0; align-self: end; } }
+  .photo::before { content: ''; position: absolute; z-index: -1; inset: 16% 0 0 0; border-radius: var(--radius-panel) var(--radius-panel) 0 0; background: rgb(252 113 64 / 0.18); }
   .photo :global(picture), .photo :global(img) { display: block; width: 100%; height: auto; }
-  .copy { display: grid; gap: 1rem; align-content: center; padding-bottom: var(--section); }
-  @media (max-width: 63.99rem) { .copy { padding-bottom: 0; } }
+  .copy { display: grid; gap: 1rem; align-content: center; }
+  @media (min-width: 64rem) { .copy { align-self: stretch; padding-top: calc(var(--section) * 0.6); padding-bottom: var(--section); } }
   .checks { list-style: none; margin: 0.5rem 0; padding: 0; display: grid; gap: 0.75rem; }
   .checks li { position: relative; padding-left: 2rem; max-width: 56ch; }
   .checks li::before {

@@ -67,19 +67,19 @@ const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => 
   .viewer-facts div[hidden] { display: none; }
   .viewer-facts dt { font-weight: 600; color: var(--paper); flex: none; }
   .viewer-facts dt::after { content: ':'; }
-  .viewer-facts dd { margin: 0; color: rgb(255 255 240 / 0.8); }
+  .viewer-facts dd { margin: 0; color: rgb(255 255 255 / 0.8); }
   .viewer-brand { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: var(--paper); }
   .viewer-title { font-size: var(--fs-body); font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; }
   .viewer-nav { display: flex; gap: 0.4rem; flex-shrink: 0; }
   .viewer-nav button[hidden] { display: none; }
   .viewer-nav button {
     width: 2.75rem; height: 2.75rem; border-radius: 50%;
-    background: rgb(255 255 240 / 0.1); color: var(--paper);
-    border: 1px solid rgb(255 255 240 / 0.25);
+    background: rgb(255 255 255 / 0.1); color: var(--paper);
+    border: 1px solid rgb(255 255 255 / 0.25);
     font-size: var(--fs-body); cursor: pointer;
     transition: background 0.2s ease;
   }
-  .viewer-nav button:hover { background: rgb(255 255 240 / 0.22); }
+  .viewer-nav button:hover { background: rgb(255 255 255 / 0.22); }
   .viewer-nav button:focus-visible { outline: 2px solid var(--paper); outline-offset: 2px; }
   /* Phones: the text and buttons get their own rows, and the video leaves room for them */
   @media (max-width: 40rem) {

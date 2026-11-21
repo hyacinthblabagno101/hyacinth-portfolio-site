@@ -36,6 +36,7 @@ const siteSchema = z.object({
   seo: z.object({ title: z.string(), description: z.string().max(160), ogImage: z.string() }),
   hero: z.object({
     headline: z.string(),
+    accent: z.string().optional(), // one word of the headline, set in italics with the orange underline
     intro: z.string(),
     primaryCta: link,
     secondaryCta: link,
@@ -90,6 +91,11 @@ export const experience = parse(
       z.object({
         company: z.string(), role: z.string(), dates: z.string(), type: z.string(), industry: z.string(),
         summary: z.string(), points: z.array(z.string()), brands: z.array(z.string()),
+        // Optional: what each brand is, for roles that covered more than one brand (shown under "Brands")
+        brandNotes: z.array(z.object({
+          name: z.string(), about: z.string(),
+          links: z.array(z.object({ label: z.string(), url: z.string().url() })).optional(),
+        })).optional(),
       }),
     ),
     additional: z.array(z.object({ company: z.string(), role: z.string(), note: z.string() })),

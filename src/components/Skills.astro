@@ -1,18 +1,19 @@
 ---
 /**
  * What I do, shown inside About (About.astro renders this). Text: "skills" in src/data/about.json; tools: src/data/tools.json.
- * - A 2x2 grid of cards: my three main skills, plus one card that groups e-commerce, AI workflows and virtual assistance.
- *   Each title has one keyword underlined in orange; each card has "See related work" and "See details".
- * - "See details" opens a panel: a cover image from my own work, where I can help (my own words from about.json),
- *   a checklist of what I'll handle (split from the skill text), and the tools I use for it (from tools.json).
+ * - A 2x2 grid of role cards (social media, creative production, UGC and influencer, e-commerce and AI), each with a
+ *   cover image made for that role (AI-generated still lifes in Cloudinary, portfolio/what-i-do/*; not my client work),
+ *   one keyword underlined in orange, "See related work" and "See details".
+ * - Below them, one wide card for remote virtual assistance: ad hoc tasks, easy to train, growing with the role, with
+ *   three steps for how working together remotely goes.
+ * - "See details" opens a panel: the cover, where I can help (my own words from about.json), a checklist of what I'll
+ *   handle (split from the skill text), and the tools I use for it (from tools.json).
  * Written for hiring managers: about a role on their team, not a service for sale.
  */
 import { about, showcase, tools } from '../lib/data';
-import { imageUrl, posterFor } from '../lib/cloudinary';
+import { imageUrl } from '../lib/cloudinary';
 
 const has = (key: string) => showcase.some((c) => c.key === key);
-const items = showcase.flatMap((c) => c.items);
-const media = (id: string) => items.find((i) => i.id === id);
 
 /** "A, B, and C. More sentences." becomes the list [A, B, C] plus the remaining sentences as a note. */
 function split(text: string) {
@@ -27,40 +28,56 @@ function split(text: string) {
 }
 const toolNames = (groups: string[]) =>
   tools.groups.filter((g) => groups.includes(g.name)).flatMap((g) => g.tools.map((t) => (typeof t === 'string' ? t : t.name)));
-const cover = (id: string, w = 900) => {
-  const i = media(id);
-  if (!i) return undefined;
-  return i.kind === 'video' ? posterFor({ id: i.media }, w, '16:9') : imageUrl(i.media, w, '16:9');
-};
+// Role covers: generated still lifes, one per role (Cloudinary public IDs)
+const cover = (name: string) => `portfolio/what-i-do/${name}`;
 const skill = (title: string) => about.skills.find((s) => s.title === title)!;
 
 type Card = {
-  id: string; title: string; key: string; line: string; work?: { label: string; href: string }; cover?: string;
+  id: string; title: string; key: string; line: string; work?: { label: string; href: string }; cover?: string; coverAlt?: string;
   sections: { heading?: string; help?: string; parts: string[]; note?: string }[]; tools: string[];
 };
-const one = (title: string, key: string, work: Card['work'], coverId: string, toolGroups: string[]): Card => {
+const one = (title: string, key: string, work: Card['work'], coverName: string, coverAlt: string, toolGroups: string[]): Card => {
   const s = skill(title);
   const { parts, note } = split(s.text);
   return {
     // One short line for the card: the help text up to its colon or first comma-led list, at most one sentence
     id: `skill-${key.toLowerCase()}`, title, key, line: (s.help ?? s.text).split(/:|(?<=\.)\s|, from /)[0].replace(/\.$/, '') + '.',
-    work, cover: cover(coverId), sections: [{ help: s.help, parts, note }], tools: toolNames(toolGroups),
+    work, cover: cover(coverName), coverAlt, sections: [{ help: s.help, parts, note }], tools: toolNames(toolGroups),
   };
 };
-const extra = ['E-commerce support', 'AI-assisted workflows', 'Virtual assistance'].map((t) => skill(t)).filter(Boolean);
+const shop = ['E-commerce support', 'AI-assisted workflows'].map((t) => skill(t)).filter(Boolean);
 const cards: Card[] = [
-  one('Social media management', 'management', has('statics') ? { label: 'See related work', href: '/?work=statics#work' } : undefined, 'board-expertbiotics', ['Social platforms', 'Scheduling and analytics']),
-  one('Creative production', 'production', has('reels') ? { label: 'See related work', href: '/?work=reels#work' } : undefined, 'reel-ss-top-trends', ['Design and video', 'AI']),
-  one('UGC and influencer coordination', 'influencer', { label: 'See the case studies', href: '/#case-studies' }, 'reel-rb-unboxing', ['Influencer marketing', 'Project management']),
+  one('Social media management', 'management', has('statics') ? { label: 'See related work', href: '/?work=statics#work' } : undefined,
+    'social-media-management', 'A desk with a phone showing a grid of posts and a printed monthly content calendar', ['Social platforms', 'Scheduling and analytics']),
+  one('Creative production', 'production', has('reels') ? { label: 'See related work', href: '/?work=reels#work' } : undefined,
+    'creative-production', 'A phone on a tripod with a ring light filming a product, next to a laptop with a video edit open', ['Design and video', 'AI']),
+  one('UGC and influencer coordination', 'influencer', { label: 'See the case studies', href: '/#case-studies' },
+    'ugc-influencer', 'An opened creator package with products, a phone on a mini tripod and a brief on a clipboard', ['Influencer marketing', 'Project management']),
   {
-    id: 'skill-support', title: 'E-commerce, AI and admin support', key: 'support',
-    line: 'Product listings and images, small AI-built tools, and the admin that keeps campaigns on schedule.',
+    id: 'skill-shop', title: 'E-commerce and AI support', key: 'E-commerce',
+    line: 'Product images and listings that sell clearly, and small AI-built tools that save the team time.',
     work: has('ai') ? { label: 'See related work', href: '/?work=ai#work' } : undefined,
-    cover: cover('ai-uncle-scientist-talking'),
-    sections: extra.map((s) => ({ heading: s.title, help: s.help, ...split(s.text) })),
-    tools: toolNames(['E-commerce and email', 'AI', 'Automation and web', 'Google Workspace']),
+    cover: cover('ecommerce-ai'), coverAlt: 'Folded garments, fabric swatches and a camera beside a laptop showing a product page',
+    sections: shop.map((s) => ({ heading: s.title, help: s.help, ...split(s.text) })),
+    tools: toolNames(['E-commerce and email', 'AI', 'Automation and web']),
   },
 ];
+
+// Remote virtual assistance: the wide card under the grid
+const va = skill('Virtual assistance');
+const vaCard: Card = {
+  id: 'skill-assistance', title: 'Remote virtual assistance', key: 'assistance',
+  line: 'An extra pair of hands for the tasks that come up between the bigger projects, from someone who is easy to train and keen to grow into the role.',
+  sections: [{ help: va.help, ...split(va.text), note: "Show me your tools and the way you like things done, and I'll follow your process." }],
+  tools: toolNames(['Google Workspace', 'Project management']),
+};
+// How working together remotely goes: a real sequence, so it is numbered
+const steps = [
+  { title: 'Show me how you work', text: 'Walk me through your tools, files and the way you like things done. I learn quickly.' },
+  { title: 'I take tasks off your plate', text: 'Ad hoc or recurring, I handle them remotely and keep you updated as I go.' },
+  { title: 'I grow with the role', text: "As I learn your business I take on more, and I'm happy to be trained on new tools." },
+];
+const all = [...cards, vaCard];
 const mark = (title: string, key: string) =>
   title.replace(new RegExp(`(${key})`, 'i'), '<span class="mark">$1</span>');
 ---
@@ -74,6 +91,9 @@ const mark = (title: string, key: string) =>
   <ul class="grid" role="list">
     {cards.map((c, n) => (
       <li class="card lift reveal" style={`--delay: ${(n % 2) * 80}ms`}>
+        {c.cover && (
+          <img class="card-cover" src={imageUrl(c.cover, 720, '16:9')} srcset={`${imageUrl(c.cover, 480, '16:9')} 480w, ${imageUrl(c.cover, 720, '16:9')} 720w, ${imageUrl(c.cover, 1080, '16:9')} 1080w`} sizes="(min-width: 80rem) 34rem, (min-width: 48rem) 44vw, 90vw" alt={c.coverAlt} width="720" height="405" loading="lazy" decoding="async" />
+        )}
         <h4 class="card-title" set:html={mark(c.title, c.key)} />
         <p class="card-line">{c.line}</p>
         <div class="card-actions">
@@ -82,49 +102,68 @@ const mark = (title: string, key: string) =>
             See details <span class="visually-hidden">about {c.title}</span>
           </button>
         </div>
-
-        <dialog class="details" id={c.id} aria-labelledby={`${c.id}-title`}>
-          <div class="details-cover">
-            {c.cover && <img src={c.cover} alt="" width="900" height="506" decoding="async" />}
-            <button type="button" class="x" data-close aria-label="Close">&times;</button>
-            <div class="float-card">
-              <h3 id={`${c.id}-title`} set:html={mark(c.title, c.key)} />
-              <a class="btn btn--primary" href="#contact" data-close data-service={c.title}>Talk about a role</a>
-            </div>
-          </div>
-          <div class="details-body">
-            {c.sections.map((sec) => (
-              <section class="block">
-                {sec.heading && <h4 class="block-head">{sec.heading}</h4>}
-                {sec.help && (
-                  <>
-                    <p class="label sub">Where I can help</p>
-                    <p class="help">{sec.help}</p>
-                  </>
-                )}
-                <div class="checks">
-                  <p class="checks-title">What I'll <span class="mark">handle</span></p>
-                  <ul role="list">
-                    {sec.parts.map((p) => <li>{p}</li>)}
-                  </ul>
-                  {sec.note && <p class="note">{sec.note}</p>}
-                </div>
-              </section>
-            ))}
-            {c.tools.length > 0 && (
-              <div class="tools-box">
-                <p class="tools-title">Tools I use for this</p>
-                <ul role="list">{c.tools.map((t) => <li>{t}</li>)}</ul>
-              </div>
-            )}
-            <div class="details-actions">
-              {c.work && <a class="btn btn--secondary" href={c.work.href} data-close>{c.work.label}</a>}
-            </div>
-          </div>
-        </dialog>
       </li>
     ))}
+    <li class="card card-wide reveal">
+      <div class="wide-copy">
+        <h4 class="card-title" set:html={mark(vaCard.title, vaCard.key)} />
+        <p class="card-line">{vaCard.line}</p>
+        <div class="card-actions">
+          <a class="btn btn--ink" href="#contact">Talk about a role</a>
+          <button type="button" class="btn btn--secondary" data-open={vaCard.id} aria-haspopup="dialog">
+            See details <span class="visually-hidden">about {vaCard.title}</span>
+          </button>
+        </div>
+      </div>
+      <ol class="steps" role="list" aria-label="How working together remotely goes">
+        {steps.map((st, i) => (
+          <li><span class="step-n" aria-hidden="true">{i + 1}</span><strong>{st.title}</strong><span>{st.text}</span></li>
+        ))}
+      </ol>
+    </li>
   </ul>
+
+  {all.map((c) => (
+    <dialog class="details" id={c.id} aria-labelledby={`${c.id}-title`}>
+      <div class:list={['details-cover', { plain: !c.cover }]}>
+        {c.cover && <img src={imageUrl(c.cover, 900, '16:9')} alt="" width="900" height="506" decoding="async" />}
+        <button type="button" class="x" data-close aria-label="Close">&times;</button>
+        <div class="float-card">
+          <h3 id={`${c.id}-title`} set:html={mark(c.title, c.key)} />
+          <a class="btn btn--primary" href="#contact" data-close data-service={c.title}>Talk about a role</a>
+        </div>
+      </div>
+      <div class="details-body">
+        {c.sections.map((sec) => (
+          <section class="block">
+            {sec.heading && <h4 class="block-head">{sec.heading}</h4>}
+            {sec.help && (
+              <>
+                <p class="label sub">Where I can help</p>
+                <p class="help">{sec.help}</p>
+              </>
+            )}
+            <div class="checks">
+              <p class="checks-title">What I'll <span class="mark">handle</span></p>
+              <ul role="list">
+                {sec.parts.map((p) => <li>{p}</li>)}
+              </ul>
+              {sec.note && <p class="note">{sec.note}</p>}
+            </div>
+          </section>
+        ))}
+        {c.tools.length > 0 && (
+          <div class="tools-box">
+            <p class="tools-title">Tools I use for this</p>
+            <ul role="list">{c.tools.map((t) => <li>{t}</li>)}</ul>
+          </div>
+        )}
+        <div class="details-actions">
+          {c.work && <a class="btn btn--secondary" href={c.work.href} data-close>{c.work.label}</a>}
+        </div>
+      </div>
+    </dialog>
+  ))}
 </div>
 
 <style>
@@ -145,10 +184,28 @@ const mark = (title: string, key: string) =>
   .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
   @media (min-width: 48rem) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .card {
-    display: grid; grid-template-rows: auto 1fr auto; gap: 0.75rem;
+    display: grid; grid-template-rows: auto auto 1fr auto; align-content: start; gap: 0.75rem;
     padding: clamp(1.25rem, 1rem + 1vw, 1.75rem); border-radius: var(--radius-panel);
     background: var(--paper); border: 1px solid var(--rule);
   }
+  .card-cover { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-media); margin-bottom: 0.35rem; background: var(--surface); }
+  /* Remote virtual assistance: one wide card, copy on the left and the three steps on the right */
+  .card-wide { grid-template-rows: none; gap: clamp(1.25rem, 1rem + 1.5vw, 2.5rem); background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  @media (min-width: 48rem) { .card-wide { grid-column: 1 / -1; } }
+  @media (min-width: 64rem) { .card-wide { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); align-items: center; } }
+  .card-wide .card-title { color: var(--paper); font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem); letter-spacing: -0.02em; }
+  .card-wide .card-line { color: rgb(255 255 255 / 0.8); font-size: var(--fs-body); max-width: 44ch; }
+  .wide-copy { display: grid; gap: 0.75rem; justify-items: start; }
+  .card-wide .btn--ink { background: var(--accent); border-color: var(--accent); color: var(--ink); }
+  .card-wide .btn--ink:hover { background: var(--paper); border-color: var(--paper); }
+  .card-wide .btn--secondary { color: var(--paper); border-color: rgb(255 255 255 / 0.5); background: transparent; }
+  .card-wide .btn--secondary:hover { background: var(--paper); color: var(--ink); }
+  .card-wide .btn:focus-visible { outline: 3px solid var(--paper); outline-offset: 2px; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+  .steps li { display: grid; grid-template-columns: 2.25rem minmax(0, 1fr); column-gap: 0.85rem; row-gap: 0.15rem; padding: 0.9rem 1rem; border-radius: var(--radius-media); background: rgb(255 255 255 / 0.07); }
+  .step-n { grid-row: 1 / span 2; display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; background: var(--accent); color: var(--ink); font-weight: 700; }
+  .steps strong { font-weight: 600; color: var(--paper); }
+  .steps li > span:last-child { font-size: var(--fs-small); color: rgb(255 255 255 / 0.78); }
   .card-title { font-size: var(--fs-h3); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; margin: 0; }
   .card-line { color: var(--muted); font-size: var(--fs-small); }
   .card-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
@@ -160,7 +217,7 @@ const mark = (title: string, key: string) =>
   .details {
     width: min(100vw - 1.5rem, 44rem); max-height: calc(100dvh - 1.5rem);
     padding: 0; border: 0; border-radius: var(--radius-panel); background: var(--paper); color: var(--ink);
-    --muted: #715d58; --rule: #e3dccf; --focus: var(--ink); --heading: var(--ink); --text: var(--ink); --bg: var(--paper);
+    --muted: #715d58; --rule: #e5e2dd; --focus: var(--ink); --heading: var(--ink); --text: var(--ink); --bg: var(--paper);
   }
   .details::backdrop { background: rgb(52 23 23 / 0.72); backdrop-filter: blur(3px); }
   @media (prefers-reduced-motion: no-preference) {
@@ -169,6 +226,8 @@ const mark = (title: string, key: string) =>
   }
   .details-cover { position: relative; height: clamp(9rem, 6rem + 12vw, 13rem); background: var(--surface); }
   .details-cover img { width: 100%; height: 100%; object-fit: cover; }
+  /* No photo (remote assistance): a plain tinted header instead */
+  .details-cover.plain { height: clamp(7rem, 5rem + 6vw, 9rem); background: rgb(252 113 64 / 0.22); }
   .float-card {
     position: absolute; right: clamp(0.75rem, 0.5rem + 1.5vw, 1.5rem); bottom: -2.75rem; z-index: 2;
     display: grid; gap: 0.75rem; width: min(20rem, calc(100% - 1.5rem)); padding: 1rem 1.1rem;
@@ -200,7 +259,7 @@ const mark = (title: string, key: string) =>
   .tools-box { padding: 1rem 1.1rem; border-radius: var(--radius-media); background: var(--accent); color: var(--ink); }
   .tools-title { font-weight: 700; margin-bottom: 0.5rem; }
   .tools-box ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  .tools-box li { padding: 0.2rem 0.6rem; border-radius: var(--radius-pill); background: rgb(255 255 240 / 0.85); font-size: var(--fs-small); font-weight: 600; }
+  .tools-box li { padding: 0.2rem 0.6rem; border-radius: var(--radius-pill); background: rgb(255 255 255 / 0.85); font-size: var(--fs-small); font-weight: 600; }
   .details-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 </style>
 

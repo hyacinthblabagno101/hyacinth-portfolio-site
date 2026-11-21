@@ -46,10 +46,10 @@ export function videoUrl(id: string): string {
   return `${base}/video/upload/f_auto:video,q_auto,w_1080,c_limit/${path}`;
 }
 
-/** Poster frame taken 1 second in (many edits open on a blank or title frame). */
+/** A frame 3 seconds in: by then the on-screen text in my videos has finished animating in (at 1s it was often half drawn). */
 export function videoPosterUrl(id: string, width: number, aspect?: string): string {
   const { base, path } = resolve(id);
-  return `${base}/video/upload/${['so_1', 'f_auto', 'q_auto', ...crop(width, aspect)].join(',')}/${path}.jpg`;
+  return `${base}/video/upload/${['so_3', 'f_auto', 'q_auto', ...crop(width, aspect)].join(',')}/${path}.jpg`;
 }
 
 /** Poster for a video: its custom poster image if set, otherwise a frame from the video. */

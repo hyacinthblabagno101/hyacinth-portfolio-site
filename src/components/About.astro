@@ -34,6 +34,7 @@ const certs = proof.certifications;
 <section id="about" class="about" aria-labelledby="about-title">
   <div class="wrap grid">
     <figure class="photo reveal" data-parallax>
+      <span class="drift">
       <Picture
         src={cutout}
         alt={about.portraitAlt}
@@ -42,6 +43,7 @@ const certs = proof.certifications;
         formats={['avif', 'webp']}
         loading="lazy"
       />
+      </span>
     </figure>
 
     <div class="copy reveal">
@@ -139,21 +141,22 @@ const certs = proof.certifications;
 <style>
   .about { padding-block: var(--section) clamp(2.5rem, 2rem + 2vw, 4rem); }
   .grid { display: grid; gap: clamp(1.5rem, 1rem + 2vw, 3.5rem); align-items: center; }
-  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); } }
+  @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
   .grid > * { min-width: 0; }
 
-  /* The portrait sits beside the copy, top-aligned with the heading, over a soft Sky block shifted down and left.
-     On wide screens it drifts very slightly as you scroll (at most 20px). On phones it comes first, cropped to ~60% of the screen. */
-  .photo { position: relative; margin: 0; width: 100%; max-width: 30rem; isolation: isolate; }
-  .photo::before {
-    content: ''; position: absolute; z-index: -1; inset: 12% 8% -4% -6%;
+  /* The portrait stands in a soft Sky block. The photo itself ends at the knee and the right edge, so the block's
+     bottom and right edges sit exactly on those cuts (only the head rises above the block): the crop reads as a frame,
+     not a cut. On wide screens the whole block drifts very slightly as you scroll (at most 20px), photo and block together. */
+  .photo { margin: 0; width: 100%; max-width: 34rem; justify-self: center; }
+  .drift { position: relative; display: block; isolation: isolate; transform: translateY(var(--px, 0px)); }
+  .drift::before {
+    content: ''; position: absolute; z-index: -1; inset: 14% 0 0 0;
     border-radius: var(--radius-panel); background: rgb(165 183 229 / 0.35);
   }
-  .photo :global(img) { transform: translateY(var(--px, 0px)); }
   .photo :global(picture), .photo :global(img) { display: block; width: 100%; height: auto; }
+  .photo :global(img) { border-radius: 0 0 var(--radius-panel) var(--radius-panel); }
   @media (max-width: 63.99rem) {
-    .photo { justify-self: center; }
-    .photo :global(img) { max-height: 60vh; object-fit: cover; object-position: center top; }
+    .photo { max-width: 28rem; }
   }
   .copy { display: grid; gap: 1.25rem; justify-items: start; }
 

@@ -37,7 +37,25 @@ const { professional, additional, businesses } = experience;
               <p class="meta">{r.type} &middot; {r.industry}</p>
               <p class="summary">{r.summary}</p>
               <ul class="points">{r.points.map((p) => <li>{p}</li>)}</ul>
-              <p class="brands"><span>Brands</span> {r.brands.join(' · ')}</p>
+              {r.brandNotes ? (
+                <div class="brand-notes">
+                  <p class="brands"><span>Brands</span></p>
+                  <ul role="list">
+                    {r.brandNotes.map((b) => (
+                      <li>
+                        <strong>{b.name}</strong> {b.about}
+                        {b.links && (
+                          <span class="brand-links">
+                            {b.links.map((l) => <a href={l.url} target="_blank" rel="noopener">{l.label} <span class="visually-hidden">(opens in a new tab)</span></a>)}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p class="brands"><span>Brands</span> {r.brands.join(' · ')}</p>
+              )}
             </div>
           </li>
         ))}
@@ -159,6 +177,12 @@ const { professional, additional, businesses } = experience;
   .points { margin: 0; padding-left: 1.15rem; display: grid; gap: 0.45rem; color: var(--muted); }
   .brands { font-size: var(--fs-small); color: var(--muted); }
   .brands span { font-weight: 700; color: var(--ink); margin-right: 0.35rem; }
+  /* One short line per brand when a role covered more than one (e.g. Moname) */
+  .brand-notes { display: grid; gap: 0.5rem; padding-top: 0.75rem; border-top: 1px solid var(--rule); }
+  .brand-notes ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; font-size: var(--fs-small); color: var(--muted); }
+  .brand-notes strong { color: var(--ink); font-weight: 700; margin-right: 0.25rem; }
+  .brand-links { display: inline-flex; flex-wrap: wrap; gap: 0.25rem 0.9rem; margin-left: 0.4rem; }
+  .brand-links a { color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 0.2em; }
 
   /* Wide screens: details show in the panel on the right instead of under each row */
   /* Without JavaScript every role's details show in place; with it, wide screens use the panel on the right */
@@ -169,11 +193,13 @@ const { professional, additional, businesses } = experience;
       display: block; position: sticky; top: 6rem;
       padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem); border-radius: var(--radius-panel);
       background: var(--panel-bg); color: var(--paper);
-      --muted: rgb(255 255 240 / 0.78); --ink: var(--paper);
+      --muted: rgb(255 255 255 / 0.78); --ink: var(--paper);
     }
     .panel :global(.detail) { display: grid !important; padding: 0; animation: swap var(--t-move) var(--ease); }
     @keyframes swap { from { opacity: 0; transform: translateY(8px); } }
-    .panel :global(.points) { color: rgb(255 255 240 / 0.85); }
+    .panel :global(.points) { color: rgb(255 255 255 / 0.85); }
+    .panel :global(.brand-notes) { border-top-color: rgb(255 255 255 / 0.2); }
+    .panel :global(.brand-links a:focus-visible) { outline: 3px solid var(--paper); outline-offset: 2px; }
   }
 
   /* Two light cards side by side; each opens a pop-up */

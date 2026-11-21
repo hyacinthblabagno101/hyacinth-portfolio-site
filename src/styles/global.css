@@ -4,11 +4,11 @@
  * Contrast ratios are WCAG (AA body text needs 4.5:1).
  */
 :root {
-  --paper:   #fffff0;   /* 60% page background */
-  --surface: #f4f3e4;   /* second light surface: capabilities, contact, cards (ink 14.7:1, muted 5.5:1) */
-  --ink:     #341717;   /* text, and at most two dark bands: proof band, client feedback (16.3:1 on paper) */
+  --paper:   #ffffff;   /* white: every panel (sections sit on the off-white page) */
+  --surface: #f3f2ef;   /* off-white: the page behind the panels, and soft cards (ink 15:1, muted 5.6:1) */
+  --ink:     #341717;   /* text, and the dark panels: brands, client feedback (16.6:1 on white) */
   --muted:   #715d58;   /* secondary text (6.1:1 on paper) */
-  --rule:    #e3dccf;   /* hairline dividers and borders */
+  --rule:    #e5e2dd;   /* hairline dividers and borders */
   --accent:  #fc7140;   /* 10%: the only action color, always with ink text (5.9:1) */
   --status:  #d1d275;   /* the "Open to work" pill only */
   --tint:    #a5b7e540; /* one subtle selected/hover state */
@@ -59,8 +59,8 @@
   --bg: var(--ink);
   --text: var(--paper);
   --heading: var(--paper);
-  --muted: rgb(255 255 240 / 0.8);   /* 10.8:1 on ink */
-  --rule: rgb(255 255 240 / 0.2);
+  --muted: rgb(255 255 255 / 0.8);   /* 10.8:1 on ink */
+  --rule: rgb(255 255 255 / 0.2);
   --link: var(--paper);
   --focus: var(--paper);             /* 16.3:1 on ink */
   background: var(--bg);

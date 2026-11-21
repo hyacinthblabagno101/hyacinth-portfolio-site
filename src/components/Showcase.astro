@@ -202,15 +202,6 @@ const tabs = showcase.map((c) => {
   .tabs button[aria-selected='true'] { color: var(--ink); }
   .tabs button[aria-selected='true']::after { transform: scaleX(1); }
 
-  /* Play label that follows the cursor over videos (desktop, motion allowed) */
-  :global(.play-cursor) {
-    position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none;
-    display: grid; place-items: center; width: 4.25rem; height: 4.25rem; border-radius: 50%;
-    background: var(--accent); color: var(--ink); font-size: var(--fs-small); font-weight: 700;
-    opacity: 0; transform: translate(-50%, -50%) scale(0.6);
-    transition: opacity var(--t-ui) var(--ease), transform var(--t-ui) var(--ease);
-  }
-  :global(.play-cursor.on) { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   /* Format tabs above the grid */
   .all-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 0.5rem 2rem; border-bottom: 1px solid var(--rule); margin-bottom: 2rem; }
   .all-head .tabs { border-bottom: 0; margin-bottom: 0; }
@@ -252,7 +243,7 @@ const tabs = showcase.map((c) => {
   .icons { position: absolute; top: 0.55rem; right: 0.55rem; z-index: 2; display: flex; gap: 0.3rem; }
   .ico {
     display: grid; place-items: center; width: 1.85rem; height: 1.85rem; border-radius: 50%;
-    background: rgb(255 255 240 / 0.92); color: var(--ink);
+    background: rgb(255 255 255 / 0.92); color: var(--ink);
     box-shadow: 0 4px 10px -4px rgb(52 23 23 / 0.5);
     transition: transform var(--t-ui) var(--ease), background-color var(--t-ui) var(--ease);
   }
@@ -367,24 +358,6 @@ const tabs = showcase.map((c) => {
       panel.querySelector<HTMLElement>('.tile.extra .tile-link')?.focus({ preventScroll: true });
     });
   });
-
-  // Play label that follows the pointer over video tiles (fine pointers only, never with reduced motion)
-  if (canHover.matches && !reduce.matches) {
-    const label = document.createElement('span');
-    label.className = 'play-cursor';
-    label.setAttribute('aria-hidden', 'true');
-    label.textContent = 'Play';
-    document.body.append(label);
-    let raf = 0;
-    document.querySelectorAll<HTMLAnchorElement>('a.tile-link[data-preview]').forEach((a) => {
-      a.addEventListener('pointerenter', () => label.classList.add('on'));
-      a.addEventListener('pointerleave', () => label.classList.remove('on'));
-      a.addEventListener('pointermove', (e) => {
-        cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(() => { label.style.left = `${e.clientX}px`; label.style.top = `${e.clientY}px`; });
-      });
-    });
-  }
 
   // Hover previews: a short silent loop, loaded only when the pointer arrives (any tile on the page)
   document.querySelectorAll<HTMLAnchorElement>('a.tile-link[data-preview]').forEach((link) => {

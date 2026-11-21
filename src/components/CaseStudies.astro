@@ -154,7 +154,7 @@ const ugcVideos = (ugc?.videos ?? []).map((v) => phone(v.media, v.title, undefin
   .panel-head { display: grid; gap: 0.75rem; align-content: start; max-width: 62ch; }
   .panel-head h3 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem); letter-spacing: -0.02em; line-height: 1.15; color: inherit; }
   .panel-head p { color: var(--muted); }
-  .dark .panel-head p { color: rgb(255 255 240 / 0.8); }
+  .dark .panel-head p { color: rgb(255 255 255 / 0.8); }
 
   /* Video tiles: always 9:16 like the videos, four in a row (two on phones), capped so they never get oversized */
   .phones {
@@ -169,7 +169,7 @@ const ugcVideos = (ugc?.videos ?? []).map((v) => phone(v.media, v.title, undefin
     border-radius: 14px; background: var(--surface);
     outline: 1px solid var(--rule); outline-offset: -1px;
   }
-  .dark .phone { background: rgb(255 255 240 / 0.1); outline-color: rgb(255 255 240 / 0.25); }
+  .dark .phone { background: rgb(255 255 255 / 0.1); outline-color: rgb(255 255 255 / 0.25); }
   .phone img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
   .phone:hover img { transform: scale(1.03); }
   .phone:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
@@ -177,7 +177,7 @@ const ugcVideos = (ugc?.videos ?? []).map((v) => phone(v.media, v.title, undefin
   .play {
     position: absolute; left: 50%; top: 50%; z-index: 2; transform: translate(-50%, -50%);
     display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%;
-    background: rgb(255 255 240 / 0.92); color: var(--ink);
+    background: rgb(255 255 255 / 0.92); color: var(--ink);
     transition: transform 0.3s ease;
   }
   .phone:hover .play { transform: translate(-50%, -50%) scale(1.08); }

@@ -1,8 +1,8 @@
 ---
 /**
- * Brands I've made content for: its own light panel under the hero (the numbers are a separate panel, Proof.astro).
- * - Logos: every brand with a logo file, one height (28px), shown dark on the light panel (the files are white). The band loops slowly, pauses on hover
- *   or focus, and has a Pause button. With reduced motion it's a still, wrapping row.
+ * Brands I've made content for: a dark ink panel under the hero.
+ * - Logos: every brand with a logo file, one height (28px), in their own white (the files are white). The band loops
+ *   slowly and pauses on hover or focus (no Pause button, by choice). With reduced motion it's a still, wrapping row.
  *   A logo links to its experience entry or to the work where one exists. Files: public/logos; sizes: src/lib/logos.ts.
  */
 import { logos } from '../lib/logos';
@@ -16,14 +16,9 @@ const order = ['Winnie & Co.', 'Style State', 'Proper Ecom', 'Rabble', 'Epic Tal
 const row = order.filter((n) => logos[n]).map((name) => ({ name, href: links[name], src: `/logos/${logos[name].file}.webp`, ratio: logos[name].w / logos[name].h }));
 ---
 
-<section class="brands" aria-labelledby="brands-title" data-brands>
+<section class="brands band-dark" aria-labelledby="brands-title" data-brands>
   <div class="wrap brands-head">
     <h2 id="brands-title" class="kicker">Brands I've made content for</h2>
-    <button type="button" class="motion-toggle" aria-pressed="false" data-logo-toggle>
-      <span class="when-playing"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor" /></svg> Pause</span>
-      <span class="when-paused"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" /></svg> Play</span>
-      <span class="visually-hidden"> the moving logos</span>
-    </button>
   </div>
 
   <div class="marquee" data-marquee>
@@ -47,7 +42,7 @@ const row = order.filter((n) => logos[n]).map((name) => ({ name, href: links[nam
 
 <style>
   .brands { padding-block: clamp(1.75rem, 1.4rem + 1.5vw, 2.75rem); overflow: hidden; }
-  .brands-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .brands-head { display: flex; justify-content: center; margin-bottom: 1.25rem; }
   /* The kicker style on an h2: drop the heading font, size and width limit */
   .brands-head .kicker { margin: 0; max-width: none; font-family: var(--font-sans); font-weight: 600; font-size: 0.8125rem; line-height: 1.4; letter-spacing: 0.06em; }
 
@@ -58,13 +53,13 @@ const row = order.filter((n) => logos[n]).map((name) => ({ name, href: links[nam
     mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
   }
   .logos { list-style: none; margin: 0; padding: 0 clamp(1.75rem, 1rem + 3vw, 3.5rem) 0 0; display: flex; align-items: center; gap: clamp(1.75rem, 1rem + 3vw, 3.5rem); flex: none; }
-  /* The logo files are white; on the light panel they show in a dark ink tone */
-  .logos img { display: block; height: 28px; width: auto; max-width: 10rem; object-fit: contain; filter: brightness(0); opacity: 0.72; transition: opacity var(--t-ui) var(--ease); }
+  /* The logo files are white, so they sit on the dark ink panel in their own color */
+  .logos img { display: block; height: 28px; width: auto; max-width: 10rem; object-fit: contain; opacity: 0.88; transition: opacity var(--t-ui) var(--ease); }
   .logos a { display: inline-flex; align-items: center; min-height: 2.75rem; border-radius: 4px; }
   .logos a:hover img, .logos a:focus-visible img { opacity: 1; }
   @media (prefers-reduced-motion: no-preference) {
     .marquee { animation: logo-loop 90s linear infinite; }
-    .marquee:hover, .marquee:focus-within, .brands[data-paused] .marquee { animation-play-state: paused; }
+    .marquee:hover, .marquee:focus-within { animation-play-state: paused; }
     @keyframes logo-loop { to { transform: translateX(-50%); } }
   }
   /* Reduced motion: one still row that wraps */
@@ -75,14 +70,3 @@ const row = order.filter((n) => logos[n]).map((name) => ({ name, href: links[nam
   }
   @media (max-width: 40rem) { .logos img { height: 22px; } }
 </style>
-
-<script>
-  // Pause/play for the logo band
-  const brands = document.querySelector<HTMLElement>('[data-brands]');
-  const logoToggle = document.querySelector<HTMLButtonElement>('[data-logo-toggle]');
-  logoToggle?.addEventListener('click', () => {
-    const paused = logoToggle.getAttribute('aria-pressed') !== 'true';
-    logoToggle.setAttribute('aria-pressed', String(paused));
-    brands?.toggleAttribute('data-paused', paused);
-  });
-</script>
