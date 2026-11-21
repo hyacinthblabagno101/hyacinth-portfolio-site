@@ -64,7 +64,7 @@ const quotes = proof.testimonials.map((t, i) => ({ ...t, id: `quote-${i + 1}` })
 
 <style>
   /* A Chocopie band with Ivory cards */
-  .feedback { padding-block: var(--section); background: var(--wine); }
+  .feedback { padding-block: var(--section); background: var(--ink); }
 
   /* Slider track: native horizontal scroll with snapping, so it swipes on touch screens */
   .cards {
@@ -81,7 +81,7 @@ const quotes = proof.testimonials.map((t, i) => ({ ...t, id: `quote-${i + 1}` })
   .controls { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 0.75rem; }
   .dots { display: flex; gap: 0.4rem; }
   .dots :global(i) { width: 0.5rem; height: 0.5rem; border-radius: var(--radius-pill); background: rgb(255 255 240 / 0.3); transition: width 0.35s ease, background 0.35s ease; }
-  .dots :global(i.on) { width: 1.75rem; background: var(--sage-light); }
+  .dots :global(i.on) { width: 1.75rem; background: var(--paper); }
   .arrows { display: flex; gap: 0.5rem; }
   .arrow {
     display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%;
@@ -95,16 +95,16 @@ const quotes = proof.testimonials.map((t, i) => ({ ...t, id: `quote-${i + 1}` })
     flex: 1; display: flex; flex-direction: column; gap: 1rem;
     padding: clamp(1.5rem, 1.2rem + 1vw, 2rem);
     border-radius: var(--radius-panel); background: var(--paper); border: 1px solid transparent;
-    color: var(--ink); --text-muted: #715d58; --line: rgb(52 23 23 / 0.15); --focus: var(--wine);
+    color: var(--ink); --muted: #715d58; --rule: #e3dccf; --focus: var(--ink);
     transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s ease, border-color 0.3s ease;
   }
   @media (hover: hover) {
-    .card:hover { transform: translateY(-6px); border-color: var(--sage-light); box-shadow: 0 24px 44px -24px rgb(0 0 0 / 0.6); }
+    .card:hover { transform: translateY(-6px); border-color: var(--paper); box-shadow: 0 24px 44px -24px rgb(0 0 0 / 0.6); }
     .card:hover .mark { transform: translateY(-3px) rotate(-6deg); }
   }
   .mark {
     font-family: var(--font-serif); font-size: 3.5rem; line-height: 0.6; height: 1.5rem;
-    color: var(--wine); transition: transform 0.35s ease; transform-origin: left bottom;
+    color: var(--ink); transition: transform 0.35s ease; transform-origin: left bottom;
   }
 
   blockquote { margin: 0; }
@@ -123,21 +123,21 @@ const quotes = proof.testimonials.map((t, i) => ({ ...t, id: `quote-${i + 1}` })
   .more {
     align-self: flex-start; min-height: 2.75rem; margin-top: -0.5rem; padding: 0;
     background: none; border: 0; cursor: pointer;
-    font: inherit; font-size: var(--fs-small); font-weight: 600; color: var(--wine);
+    font: inherit; font-size: var(--fs-small); font-weight: 600; color: var(--ink);
     text-decoration: underline; text-underline-offset: 0.2em;
   }
   .more[hidden] { display: block; visibility: hidden; }
 
   figcaption {
     display: grid; gap: 0.15rem; margin-top: auto; padding-top: 1rem;
-    border-top: 1px solid var(--line); font-size: var(--fs-small);
+    border-top: 1px solid var(--rule); font-size: var(--fs-small);
   }
   figcaption strong { font-weight: 700; color: var(--ink); }
-  figcaption span { color: var(--text-muted); }
-  figcaption a { color: var(--wine); }
+  figcaption span { color: var(--muted); }
+  figcaption a { color: var(--ink); }
   .verified {
     justify-self: start; width: fit-content; display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.35rem;
-    padding: 0.2rem 0.6rem; border-radius: var(--radius-pill); background: var(--green-soft); color: var(--ink);
+    padding: 0.2rem 0.6rem; border-radius: var(--radius-pill); background: var(--surface); color: var(--ink);
     font-size: var(--fs-label); font-weight: 700; text-decoration: none;
   }
 </style>

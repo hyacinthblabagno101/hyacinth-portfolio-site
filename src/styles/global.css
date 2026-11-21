@@ -1,50 +1,33 @@
 /*
  * Design tokens. Every color, type size and corner radius on the site comes from here.
- * Palette: Linen, Black, Papaya, Banana, Sky, Saguaro.
+ * Color split is about 60/30/10: paper 60%, ink (text and two dark bands) 30%, accent 10%.
  * Contrast ratios are WCAG (AA body text needs 4.5:1).
  */
 :root {
-  /*
-   * Palette: Linen, Black, Papaya, Banana, Sky and Saguaro. Each has one job:
-   * Linen = page background · Black = text, dark bands, footer · Papaya = main buttons ·
-   * Banana = soft section background · Sky = cards, panels, Book a call · Saguaro = small accents only.
-   */
-  --paper: #fffff0;        /* Linen: page background */
-  --clay: #fff4c6;         /* Banana: What I do and Contact backgrounds */
-  --blue: #a5b7e5;         /* Sky: cards and panels (Black text 8.2:1) */
-  --greige: #a5b7e5;       /* Sky: Book a call buttons and chips */
-  --greige-soft: #f4f3e4;  /* Black at 5% on Linen: hover backgrounds, image placeholders */
-  --salsa: #fc7140;        /* Papaya: main buttons (Black text 5.9:1) */
-  --wine: #341717;         /* Black: dark bands and the footer */
-  --ink: #341717;          /* Black: all text (16:1 on Linen) */
-  --rose: #d1d275;         /* Saguaro: small accents on Black (10.3:1) */
-  --sage: #341717;         /* "Open to work" dot */
-  --sage-light: #d1d275;   /* Saguaro: small accents on Black */
-  --green: #341717;        /* "Open to work" text */
-  --green-soft: #d1d275;   /* Saguaro badge */
+  --paper:   #fffff0;   /* 60% page background */
+  --surface: #f4f3e4;   /* second light surface: capabilities, contact, cards (ink 14.7:1, muted 5.5:1) */
+  --ink:     #341717;   /* text, and at most two dark bands: proof band, client feedback (16.3:1 on paper) */
+  --muted:   #715d58;   /* secondary text (6.1:1 on paper) */
+  --rule:    #e3dccf;   /* hairline dividers and borders */
+  --accent:  #fc7140;   /* 10%: the only action color, always with ink text (5.9:1) */
+  --status:  #d1d275;   /* the "Open to work" pill only */
+  --tint:    #a5b7e540; /* one subtle selected/hover state */
 
-  /* Roles (light sections); dark sections swap these in .band-dark */
+  /* Roles: light sections use these; .band-dark swaps them */
   --bg: var(--paper);
   --text: var(--ink);
-  --text-muted: #715d58;   /* Black at 70%: captions (6.1:1 on Linen, 5.6:1 on Banana) */
   --heading: var(--ink);
-  --accent: var(--ink);    /* links are Plum Noir with a Persimmon underline */
-  --line: rgb(52 23 23 / 0.15);
-  --rule: var(--ink);
-  --focus: var(--ink);
+  --link: var(--ink);   /* links are ink with an accent underline */
+  --focus: var(--ink);  /* focus ring: 16.3:1 on paper */
 
-  /*
-   * Type: Helvetica Now for everything plain, Libre Baskerville italic for the one accent word in titles
-   * and for captions. Helvetica Now is a licensed font: it's used when installed (or when licensed web
-   * font files are added to public/fonts), then Helvetica Neue on Apple devices, then Inter Tight.
-   */
+  /* Type: Libre Baskerville for display headings; Inter Tight (loaded, weights 400 to 800) for everything else */
   --font-serif: 'Libre Baskerville', Baskerville, 'Times New Roman', serif;
-  --font-sans: 'Helvetica Now Display', 'Helvetica Now Text', 'Helvetica Neue', Helvetica, 'Inter Tight', Arial, sans-serif;
+  --font-sans: 'Inter Tight', system-ui, sans-serif;
 
   /* Type scale: the only sizes used on the site */
-  --fs-display: clamp(3.25rem, 0.4rem + 11vw, 9.5rem);   /* hero */
-  --fs-h2: clamp(2.125rem, 1.4rem + 3vw, 3.75rem);       /* section titles (Libre Baskerville) */
-  --fs-h3: clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem);     /* item titles, brand names */
+  --fs-display: clamp(2.5rem, 1.6rem + 3.8vw, 5rem);      /* hero: 40px phone, 80px at 1440 */
+  --fs-h2: clamp(2rem, 1.55rem + 1.9vw, 3.5rem);         /* section headings: 32px phone, 52px at 1440 */
+  --fs-h3: clamp(1.25rem, 1.15rem + 0.35vw, 1.5rem);     /* project, role and card titles: 20 to 24px */
   --fs-stat: clamp(1.75rem, 1.4rem + 1.2vw, 2.5rem);     /* numbers */
   --fs-lead: clamp(1.1875rem, 1.1rem + 0.4vw, 1.375rem);  /* intro lines, pull quotes */
   --fs-body: 1.0625rem;
@@ -52,29 +35,27 @@
   --fs-label: 0.8125rem;                                  /* small labels and buttons (sentence case) */
 
   /* Space, layout, corners */
-  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
-  --section: clamp(3.5rem, 2.25rem + 4vw, 6rem);
-  --max: 82rem;
-  --radius-media: 8px;     /* photos, tiles, inputs */
-  --radius-panel: 18px;    /* large panels and pop-ups */
+  --gutter: clamp(1.125rem, 0.5rem + 2.6vw, 3rem);       /* 18px phone, ~45px at 1440 */
+  --section: clamp(3.5rem, 2.6rem + 4vw, 7rem);          /* ~57px phone, ~99px at 1440 */
+  --max: 77.5rem;                                        /* one content container: 1240px */
+  --radius-media: 10px;    /* photos, tiles, inputs */
+  --radius-panel: 14px;    /* panels and pop-ups */
   --radius-pill: 999px;    /* buttons, badges */
 }
 
 /*
- * Section color rhythm, top to bottom:
- * Hero Linen, numbers Black, About Linen, brands Black, What I do Sky, Selected work Linen, Feedback Black,
- * Experience Linen (Sky and Black panels), Contact Banana, footer Black.
- * Dark band: put class="band-dark" on any section.
+ * Section colors, top to bottom: Hero paper, Selected work paper, Proof band ink, Experience paper,
+ * Client feedback ink, About & capabilities paper (capabilities on surface), Contact surface, footer ink.
+ * Dark band: put class="band-dark" on a section.
  */
 .band-dark {
-  --bg: var(--wine);
-  --text: var(--paper);              /* 16:1 */
-  --text-muted: rgb(255 255 240 / 0.8); /* Linen tint on Black */
+  --bg: var(--ink);
+  --text: var(--paper);
   --heading: var(--paper);
-  --accent: var(--rose);            /* Wasabi */
-  --line: rgb(255 255 240 / 0.2);
-  --rule: var(--paper);
-  --focus: var(--rose);
+  --muted: rgb(255 255 240 / 0.8);   /* 10.8:1 on ink */
+  --rule: rgb(255 255 240 / 0.2);
+  --link: var(--paper);
+  --focus: var(--paper);             /* 16.3:1 on ink */
   background: var(--bg);
   color: var(--text);
 }
@@ -96,7 +77,7 @@ body {
   color: var(--text);
   font-family: var(--font-sans);
   font-size: var(--fs-body);
-  line-height: 1.65;
+  line-height: 1.55;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   /* Keep the footer at the bottom on short pages */
@@ -117,7 +98,7 @@ h1, h2, h3 {
  * Titles: Libre Baskerville for every section title (h1, h2) and the big numbers; the sans for everything else.
  * The italic word in a title stays the same color, so the type itself does the styling.
  */
-h1, h2, h3 { font-family: var(--font-sans); font-weight: 700; letter-spacing: -0.02em; }
+h1, h2, h3 { font-family: var(--font-sans); font-weight: 600; letter-spacing: -0.01em; }
 h1, h2 { font-family: var(--font-serif); font-weight: 400; font-size: var(--fs-h2); line-height: 1.04; letter-spacing: -0.03em; }
 h2 { max-width: 22ch; }
 h1 em, h2 em {
@@ -128,14 +109,15 @@ h1 em, h2 em {
   color: inherit;
   padding-right: 0.04em;
 }
-h3 { font-size: var(--fs-h3); line-height: 1.1; letter-spacing: -0.02em; }
+h3 { font-size: var(--fs-h3); line-height: 1.2; letter-spacing: -0.01em; }
+p { max-width: 60ch; }
 
 /* One header pattern for every section: the title on the left, one short line or link on the right */
 .section-head {
   display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1rem 2rem;
   margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
 }
-.section-head .lede { color: var(--text-muted); max-width: 40ch; }
+.section-head .lede { color: var(--muted); max-width: 40ch; }
 .section-head .head-link {
   display: inline-flex; gap: 0.4rem; align-items: center; min-height: 2.75rem;
   font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: var(--text);
@@ -143,8 +125,7 @@ h3 { font-size: var(--fs-h3); line-height: 1.1; letter-spacing: -0.02em; }
 
 p { margin: 0; text-wrap: pretty; }
 
-a { color: var(--accent); text-underline-offset: 0.18em; text-decoration-thickness: 1px; text-decoration-color: var(--salsa); }
-.band-dark a { text-decoration-color: var(--rose); }
+a { color: var(--link); text-underline-offset: 0.18em; text-decoration-thickness: 1px; text-decoration-color: var(--accent); }
 a:hover { text-decoration-thickness: 2px; }
 
 :focus-visible {
@@ -169,36 +150,30 @@ a:hover { text-decoration-thickness: 2px; }
   line-height: 1.4;
 }
 
-/* Buttons */
+/*
+ * Buttons: three kinds, used everywhere. One .btn--primary per section.
+ * .btn--primary: accent fill, ink text, 48px tall. .btn--secondary: 1px ink outline. .btn--link: underlined text.
+ */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  min-height: 2.875rem;
-  padding: 0.7rem 1.4rem;
-  cursor: pointer;
-  font-family: var(--font-sans);
-  font-size: var(--fs-small);
-  font-weight: 600;
-  letter-spacing: 0;
- 
-  text-decoration: none;
-  border: 1px solid currentColor;
-  border-radius: var(--radius-pill);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  min-height: 2.875rem; padding: 0.7rem 1.4rem;
+  font-family: var(--font-sans); font-size: var(--fs-small); font-weight: 600; letter-spacing: 0; line-height: 1.2;
+  text-decoration: none; cursor: pointer;
+  border: 1px solid transparent; border-radius: var(--radius-pill);
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
 }
-.btn-primary { background: var(--salsa); border-color: var(--salsa); color: var(--ink); }
-.btn-primary:hover { background: var(--ink); border-color: var(--ink); color: var(--paper); }
-.btn-ghost { color: var(--text); background: transparent; }
-.btn-ghost:hover { background: var(--text); color: var(--bg); }
-/* Book a call: a lighter Milk button, on light and dark sections */
-.btn-book { background: var(--greige); border-color: var(--greige); color: var(--ink); }
-.band-dark .btn-book { border-color: var(--greige); }
-.btn-book:hover { background: var(--paper); border-color: var(--ink); color: var(--ink); }
-.band-dark .btn-book:hover { border-color: var(--paper); }
-.band-dark .btn-primary { background: var(--salsa); border-color: var(--salsa); color: var(--ink); }
-.band-dark .btn-primary:hover { background: var(--paper); border-color: var(--paper); color: var(--ink); }
+.btn--primary { min-height: 3rem; background: var(--accent); border-color: var(--accent); color: var(--ink); }
+.btn--primary:hover { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.btn--secondary { background: transparent; border-color: var(--text); color: var(--text); }
+.btn--secondary:hover { background: var(--text); color: var(--bg); }
+.btn--link {
+  min-height: 2.75rem; padding: 0; border: 0; border-radius: 0; background: none;
+  color: var(--link); text-decoration: underline; text-decoration-color: var(--accent);
+  text-underline-offset: 0.25em; text-decoration-thickness: 1px;
+}
+.btn--link:hover { text-decoration-thickness: 2px; }
+.band-dark .btn--primary:hover { background: var(--paper); border-color: var(--paper); color: var(--ink); }
+.btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 
 /* Development placeholders: obvious on purpose so nothing ships by accident */
 .placeholder {
@@ -260,4 +235,3 @@ a:hover { text-decoration-thickness: 2px; }
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
 
-.band-blue { background: var(--clay); }

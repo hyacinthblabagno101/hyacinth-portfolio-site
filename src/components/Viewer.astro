@@ -60,7 +60,7 @@ const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => 
   .viewer-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem 1rem; }
   .viewer-text { margin: 0; display: grid; gap: 0.1rem; min-width: 0; }
   .viewer-text p { margin: 0; }
-  .viewer-pos { margin-left: 0.5rem; color: var(--greige); font-weight: 400; letter-spacing: 0.04em; }
+  .viewer-pos { margin-left: 0.5rem; color: var(--surface); font-weight: 400; letter-spacing: 0.04em; }
   /* Brief, my contribution and outcome: each shows only when it has text */
   .viewer-facts { margin: 0.2rem 0 0; display: grid; gap: 0.15rem; font-size: var(--fs-small); max-width: 60ch; }
   .viewer-facts div { display: flex; gap: 0.4rem; }
@@ -80,7 +80,7 @@ const registry = Object.fromEntries(showcase.flatMap((c) => c.items).map((i) => 
     transition: background 0.2s ease;
   }
   .viewer-nav button:hover { background: rgb(255 255 240 / 0.22); }
-  .viewer-nav button:focus-visible { outline: 2px solid var(--rose); outline-offset: 2px; }
+  .viewer-nav button:focus-visible { outline: 2px solid var(--paper); outline-offset: 2px; }
   /* Phones: the text and buttons get their own rows, and the video leaves room for them */
   @media (max-width: 40rem) {
     .viewer-bar { flex-wrap: wrap; }

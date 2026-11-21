@@ -11,7 +11,7 @@ const mailto = publicEmail ? `mailto:${publicEmail}?subject=${encodeURIComponent
 const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholder(s.url)) : [];
 ---
 
-<section id="contact" class="contact band-blue" aria-labelledby="contact-title">
+<section id="contact" class="contact" aria-labelledby="contact-title">
   <div class="wrap grid">
     <div class="left">
     <div class="intro">
@@ -34,7 +34,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
             </p>
             <p class="copied" role="status" aria-live="polite" data-copy-status></p>
             {bookingUrl && (
-              <a class="btn btn-primary book" href={bookingUrl} target="_blank" rel="noopener">
+              <a class="btn btn--secondary book" href={bookingUrl} target="_blank" rel="noopener">
                 Book a 30-minute call <span class="visually-hidden">(opens Calendly in a new tab)</span>
               </a>
             )}
@@ -104,7 +104,8 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
       </div>
       <div class="field">
         <label for="cf-topic">What's this about?</label>
-        <select id="cf-topic" name="topic">
+        <select id="cf-topic" name="topic" required>
+          <option value="" selected disabled>Select an inquiry type</option>
           <option>A full-time role</option>
           <option>A part-time role</option>
           <option>A contract role</option>
@@ -118,7 +119,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
         <textarea id="cf-message" name="message" rows="5" required></textarea>
       </div>
 
-      <button class="btn btn-primary submit" type="submit">Send message</button>
+      <button class="btn btn--primary submit" type="submit">Send message</button>
       <p class="form-status" role="status" aria-live="polite" data-form-status></p>
     </form>
 
@@ -129,12 +130,12 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
 
 <style>
   /* A light Ivory section, with a hairline between it and Experience */
-  .contact { padding-block: var(--section); }
+  .contact { padding-block: var(--section); background: var(--surface); }
   .grid { display: grid; gap: 2.5rem; align-items: start; }
   @media (min-width: 64rem) { .grid { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(3rem, 2rem + 3vw, 5rem); } }
   .left { display: grid; gap: 2rem; align-content: start; }
   /* The form sits in a card so both columns carry the same visual weight */
-  .form { padding: clamp(1.25rem, 1rem + 1.5vw, 2rem); border-radius: var(--radius-panel); background: var(--paper); border: 1px solid var(--line); }
+  .form { padding: clamp(1.25rem, 1rem + 1.5vw, 2rem); border-radius: var(--radius-panel); background: var(--paper); border: 1px solid var(--rule); }
   /* Form: name and email side by side where there's room */
   .pair { display: grid; gap: 1.1rem; }
   @media (min-width: 40rem) { .pair { grid-template-columns: 1fr 1fr; } }
@@ -161,18 +162,18 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
     appearance: none;
   }
   .field select option { color: var(--ink); background: var(--paper); }
-  .skill-note { font-size: var(--fs-small); color: var(--wine); }
-  .field select:focus-visible { outline: 3px solid var(--wine); outline-offset: 2px; border-color: var(--ink); }
-  .field input:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--wine); outline-offset: 2px; border-color: var(--ink); }
+  .skill-note { font-size: var(--fs-small); color: var(--ink); }
+  .field select:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; border-color: var(--ink); }
+  .field input:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; border-color: var(--ink); }
   .field input:user-invalid, .field textarea:user-invalid { border-color: #9b2c2c; }
   .submit { justify-self: start; cursor: pointer; }
   .submit[disabled] { opacity: 0.6; cursor: progress; }
   @media (max-width: 30rem) { .submit { justify-self: stretch; } }
-  .form-status { min-height: 1.5em; font-size: var(--fs-small); color: var(--text-muted); }
+  .form-status { min-height: 1.5em; font-size: var(--fs-small); color: var(--muted); }
 
   .intro { display: grid; gap: 1.25rem; }
   h2 { max-width: 12ch; }
-  .lede { color: var(--text-muted); max-width: 46ch; }
+  .lede { color: var(--muted); max-width: 46ch; }
 
   .actions { display: grid; gap: 1.25rem; }
   .email { display: grid; gap: 0.75rem; }
@@ -192,11 +193,11 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
     display: inline-flex; align-items: center; gap: 0.4rem;
     min-height: 2.75rem; padding: 0 0.9rem;
     background: transparent; color: var(--ink);
-    border: 1px solid var(--line); border-radius: var(--radius-pill);
+    border: 1px solid var(--rule); border-radius: var(--radius-pill);
     font: inherit; font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; cursor: pointer;
   }
   .copy:hover { border-color: var(--ink); }
-  .copied { min-height: 1.5em; font-size: var(--fs-small); color: var(--text-muted); }
+  .copied { min-height: 1.5em; font-size: var(--fs-small); color: var(--muted); }
 
   .links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; }
   .links a {
@@ -214,7 +215,7 @@ const pendingSocials = showUnconfirmed ? site.socials.filter((s) => isPlaceholde
     color: var(--ink);
     font-weight: 600;
   }
-  .resume .meta { font-weight: 400; color: var(--text-muted); }
+  .resume .meta { font-weight: 400; color: var(--muted); }
 
   .book { justify-self: start; margin-top: 0.5rem; }
 </style>

@@ -188,7 +188,7 @@ const tabs = showcase.map((c) => {
             ))}
           </ul>
           {!t.grouped && t.tiles.length > INITIAL && (
-            <button type="button" class="btn btn-ghost more" aria-expanded="false" data-more>
+            <button type="button" class="btn btn--secondary more" aria-expanded="false" data-more>
               Show all <span class="visually-hidden">{t.label}</span>
               <span aria-hidden="true">&darr;</span>
             </button>
@@ -206,7 +206,7 @@ const tabs = showcase.map((c) => {
   /* Tabs: a quiet underline that slides to the active tab */
   .tabs {
     display: flex; gap: 0.25rem 1.75rem; flex-wrap: wrap;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--rule);
     margin-bottom: 2rem;
   }
   /* Tabs wrap onto a second line on phones (no sideways scrolling); the selected tab is underlined */
@@ -218,31 +218,31 @@ const tabs = showcase.map((c) => {
     background: none; border: 0; cursor: pointer;
     font: inherit; font-weight: 600; font-size: var(--fs-small);
     letter-spacing: 0.01em;
-    color: var(--text-muted);
+    color: var(--muted);
     transition: color 0.25s ease;
   }
   .tabs button::after {
     content: '';
     position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
-    background: var(--wine);
+    background: var(--ink);
     transform: scaleX(0); transform-origin: left;
     transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .tabs button:hover { color: var(--wine); }
-  .tabs button[aria-selected='true'] { color: var(--wine); }
+  .tabs button:hover { color: var(--ink); }
+  .tabs button[aria-selected='true'] { color: var(--ink); }
   .tabs button[aria-selected='true']::after { transform: scaleX(1); }
 
   /* Featured row */
   .featured { margin-bottom: clamp(2.5rem, 2rem + 2vw, 3.5rem); }
-  .featured .label { color: var(--text-muted); margin-bottom: 1rem; }
+  .featured .label { color: var(--muted); margin-bottom: 1rem; }
   .feat-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.5rem 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   @media (min-width: 64rem) { .feat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; } }
   .feat { display: grid; gap: 0.75rem; align-content: start; }
   .feat-text { display: grid; gap: 0.2rem; }
-  .feat-brand { font-size: var(--fs-small); font-weight: 600; color: var(--text-muted); }
+  .feat-brand { font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
   .feat-title { font-family: var(--font-sans); font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem); font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
-  .feat-role { font-size: var(--fs-small); color: var(--text-muted); max-width: 40ch; }
-  .all-title { color: var(--text-muted); margin-bottom: 0.25rem; }
+  .feat-role { font-size: var(--fs-small); color: var(--muted); max-width: 40ch; }
+  .all-title { color: var(--muted); margin-bottom: 0.25rem; }
 
   .grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
   .grid-tall { grid-template-columns: repeat(2, 1fr); }
@@ -260,7 +260,7 @@ const tabs = showcase.map((c) => {
   .frame {
     position: relative; display: block; overflow: hidden;
     border-radius: var(--radius-media);
-    background: var(--greige-soft);
+    background: var(--surface);
   }
   .frame img, .frame :global(video) {
     position: absolute; inset: 0;

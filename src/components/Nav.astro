@@ -39,7 +39,7 @@ const links = [
     z-index: 50;
     background: color-mix(in srgb, var(--paper) 94%, transparent);
     backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--rule);
   }
   .bar {
     display: flex;
@@ -63,7 +63,7 @@ const links = [
   .brand .tag {
     margin-left: 0.35rem;
     font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: var(--fs-small); letter-spacing: 0; text-transform: none;
-    color: var(--wine);
+    color: var(--ink);
   }
   @media (max-width: 22rem) { .brand .tag { display: none; } }
 
@@ -104,7 +104,7 @@ const links = [
     text-decoration: none;
     font-weight: 600;
   }
-  .menu a:hover { color: var(--ink); text-decoration-color: var(--salsa); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.35em; }
+  .menu a:hover { color: var(--ink); text-decoration-color: var(--accent); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.35em; }
 
   /* Mobile: drop-down panel */
   @media (max-width: 74.99rem) {
@@ -124,7 +124,7 @@ const links = [
       letter-spacing: -0.04em;
      
       line-height: 1;
-      border-bottom: 1px solid var(--line);
+      border-bottom: 1px solid var(--rule);
     }
   }
 
@@ -140,10 +140,10 @@ const links = [
      
     }
     .menu ul { align-items: center; }
-    .menu .resume { color: var(--wine); }
+    .menu .resume { color: var(--ink); }
     .menu .cta {
       display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0 1.1rem;
-      border-radius: var(--radius-pill); background: var(--salsa); color: var(--ink);
+      border-radius: var(--radius-pill); background: var(--accent); color: var(--ink);
     }
     .menu .cta:hover { background: var(--ink); color: var(--paper); text-decoration: none; }
   }

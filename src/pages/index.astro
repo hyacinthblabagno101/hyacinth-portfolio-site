@@ -3,7 +3,6 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import About from '../components/About.astro';
 import Proof from '../components/Proof.astro';
-import Skills from '../components/Skills.astro';
 import CaseStudies from '../components/CaseStudies.astro';
 import Showcase from '../components/Showcase.astro';
 import Testimonials from '../components/Testimonials.astro';
@@ -20,7 +19,6 @@ import { showAbout, showExperience } from '../lib/data';
   {showExperience && <Experience />}
   <Testimonials />
   {showAbout && <About />}
-  <Skills />
   <Contact />
   <CaseStudies />
 </Base>

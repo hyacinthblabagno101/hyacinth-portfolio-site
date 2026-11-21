@@ -58,8 +58,8 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
       <p class="intro rise" style="--delay: 0.12s">{hero.intro}</p>
 
       <div class="actions rise" style="--delay: 0.18s">
-        <a class="btn btn-primary" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
-        <a class="btn btn-ghost" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>
+        <a class="btn btn--primary" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
+        <a class="btn btn--secondary" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>
           {hero.secondaryCta.label}
           {book.external && <span class="visually-hidden">(opens in a new tab)</span>}
         </a>
@@ -127,27 +127,27 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
   .grid > * { min-width: 0; }
 
   .copy { display: grid; gap: clamp(1.25rem, 1rem + 1vw, 1.75rem); align-content: center; }
-  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; font-size: var(--fs-small); color: var(--text-muted); }
+  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; font-size: var(--fs-small); color: var(--muted); }
   /* My role, on its own line under the headline */
   .role { font-size: clamp(1.125rem, 1rem + 0.4vw, 1.25rem); font-weight: 600; letter-spacing: -0.01em; color: var(--ink); margin-top: -0.25rem; }
   .status {
     display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.85rem;
-    border-radius: var(--radius-pill); background: var(--green-soft); color: var(--green);
+    border-radius: var(--radius-pill); background: var(--status); color: var(--ink);
     font-weight: 700; font-size: var(--fs-small);
   }
-  .status i { position: relative; width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--sage); }
+  .status i { position: relative; width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--ink); }
   @media (prefers-reduced-motion: no-preference) {
-    .status i::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--sage); opacity: 0; animation: ping 2s ease-out infinite; }
+    .status i::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--ink); opacity: 0; animation: ping 2s ease-out infinite; }
     @keyframes ping { 0% { transform: scale(0.6); opacity: 0.8; } 100% { transform: scale(1.6); opacity: 0; } }
   }
 
 
   h1 {
-    font-size: clamp(2.75rem, 1.4rem + 4.6vw, 5.25rem);
+    font-size: var(--fs-display);
     line-height: 1; letter-spacing: -0.035em;
     max-width: 12ch;
   }
-  .intro { color: var(--text-muted); max-width: 46ch; font-size: var(--fs-lead); line-height: 1.5; }
+  .intro { color: var(--muted); max-width: 46ch; font-size: var(--fs-lead); line-height: 1.5; }
   .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
   @media (max-width: 30rem) { .actions .btn { flex: 1 1 100%; } }
 
@@ -165,7 +165,7 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
   .track { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
   .reel {
     position: relative; display: block; overflow: hidden;
-    aspect-ratio: 9 / 16; border-radius: var(--radius-media); background: var(--greige-soft);
+    aspect-ratio: 9 / 16; border-radius: var(--radius-media); background: var(--surface);
     color: inherit; text-decoration: none;
   }
   .reel img, .reel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -187,11 +187,11 @@ const book = bookingUrl ? { href: bookingUrl, external: true } : { href: hero.se
   .wall-toggle {
     position: absolute; right: 0.5rem; bottom: 0.75rem; z-index: 3;
     display: none; align-items: center; gap: 0.4rem; min-height: 2.75rem; padding: 0 0.9rem;
-    border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--paper); color: var(--ink);
+    border: 1px solid var(--rule); border-radius: var(--radius-pill); background: var(--paper); color: var(--ink);
     font: inherit; font-size: var(--fs-small); font-weight: 600; cursor: pointer;
     transition: background-color 0.18s ease;
   }
-  .wall-toggle:hover { background: var(--greige-soft); }
+  .wall-toggle:hover { background: var(--surface); }
   .wall-toggle span { display: inline-flex; align-items: center; gap: 0.4rem; }
   .wall-toggle .when-paused, .wall-toggle[aria-pressed='true'] .when-playing { display: none; }
   .wall-toggle[aria-pressed='true'] .when-paused { display: inline-flex; }

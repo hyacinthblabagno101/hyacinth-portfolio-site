@@ -1,167 +1,129 @@
 ---
 /**
- * "What I do": one card per skill, text from "skills" in src/data/about.json.
- * Each card shows "help": one first-person line on how I can help a team with that skill.
- * Each card has two buttons:
- * - "See details" opens a panel with everything the skill covers (split from the skill text) and a link to
- *   matching work when there is some.
- * - "Talk about a role" opens my booking link (bookingUrl in site.json) when it's set. Until then it jumps to
- *   the contact form and notes which skill the visitor asked about.
- * Wording is for hiring managers: this is a job portfolio, not a list of services for sale.
+ * Capabilities, shown inside About (About.astro renders this). Text: "skills" in src/data/about.json.
+ * - Three main capabilities in one row with fine dividers, each with at most one quiet link to matching work.
+ * - The other three (e-commerce, AI workflows, virtual assistance) in a smaller supporting row.
+ * - Phones: a list of buttons (title and one line); tapping one opens the full description (aria-expanded).
+ *   Wide screens show everything open.
+ * No "Talk about a role" buttons: the Contact section handles that.
  */
-import { about, showcase, bookingUrl } from '../lib/data';
+import { about, showcase } from '../lib/data';
 
-/** Where each skill's "see the work" link goes. Showcase links only appear when that tab has items. */
 const has = (key: string) => showcase.some((c) => c.key === key);
+/** One quiet link per main capability, only where matching work exists */
 const links: Record<string, { label: string; href: string } | undefined> = {
-  'Short-Form Video': has('reels') ? { label: 'See my video reels', href: '/?work=reels#work' } : undefined,
-  'Social Media & Design': has('statics') ? { label: 'See my statics', href: '/?work=statics#work' } : undefined,
-  'UGC & Influencer': { label: 'See the case studies and videos', href: '/#case-studies' },
+  'Social Media & Design': has('statics') ? { label: 'See statics', href: '/?work=statics#work' } : undefined,
+  'Short-Form Video': has('reels') ? { label: 'See video reels', href: '/?work=reels#work' } : undefined,
+  'UGC & Influencer': { label: 'See the case studies', href: '/#case-studies' },
 };
+const MAIN = ['Social media management', 'Creative production', 'UGC and influencer coordination'];
 
-/** "A, B, and C. More sentences." becomes the list [A, B, C] plus the remaining sentences as a note. */
-function split(text: string) {
-  const [first, ...rest] = text.split(/(?<=\.)\s+/);
-  const parts = first
-    .replace(/\.$/, '')
-    .split(/,\s*(?:and\s+)?/i)
-    .map((p) => p.trim())
-    .filter((p) => p && !/^by /i.test(p)) // "by direct outreach or..." describes how, not a task; the help line covers it
-    .map((p) => p.charAt(0).toUpperCase() + p.slice(1));
-  return { parts, note: rest.join(' ') };
-}
-
-const skills = about.skills.map((s, i) => {
-  const { parts, note } = split(s.text);
-  return { ...s, id: `skill-${i + 1}`, num: String(i + 1).padStart(2, '0'), parts, note, link: s.category ? links[s.category] : undefined };
-});
+const all = about.skills.map((s, i) => ({
+  ...s,
+  id: `cap-${i + 1}`,
+  // One line for the collapsed view: the text up to its first comma
+  line: s.text.split(/,|\./)[0].trim(),
+  link: s.category ? links[s.category] : undefined,
+}));
+const main = all.filter((s) => MAIN.includes(s.title));
+const support = all.filter((s) => !MAIN.includes(s.title));
 ---
 
-<section id="skills" class="skills band-blue" aria-labelledby="skills-title">
-  <div class="wrap">
-    <header class="section-head">
-      <h2 id="skills-title">What I <em>do</em></h2>
-      <p class="lede">How I can help your team. Open a skill to see what it covers, or set up a call to talk about your open role.</p>
-    </header>
+<div id="skills" class="caps reveal" aria-labelledby="caps-title">
+  <h3 id="caps-title" class="caps-title">What I do</h3>
 
-    <ul class="cards" role="list">
-      {skills.map((s, n) => (
-        <li class="card reveal" style={`--delay: ${(n % 3) * 70}ms`}>
-          <h3>{s.title}</h3>
-          <p class="help">{s.help ?? s.text}</p>
-          <div class="buttons">
-            <button type="button" class="btn btn-ghost small" data-open={s.id} aria-haspopup="dialog">
-              See details <span class="visually-hidden">about {s.title}</span>
-            </button>
-            {bookingUrl ? (
-              <a class="btn btn-primary small" href={bookingUrl} target="_blank" rel="noopener">
-                Talk about a role <span class="visually-hidden">that needs {s.title.toLowerCase()} (opens in a new tab)</span>
-              </a>
-            ) : (
-              <a class="btn btn-primary small" href="#contact" data-service={s.title}>
-                Talk about a role <span class="visually-hidden">that needs {s.title.toLowerCase()}</span>
-              </a>
-            )}
-          </div>
+  <ul class="main" role="list">
+    {main.map((s) => (
+      <li class="cap">
+        <button type="button" class="cap-toggle" aria-expanded="false" aria-controls={s.id} data-cap>
+          <span class="cap-name">{s.title}</span>
+          <span class="cap-line">{s.line}</span>
+          <span class="chev" aria-hidden="true"></span>
+        </button>
+        <div class="cap-body" id={s.id} data-cap-body>
+          <p>{s.text}</p>
+          {s.link && <a class="btn btn--link" href={s.link.href}>{s.link.label}</a>}
+        </div>
+      </li>
+    ))}
+  </ul>
 
-          <dialog class="details" id={s.id} aria-labelledby={`${s.id}-dtitle`}>
-            <div class="details-inner">
-              <button type="button" class="close" data-close aria-label="Close">&times;</button>
-              <h3 id={`${s.id}-dtitle`}>{s.title}</h3>
-              {s.help && <p class="lead">{s.help}</p>}
-              <p class="label">What this covers</p>
-              <ul class="included" role="list">
-                {s.parts.map((p) => <li>{p}</li>)}
-              </ul>
-              {s.note && <p class="note">{s.note}</p>}
-              <div class="buttons">
-                {/* UGC & Influencer leads with the case studies; the other skills lead with talking about a role */}
-                {s.link && s.category === 'UGC & Influencer' && <a class="btn btn-primary" href={s.link.href} data-close>{s.link.label}</a>}
-                {bookingUrl ? (
-                  <a class:list={['btn', s.category === 'UGC & Influencer' ? 'btn-ghost' : 'btn-primary']} href={bookingUrl} target="_blank" rel="noopener">Talk about a role <span class="visually-hidden">(opens in a new tab)</span></a>
-                ) : (
-                  <a class:list={['btn', s.category === 'UGC & Influencer' ? 'btn-ghost' : 'btn-primary']} href="#contact" data-service={s.title} data-close>Talk about a role</a>
-                )}
-                {s.link && s.category !== 'UGC & Influencer' && <a class="btn btn-ghost" href={s.link.href} data-close>{s.link.label}</a>}
-              </div>
-            </div>
-          </dialog>
-        </li>
-      ))}
-    </ul>
-  </div>
-</section>
+  <p class="label support-title">Also</p>
+  <ul class="support" role="list">
+    {support.map((s) => (
+      <li class="cap small">
+        <button type="button" class="cap-toggle" aria-expanded="false" aria-controls={s.id} data-cap>
+          <span class="cap-name">{s.title}</span>
+          <span class="cap-line">{s.line}</span>
+          <span class="chev" aria-hidden="true"></span>
+        </button>
+        <div class="cap-body" id={s.id} data-cap-body>
+          <p>{s.text}</p>
+        </div>
+      </li>
+    ))}
+  </ul>
+</div>
 
 <style>
-  .skills { padding-block: var(--section); background: var(--blue); --text-muted: rgb(52 23 23 / 0.85); }
-
-  .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
-  @media (min-width: 40rem) { .cards { grid-template-columns: repeat(2, 1fr); } }
-  @media (min-width: 64rem) { .cards { grid-template-columns: repeat(3, 1fr); } }
-
-  .card {
-    display: grid; grid-template-rows: auto 1fr auto; gap: 0.9rem;
-    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
-    border: 1px solid var(--line); border-radius: var(--radius-panel);
-    background: var(--paper);
-    transition: border-color 0.3s ease, transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  .caps {
+    margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+    padding: clamp(1.25rem, 1rem + 1.5vw, 2.5rem);
+    border-radius: var(--radius-panel); background: var(--surface);
   }
-  .card:hover { border-color: var(--wine); transform: translateY(-3px); }
-  .num { font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.01em; color: var(--wine); }
-  .help { color: var(--text-muted); }
-  .buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .btn.small { min-height: 2.75rem; padding: 0.5rem 1.1rem; }
+  .caps-title { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem); letter-spacing: -0.02em; margin-bottom: 1.25rem; }
+  .main, .support { list-style: none; margin: 0; padding: 0; display: grid; }
+  .cap { border-top: 1px solid var(--rule); }
+  .cap-toggle {
+    width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.15rem 1rem; align-items: center;
+    min-height: 2.75rem; padding: 0.9rem 0; background: none; border: 0; text-align: left; cursor: pointer;
+    font: inherit; color: var(--ink);
+  }
+  .cap-toggle:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+  .cap-name { grid-column: 1; font-size: var(--fs-h3); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
+  .small .cap-name { font-size: var(--fs-body); }
+  .cap-line { grid-column: 1; font-size: var(--fs-small); color: var(--muted); }
+  .chev { grid-column: 2; grid-row: 1 / span 2; width: 0.6rem; height: 0.6rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); transition: transform 180ms ease; }
+  .cap-toggle[aria-expanded='true'] .chev { transform: rotate(-135deg); }
+  .cap-body { display: grid; gap: 0.5rem; padding: 0 0 1rem; justify-items: start; }
+  .cap-body[hidden] { display: none; }
+  .cap-body p { color: var(--muted); font-size: var(--fs-small); }
+  .support-title { color: var(--muted); margin: 1.75rem 0 0.25rem; }
 
-  /* Details panel */
-  .details {
-    width: min(100vw - 2rem, 36rem); max-height: calc(100vh - 2rem);
-    padding: 0; border: 0; border-radius: var(--radius-media);
-    background: var(--paper); color: var(--ink);
-    --text-muted: #715d58; --line: rgb(52 23 23 / 0.15); --focus: var(--wine); --heading: var(--ink);
+  /* Wide screens: everything open; main capabilities in three columns with fine dividers, supporting ones smaller */
+  @media (min-width: 64rem) {
+    .main { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .support { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cap { border-top: 0; border-left: 1px solid var(--rule); padding: 0 1.5rem; }
+    .cap:first-child { border-left: 0; padding-left: 0; }
+    .cap-toggle { cursor: default; padding-top: 0; }
+    .cap-line, .chev { display: none; }
+    .cap-body, .cap-body[hidden] { display: grid; }
+    .cap-body p { font-size: var(--fs-body); }
+    .small .cap-body p { font-size: var(--fs-small); }
   }
-  .details::backdrop { background: rgb(52 23 23 / 0.7); backdrop-filter: blur(3px); }
-  .details[open] { animation: pop 0.25s ease; }
-  @keyframes pop { from { opacity: 0; transform: translateY(8px); } }
-  .details-inner { position: relative; display: grid; gap: 0.9rem; padding: clamp(1.5rem, 1rem + 2vw, 2.25rem); }
-  .details h3 { padding-right: 2.5rem; }
-  .details .num { color: var(--wine); }
-  .label { font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.01em; color: var(--wine); margin-top: 0.5rem; }
-  .included { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
-  .included li { padding: 0.6rem 0 0.6rem 1.5rem; border-bottom: 1px solid var(--line); position: relative; }
-  .included li::before { content: ''; position: absolute; left: 0.2rem; top: 1.25rem; width: 0.55rem; height: 1px; background: var(--wine); }
-  .note { color: var(--text-muted); }
-  .lead { font-size: var(--fs-lead); line-height: 1.45; }
-  .details .buttons { margin-top: 0.5rem; }
-  .details .btn-ghost { color: var(--ink); }
-  .details .btn-ghost:hover { background: var(--ink); color: var(--paper); }
-  .details .btn-primary { background: var(--salsa); border-color: var(--salsa); color: var(--ink); }
-  .details .btn-primary:hover { background: var(--ink); border-color: var(--ink); color: var(--paper); }
-  .close {
-    position: absolute; top: 1rem; right: 1rem;
-    width: 2.75rem; height: 2.75rem; border-radius: 50%;
-    background: transparent; border: 1px solid var(--line); color: var(--ink);
-    font-size: 1.4rem; line-height: 1; cursor: pointer;
-  }
-  .close:hover { border-color: var(--ink); }
 </style>
 
 <script>
-  // "See details" opens that skill's panel; closing returns focus to the button
-  document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((btn) => {
-    const dialog = document.getElementById(btn.dataset.open!) as HTMLDialogElement | null;
-    if (!dialog) return;
-    btn.addEventListener('click', () => dialog.showModal());
-    dialog.addEventListener('click', (e) => {
-      const t = e.target as HTMLElement;
-      if (t === dialog || t.closest('[data-close]')) {
-        if (t.closest('a')) dialog.dataset.leaving = '1';
-        dialog.close();
-      }
-    });
-    dialog.addEventListener('close', () => {
-      // Focus goes back to the button, unless a link inside the panel is taking the visitor elsewhere
-      if (!dialog.dataset.leaving) btn.focus();
-      delete dialog.dataset.leaving;
-    });
+  // Phones: each capability opens with a tap (one line until then). Wide screens: all open.
+  const caps = [...document.querySelectorAll<HTMLButtonElement>('[data-cap]')];
+  const wide = window.matchMedia('(min-width: 64rem)');
+  const setAll = () => caps.forEach((b) => {
+    const body = document.getElementById(b.getAttribute('aria-controls')!);
+    if (!body) return;
+    body.hidden = !wide.matches && b.getAttribute('aria-expanded') !== 'true';
+    if (wide.matches) b.setAttribute('aria-expanded', 'true');
   });
+  caps.forEach((b) => b.addEventListener('click', () => {
+    if (wide.matches) return;
+    const open = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', String(open));
+    const body = document.getElementById(b.getAttribute('aria-controls')!);
+    if (body) body.hidden = !open;
+  }));
+  wide.addEventListener('change', () => {
+    if (!wide.matches) caps.forEach((b) => b.setAttribute('aria-expanded', 'false'));
+    setAll();
+  });
+  setAll();
 </script>
